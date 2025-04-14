@@ -46,6 +46,7 @@ export interface Exam {
   timeLimit: number; // in minutes
   startDate: string;
   endDate: string;
+  questions: Question[];
 }
 
 export interface Question {
@@ -63,4 +64,20 @@ export interface ExamResult {
   score: number;
   timeTaken: number; // in seconds
   submittedAt: string;
+  answers: Answer[];
+}
+
+export interface Answer {
+  questionId: string;
+  selectedOption: number;
+  isCorrect: boolean;
+}
+
+export interface ExamSubmission {
+  examId: string;
+  answers: {
+    questionId: string;
+    selectedOption: number;
+  }[];
+  timeTaken: number;
 }

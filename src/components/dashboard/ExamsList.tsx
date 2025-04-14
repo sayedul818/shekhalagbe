@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,12 +12,19 @@ import {
   AlertTriangle, 
   CheckCircle, 
   LockIcon, 
-  Award
+  Award,
+  Edit,
+  Trash2,
+  Plus,
+  Play
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const ExamsList = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [tabValue, setTabValue] = useState("upcoming");
   
   // Mock exams data
@@ -25,6 +33,7 @@ const ExamsList = () => {
       id: "1", 
       title: "JavaScript Fundamentals - Final Exam", 
       course: "JavaScript Fundamentals",
+      courseId: "course1",
       startDate: "2025-04-20T10:00:00Z",
       endDate: "2025-04-20T12:00:00Z",
       timeLimit: 120, // minutes
@@ -35,6 +44,7 @@ const ExamsList = () => {
       id: "2", 
       title: "UI/UX Design Principles", 
       course: "UI/UX Design Fundamentals",
+      courseId: "course2",
       startDate: "2025-04-25T14:00:00Z",
       endDate: "2025-04-25T15:30:00Z",
       timeLimit: 90, // minutes
@@ -48,6 +58,7 @@ const ExamsList = () => {
       id: "3", 
       title: "HTML & CSS Basics - Final Assessment", 
       course: "HTML & CSS Basics",
+      courseId: "course3",
       completedDate: "2025-03-15T15:45:00Z",
       score: 92,
       maxScore: 100,
@@ -59,6 +70,7 @@ const ExamsList = () => {
       id: "4", 
       title: "Web Development Introduction", 
       course: "Introduction to Web Development",
+      courseId: "course4",
       completedDate: "2025-02-20T11:30:00Z",
       score: 85,
       maxScore: 100,
@@ -100,6 +112,24 @@ const ExamsList = () => {
     }
   };
 
+  const handleCreateExam = () => {
+    // In a real app, this would navigate to a form with a course selection
+    // For now, we'll just use a hardcoded course ID
+    navigate("/dashboard/exams/create/course1");
+  };
+
+  const handleDeleteExam = (examId: string) => {
+    // In a real app, this would call an API to delete the exam
+    toast({
+      title: "Exam deleted",
+      description: "The exam has been successfully deleted",
+    });
+  };
+
+  const handleTakeExam = (examId: string) => {
+    navigate(`/dashboard/exams/take/${examId}`);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -115,7 +145,7 @@ const ExamsList = () => {
       </div>
 
       {user?.role === "teacher" && (
-        <Button className="mb-4">
+        <Button className="mb-4" onClick={handleCreateExam}>
           <ClipboardList className="h-4 w-4 mr-2" />
           Create New Exam
         </Button>
@@ -183,16 +213,28 @@ const ExamsList = () => {
                       <div className="flex space-x-2">
                         {user?.role === "teacher" ? (
                           <>
-                            <Button variant="outline">Edit Exam</Button>
-                            <Button>View Details</Button>
+                            <Button variant="outline" onClick={() => navigate(`/dashboard/exams/edit/${exam.id}`)}>
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit Exam
+                            </Button>
+                            <Button variant="destructive" onClick={() => handleDeleteExam(exam.id)}>
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </Button>
                           </>
                         ) : (
                           <>
-                            <Button disabled={true} variant="outline">
+                            <Button variant="outline" disabled={new Date(exam.startDate) > new Date()}>
                               <LockIcon className="h-4 w-4 mr-2" />
-                              Not Started Yet
+                              {new Date(exam.startDate) > new Date() ? "Not Started Yet" : "Ready"}
                             </Button>
-                            <Button>Set Reminder</Button>
+                            <Button 
+                              onClick={() => handleTakeExam(exam.id)}
+                              disabled={new Date(exam.startDate) > new Date()}
+                            >
+                              <Play className="h-4 w-4 mr-2" />
+                              Take Exam
+                            </Button>
                           </>
                         )}
                       </div>
@@ -212,7 +254,10 @@ const ExamsList = () => {
                 }
               </p>
               {user?.role === "teacher" && (
-                <Button>Create New Exam</Button>
+                <Button onClick={handleCreateExam}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create New Exam
+                </Button>
               )}
             </div>
           )}
