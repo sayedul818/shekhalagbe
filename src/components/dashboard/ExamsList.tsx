@@ -1,25 +1,13 @@
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { 
-  ClipboardList, 
-  Clock, 
-  Calendar, 
-  AlertTriangle, 
-  CheckCircle, 
-  LockIcon, 
-  Award,
-  Edit,
-  Trash2,
-  Plus,
-  Play
-} from "lucide-react";
+import { ClipboardList, Plus, Award } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { ExamCard } from "@/components/exams/ExamCard";
+import { CompletedExamCard } from "@/components/exams/CompletedExamCard";
 
 const ExamsList = () => {
   const { user } = useAuth();
@@ -36,9 +24,9 @@ const ExamsList = () => {
       courseId: "course1",
       startDate: "2025-04-20T10:00:00Z",
       endDate: "2025-04-20T12:00:00Z",
-      timeLimit: 120, // minutes
+      timeLimit: 120,
       questions: 50,
-      status: "scheduled", // scheduled, active, completed
+      status: "scheduled",
     },
     { 
       id: "2", 
@@ -47,7 +35,7 @@ const ExamsList = () => {
       courseId: "course2",
       startDate: "2025-04-25T14:00:00Z",
       endDate: "2025-04-25T15:30:00Z",
-      timeLimit: 90, // minutes
+      timeLimit: 90,
       questions: 40,
       status: "scheduled",
     },
@@ -62,7 +50,7 @@ const ExamsList = () => {
       completedDate: "2025-03-15T15:45:00Z",
       score: 92,
       maxScore: 100,
-      timeTaken: 85, // minutes
+      timeTaken: 85,
       rank: 3,
       totalParticipants: 124,
     },
@@ -74,52 +62,17 @@ const ExamsList = () => {
       completedDate: "2025-02-20T11:30:00Z",
       score: 85,
       maxScore: 100,
-      timeTaken: 65, // minutes
+      timeTaken: 65,
       rank: 12,
       totalParticipants: 156,
     },
   ];
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    }).format(date);
-  };
-
-  const getTimeRemaining = (dateString: string) => {
-    const targetDate = new Date(dateString);
-    const now = new Date();
-    const diffMs = targetDate.getTime() - now.getTime();
-    
-    if (diffMs <= 0) return 'Starting now';
-    
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (diffDays > 0) {
-      return `${diffDays} day${diffDays > 1 ? 's' : ''} ${diffHours} hr${diffHours > 1 ? 's' : ''}`;
-    } else if (diffHours > 0) {
-      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ${diffMinutes} min${diffMinutes > 1 ? 's' : ''}`;
-    } else {
-      return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`;
-    }
-  };
-
   const handleCreateExam = () => {
-    // In a real app, this would navigate to a form with a course selection
-    // For now, we'll just use a hardcoded course ID
     navigate("/dashboard/exams/create/course1");
   };
 
   const handleDeleteExam = (examId: string) => {
-    // In a real app, this would call an API to delete the exam
     toast({
       title: "Exam deleted",
       description: "The exam has been successfully deleted",
@@ -170,78 +123,13 @@ const ExamsList = () => {
         <TabsContent value="upcoming" className="space-y-4 mt-6">
           {upcomingExams.length > 0 ? (
             upcomingExams.map((exam) => (
-              <Card key={exam.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>{exam.title}</CardTitle>
-                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Upcoming</Badge>
-                  </div>
-                  <CardDescription>{exam.course}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-                      <div className="flex items-start space-x-2">
-                        <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
-                        <div>
-                          <p className="font-medium text-sm">Exam Date</p>
-                          <p className="text-sm text-muted-foreground">{formatDate(exam.startDate)}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-2">
-                        <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
-                        <div>
-                          <p className="font-medium text-sm">Duration</p>
-                          <p className="text-sm text-muted-foreground">{exam.timeLimit} minutes</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-2">
-                        <ClipboardList className="h-5 w-5 text-muted-foreground mt-0.5" />
-                        <div>
-                          <p className="font-medium text-sm">Questions</p>
-                          <p className="text-sm text-muted-foreground">{exam.questions} questions</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between border-t pt-4">
-                      <div className="flex items-center">
-                        <AlertTriangle className="h-4 w-4 text-amber-500 mr-2" />
-                        <span className="text-sm">
-                          Starts in <span className="font-medium">{getTimeRemaining(exam.startDate)}</span>
-                        </span>
-                      </div>
-                      <div className="flex space-x-2">
-                        {user?.role === "teacher" ? (
-                          <>
-                            <Button variant="outline" onClick={() => navigate(`/dashboard/exams/edit/${exam.id}`)}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit Exam
-                            </Button>
-                            <Button variant="destructive" onClick={() => handleDeleteExam(exam.id)}>
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button variant="outline" disabled={new Date(exam.startDate) > new Date()}>
-                              <LockIcon className="h-4 w-4 mr-2" />
-                              {new Date(exam.startDate) > new Date() ? "Not Started Yet" : "Ready"}
-                            </Button>
-                            <Button 
-                              onClick={() => handleTakeExam(exam.id)}
-                              disabled={new Date(exam.startDate) > new Date()}
-                            >
-                              <Play className="h-4 w-4 mr-2" />
-                              Take Exam
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ExamCard
+                key={exam.id}
+                exam={exam}
+                userRole={user?.role || ""}
+                onDelete={handleDeleteExam}
+                onTakeExam={handleTakeExam}
+              />
             ))
           ) : (
             <div className="text-center py-12 border rounded-md bg-gray-50">
@@ -266,80 +154,11 @@ const ExamsList = () => {
         <TabsContent value="completed" className="space-y-4 mt-6">
           {completedExams.length > 0 ? (
             completedExams.map((exam) => (
-              <Card key={exam.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>{exam.title}</CardTitle>
-                    <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Completed</Badge>
-                  </div>
-                  <CardDescription>{exam.course}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-                      <div className="flex items-start space-x-2">
-                        <Calendar className="h-5 w-5 text-muted-foreground mt-0.5" />
-                        <div>
-                          <p className="font-medium text-sm">Taken On</p>
-                          <p className="text-sm text-muted-foreground">{formatDate(exam.completedDate)}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-2">
-                        <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                        <div>
-                          <p className="font-medium text-sm">Score</p>
-                          <p className="text-sm text-muted-foreground">{exam.score}/{exam.maxScore} ({Math.round(exam.score / exam.maxScore * 100)}%)</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-2">
-                        <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
-                        <div>
-                          <p className="font-medium text-sm">Time Taken</p>
-                          <p className="text-sm text-muted-foreground">{exam.timeTaken} minutes</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-2">
-                        <Award className="h-5 w-5 text-yellow-500 mt-0.5" />
-                        <div>
-                          <p className="font-medium text-sm">Rank</p>
-                          <p className="text-sm text-muted-foreground">
-                            {exam.rank}/{exam.totalParticipants} 
-                            <span className="text-xs"> (Top {Math.round(exam.rank / exam.totalParticipants * 100)}%)</span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between border-t pt-4">
-                      <div className="flex items-center">
-                        {Math.round(exam.score / exam.maxScore * 100) >= 70 ? (
-                          <div className="flex items-center text-green-600">
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            <span className="text-sm font-medium">Passed</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center text-red-500">
-                            <AlertTriangle className="h-4 w-4 mr-2" />
-                            <span className="text-sm font-medium">Failed</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex space-x-2">
-                        {user?.role === "teacher" ? (
-                          <>
-                            <Button variant="outline">View Results</Button>
-                            <Button>View Leaderboard</Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button variant="outline">View Leaderboard</Button>
-                            <Button>Review Answers</Button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <CompletedExamCard
+                key={exam.id}
+                exam={exam}
+                userRole={user?.role || ""}
+              />
             ))
           ) : (
             <div className="text-center py-12 border rounded-md bg-gray-50">
