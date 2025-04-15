@@ -14,12 +14,12 @@ const ExamsList = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [tabValue, setTabValue] = useState("upcoming");
-  
+
   // Updated mock exams data with today's date
   const upcomingExams = [
-    { 
-      id: "1", 
-      title: "JavaScript Fundamentals - Final Exam", 
+    {
+      id: "1",
+      title: "JavaScript Fundamentals - Final Exam",
       course: "JavaScript Fundamentals",
       courseId: "course1",
       startDate: new Date().toISOString(), // Set to current time
@@ -28,23 +28,23 @@ const ExamsList = () => {
       questions: 50,
       status: "scheduled",
     },
-    { 
-      id: "2", 
-      title: "UI/UX Design Principles", 
+    {
+      id: "2",
+      title: "UI/UX Design Principles",
       course: "UI/UX Design Fundamentals",
       courseId: "course2",
-      startDate: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutes from now
+      startDate: new Date().toISOString(), // 1 minutes from now
       endDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
       timeLimit: 90,
       questions: 40,
       status: "scheduled",
     },
   ];
-  
+
   const completedExams = [
-    { 
-      id: "3", 
-      title: "HTML & CSS Basics - Final Assessment", 
+    {
+      id: "3",
+      title: "HTML & CSS Basics - Final Assessment",
       course: "HTML & CSS Basics",
       courseId: "course3",
       completedDate: "2025-03-15T15:45:00Z",
@@ -54,9 +54,9 @@ const ExamsList = () => {
       rank: 3,
       totalParticipants: 124,
     },
-    { 
-      id: "4", 
-      title: "Web Development Introduction", 
+    {
+      id: "4",
+      title: "Web Development Introduction",
       course: "Introduction to Web Development",
       courseId: "course4",
       completedDate: "2025-02-20T11:30:00Z",
@@ -90,8 +90,8 @@ const ExamsList = () => {
           {user?.role === "teacher" ? "Manage Exams" : "My Exams"}
         </h1>
         <p className="text-muted-foreground">
-          {user?.role === "teacher" 
-            ? "Create and manage exams for your courses" 
+          {user?.role === "teacher"
+            ? "Create and manage exams for your courses"
             : "View upcoming and completed exams"
           }
         </p>
@@ -119,7 +119,7 @@ const ExamsList = () => {
             </span>
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="upcoming" className="space-y-4 mt-6">
           {upcomingExams.length > 0 ? (
             upcomingExams.map((exam) => (
@@ -136,8 +136,8 @@ const ExamsList = () => {
               <ClipboardList className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium">No upcoming exams</h3>
               <p className="text-muted-foreground mb-4">
-                {user?.role === "teacher" 
-                  ? "Create an exam for your courses" 
+                {user?.role === "teacher"
+                  ? "Create an exam for your courses"
                   : "You don't have any upcoming exams scheduled"
                 }
               </p>
@@ -150,7 +150,7 @@ const ExamsList = () => {
             </div>
           )}
         </TabsContent>
-        
+
         <TabsContent value="completed" className="space-y-4 mt-6">
           {completedExams.length > 0 ? (
             completedExams.map((exam) => (
@@ -165,8 +165,8 @@ const ExamsList = () => {
               <Award className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium">No completed exams</h3>
               <p className="text-muted-foreground mb-4">
-                {user?.role === "teacher" 
-                  ? "You haven't published any exams yet" 
+                {user?.role === "teacher"
+                  ? "You haven't published any exams yet"
                   : "You haven't taken any exams yet"
                 }
               </p>

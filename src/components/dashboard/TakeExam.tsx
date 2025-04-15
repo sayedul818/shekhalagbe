@@ -4,12 +4,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Clock, 
-  ArrowLeft, 
-  ArrowRight, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  Clock,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle,
+  AlertTriangle,
   Trophy,
   Users,
   BookOpen
@@ -162,7 +162,7 @@ const TakeExam = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [timeLeft, setTimeLeft] = useState(mockExam.timeLimit * 60); // in seconds
@@ -172,16 +172,16 @@ const TakeExam = () => {
   const [showResults, setShowResults] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [userScore, setUserScore] = useState({ score: 0, total: 0 });
-  
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
-  
+
   useEffect(() => {
     if (!examStarted || examSubmitted || showInstructions) return;
-    
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -192,10 +192,10 @@ const TakeExam = () => {
         return prev - 1;
       });
     }, 1000);
-    
+
     return () => clearInterval(timer);
   }, [examStarted, examSubmitted, showInstructions]);
-  
+
   const startExam = () => {
     setShowInstructions(false);
     setExamStarted(true);
@@ -204,23 +204,23 @@ const TakeExam = () => {
       description: `You have ${mockExam.timeLimit} minutes to complete the exam`,
     });
   };
-  
+
   const handleAnswerSelect = (questionId: string, optionIndex: number) => {
     setSelectedAnswers((prev) => ({
       ...prev,
       [questionId]: optionIndex
     }));
   };
-  
+
   const navigateToQuestion = (index: number) => {
     if (index >= 0 && index < mockExam.questions.length) {
       setCurrentQuestion(index);
     }
   };
-  
+
   const submitExam = () => {
     const timeTaken = mockExam.timeLimit * 60 - timeLeft;
-    
+
     const submission: ExamSubmission = {
       examId: mockExam.id,
       answers: Object.entries(selectedAnswers).map(([questionId, selectedOption]) => ({
@@ -229,31 +229,31 @@ const TakeExam = () => {
       })),
       timeTaken
     };
-    
+
     console.log("Exam submission:", submission);
-    
+
     const score = calculateScore(submission);
     setUserScore(score);
-    
+
     setExamSubmitted(true);
     setShowResults(true);
-    
+
     toast({
       title: "Exam submitted",
       description: `Your score: ${score.score}/${score.total}`,
     });
   };
-  
+
   const calculateScore = (submission: ExamSubmission) => {
     let correct = 0;
-    
+
     submission.answers.forEach(answer => {
       const question = mockExam.questions.find(q => q.id === answer.questionId);
       if (question && question.correctOption === answer.selectedOption) {
         correct++;
       }
     });
-    
+
     return {
       score: correct,
       total: mockExam.questions.length
@@ -268,7 +268,7 @@ const TakeExam = () => {
   const returnToDashboard = () => {
     navigate('/dashboard/exams');
   };
-  
+
   if (showInstructions && !examStarted) {
     return (
       <div className="max-w-3xl mx-auto px-4">
@@ -307,7 +307,7 @@ const TakeExam = () => {
                 </li>
               </ul>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-md">
                 <Clock className="h-6 w-6 text-muted-foreground" />
@@ -316,7 +316,7 @@ const TakeExam = () => {
                   <p className="text-sm text-muted-foreground">{mockExam.timeLimit} minutes</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-md">
                 <BookOpen className="h-6 w-6 text-muted-foreground" />
                 <div>
@@ -324,7 +324,7 @@ const TakeExam = () => {
                   <p className="text-sm text-muted-foreground">{mockExam.questions.length} multiple choice</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-md">
                 <Trophy className="h-6 w-6 text-muted-foreground" />
                 <div>
@@ -333,7 +333,7 @@ const TakeExam = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="rounded-md bg-yellow-50 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -351,7 +351,7 @@ const TakeExam = () => {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="flex justify-between border-t pt-6">
+          {/* <CardFooter className="flex justify-between border-t pt-6">
             <Button variant="outline" onClick={returnToDashboard}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Return to Dashboard
@@ -360,16 +360,34 @@ const TakeExam = () => {
               Start Exam
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
+          </CardFooter> */}
+          <CardFooter className="flex flex-col sm:flex-row justify-between gap-4 border-t pt-6">
+            <Button
+              variant="outline"
+              onClick={returnToDashboard}
+              className="w-full sm:w-auto"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Return to Dashboard
+            </Button>
+            <Button
+              onClick={startExam}
+              className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
+            >
+              Start Exam
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
           </CardFooter>
+
         </Card>
       </div>
     );
   }
-  
+
   if (examSubmitted && showResults) {
     const percentage = (userScore.score / userScore.total) * 100;
     const isPassed = percentage >= 70;
-    
+
     return (
       <div className="max-w-3xl mx-auto px-4">
         <Card>
@@ -390,26 +408,26 @@ const TakeExam = () => {
                   <AlertTriangle className="h-12 w-12 text-red-600" />
                 </div>
               )}
-              
+
               <h2 className="text-3xl font-bold">{percentage.toFixed(0)}%</h2>
               <p className={`text-lg font-medium ${isPassed ? 'text-green-600' : 'text-red-600'}`}>
                 {isPassed ? 'Passed' : 'Failed'}
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
               <div className="p-4 bg-gray-50 rounded-md">
                 <h3 className="text-lg font-medium mb-1">Score</h3>
                 <p className="text-2xl font-bold">{userScore.score}/{userScore.total}</p>
               </div>
-              
+
               <div className="p-4 bg-gray-50 rounded-md">
                 <h3 className="text-lg font-medium mb-1">Time Taken</h3>
                 <p className="text-2xl font-bold">
                   {formatTime((mockExam.timeLimit * 60) - timeLeft)}
                 </p>
               </div>
-              
+
               <div className="p-4 bg-gray-50 rounded-md">
                 <h3 className="text-lg font-medium mb-1">Questions</h3>
                 <p className="text-2xl font-bold">
@@ -417,7 +435,7 @@ const TakeExam = () => {
                 </p>
               </div>
             </div>
-            
+
             {isPassed ? (
               <div className="bg-green-50 p-6 rounded-md text-center">
                 <h3 className="text-xl font-medium text-green-800 mb-2">Congratulations!</h3>
@@ -448,7 +466,7 @@ const TakeExam = () => {
       </div>
     );
   }
-  
+
   if (examSubmitted && showLeaderboard) {
     return (
       <div className="max-w-3xl mx-auto px-4">
@@ -472,8 +490,8 @@ const TakeExam = () => {
                 </thead>
                 <tbody>
                   {mockLeaderboard.map((entry, index) => (
-                    <tr 
-                      key={index} 
+                    <tr
+                      key={index}
                       className={`
                         border-b 
                         ${entry.name === "Current User" ? "bg-blue-50" : ""} 
@@ -484,9 +502,9 @@ const TakeExam = () => {
                         {entry.rank <= 3 ? (
                           <div className={`
                             flex items-center justify-center w-6 h-6 rounded-full 
-                            ${entry.rank === 1 ? "bg-yellow-100 text-yellow-800" : 
-                              entry.rank === 2 ? "bg-gray-100 text-gray-800" : 
-                              "bg-amber-100 text-amber-800"}
+                            ${entry.rank === 1 ? "bg-yellow-100 text-yellow-800" :
+                              entry.rank === 2 ? "bg-gray-100 text-gray-800" :
+                                "bg-amber-100 text-amber-800"}
                           `}>
                             {entry.rank}
                           </div>
@@ -530,7 +548,7 @@ const TakeExam = () => {
       </div>
     );
   }
-  
+
   if (examSubmitted && !showResults && !showLeaderboard) {
     return (
       <div className="max-w-3xl mx-auto px-4">
@@ -550,7 +568,7 @@ const TakeExam = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="max-w-4xl mx-auto px-4">
       <div className="sticky top-0 bg-background z-10 py-4 border-b mb-6">
@@ -574,7 +592,7 @@ const TakeExam = () => {
           </div>
         </div>
       </div>
-      
+
       <div className="space-y-8">
         {mockExam.questions.map((question, questionIndex) => (
           <Card key={question.id} className="relative">
@@ -591,19 +609,17 @@ const TakeExam = () => {
                 {question.options.map((option, index) => (
                   <div
                     key={index}
-                    className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                      selectedAnswers[question.id] === index
+                    className={`border rounded-lg p-4 cursor-pointer transition-colors ${selectedAnswers[question.id] === index
                         ? "bg-primary/10 border-primary"
                         : "hover:bg-accent"
-                    }`}
+                      }`}
                     onClick={() => handleAnswerSelect(question.id, index)}
                   >
                     <div className="flex items-center">
-                      <div className={`flex items-center justify-center w-6 h-6 rounded-full mr-3 text-xs font-medium ${
-                        selectedAnswers[question.id] === index
+                      <div className={`flex items-center justify-center w-6 h-6 rounded-full mr-3 text-xs font-medium ${selectedAnswers[question.id] === index
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted text-muted-foreground"
-                      }`}>
+                        }`}>
                         {String.fromCharCode(65 + index)}
                       </div>
                       <span>{option}</span>
@@ -621,7 +637,7 @@ const TakeExam = () => {
           <div className="text-sm text-muted-foreground">
             <span className="font-medium">{Object.keys(selectedAnswers).length}</span> of {mockExam.questions.length} questions answered
           </div>
-          <Button 
+          <Button
             onClick={submitExam}
             className="bg-green-600 hover:bg-green-700"
           >
