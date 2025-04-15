@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,7 @@ const BrowseCourses = () => {
       id: "2", 
       title: "Advanced React & Redux", 
       description: "Master React, Redux, and modern frontend development patterns.",
+      longDescription: "Take your React skills to the next level with advanced patterns, Redux state management, and performance optimization techniques.",
       teacher: "Emily Davis", 
       rating: 4.7,
       reviews: 256,
@@ -52,12 +54,30 @@ const BrowseCourses = () => {
       price: 69.99, 
       hours: 18,
       level: "Intermediate",
-      thumbnail: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2"
+      thumbnail: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2",
+      curriculum: [
+        "Advanced React Hooks",
+        "Redux Toolkit",
+        "Performance Optimization",
+        "Testing React Applications",
+        "Server-Side Rendering",
+      ],
+      faqs: [
+        {
+          question: "Is this course right for beginners?",
+          answer: "This course is designed for developers who already have basic React knowledge."
+        },
+        {
+          question: "Will we build real applications?",
+          answer: "Yes, you'll build multiple production-ready applications throughout the course."
+        }
+      ]
     },
     { 
       id: "3", 
       title: "Node.js API Development", 
       description: "Build robust and scalable APIs with Node.js, Express, and MongoDB.",
+      longDescription: "Learn to design, build, and deploy production-ready APIs using Node.js, Express, and MongoDB. Perfect for developers looking to master backend development.",
       teacher: "Robert Johnson", 
       rating: 4.5,
       reviews: 198,
@@ -65,12 +85,30 @@ const BrowseCourses = () => {
       price: 59.99, 
       hours: 12,
       level: "Intermediate",
-      thumbnail: "https://images.unsplash.com/photo-1527689368864-3a821dbccc34"
+      thumbnail: "https://images.unsplash.com/photo-1527689368864-3a821dbccc34",
+      curriculum: [
+        "RESTful API Design",
+        "Express.js Framework",
+        "MongoDB & Mongoose",
+        "Authentication & Authorization",
+        "API Testing & Deployment",
+      ],
+      faqs: [
+        {
+          question: "Do I need database experience?",
+          answer: "Basic database concepts are helpful but not required. We cover MongoDB from the ground up."
+        },
+        {
+          question: "What will I be able to build after this course?",
+          answer: "You'll be able to build professional backend systems and APIs for web and mobile applications."
+        }
+      ]
     },
     { 
       id: "4", 
       title: "Web Design Principles", 
       description: "Learn fundamental principles of modern web design and UX/UI best practices.",
+      longDescription: "Master the fundamentals of effective web design including layout principles, color theory, typography, and responsive design. Create beautiful, user-friendly websites.",
       teacher: "Lisa Martinez", 
       rating: 4.6,
       reviews: 176,
@@ -78,12 +116,30 @@ const BrowseCourses = () => {
       price: 39.99, 
       hours: 10,
       level: "Beginner",
-      thumbnail: "https://images.unsplash.com/photo-1559028012-481c04fa702d"
+      thumbnail: "https://images.unsplash.com/photo-1559028012-481c04fa702d",
+      curriculum: [
+        "Design Fundamentals",
+        "Typography & Color Theory",
+        "Layout & Composition",
+        "Responsive Design",
+        "UI/UX Best Practices",
+      ],
+      faqs: [
+        {
+          question: "Do I need to know how to code?",
+          answer: "No coding experience is required. This course focuses on design principles."
+        },
+        {
+          question: "What software will we use?",
+          answer: "We'll use Figma for design, which has a free tier sufficient for the course."
+        }
+      ]
     },
     { 
       id: "5", 
       title: "Python for Data Science", 
       description: "Learn Python and its powerful libraries for data analysis and visualization.",
+      longDescription: "Discover how to use Python for data manipulation, analysis, and visualization. Learn libraries like Pandas, NumPy, and Matplotlib to extract insights from data.",
       teacher: "Emily Davis", 
       rating: 4.9,
       reviews: 287,
@@ -91,12 +147,30 @@ const BrowseCourses = () => {
       price: 49.99, 
       hours: 14,
       level: "Beginner",
-      thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5"
+      thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+      curriculum: [
+        "Python Fundamentals",
+        "Data Manipulation with Pandas",
+        "Numerical Computing with NumPy",
+        "Data Visualization",
+        "Machine Learning Basics",
+      ],
+      faqs: [
+        {
+          question: "Is programming experience needed?",
+          answer: "No prior programming experience is needed. We start from the basics."
+        },
+        {
+          question: "What kind of computer do I need?",
+          answer: "Any modern computer running Windows, macOS, or Linux will work for this course."
+        }
+      ]
     },
     { 
       id: "6", 
       title: "UI/UX Design Masterclass", 
       description: "A comprehensive course on modern UI/UX design from concept to implementation.",
+      longDescription: "Learn end-to-end UI/UX design processes from user research to high-fidelity prototypes. Master design thinking and create engaging user experiences.",
       teacher: "Lisa Martinez", 
       rating: 4.8,
       reviews: 234,
@@ -104,7 +178,24 @@ const BrowseCourses = () => {
       price: 79.99, 
       hours: 20,
       level: "Intermediate",
-      thumbnail: "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd"
+      thumbnail: "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd",
+      curriculum: [
+        "User Research Methods",
+        "Information Architecture",
+        "Wireframing & Prototyping",
+        "User Testing",
+        "Design Systems",
+      ],
+      faqs: [
+        {
+          question: "Is this course for beginners?",
+          answer: "This course is best for those with some basic design knowledge, but motivated beginners can follow along."
+        },
+        {
+          question: "Will I get feedback on my designs?",
+          answer: "Yes, you'll receive feedback through peer reviews and instructor reviews on major assignments."
+        }
+      ]
     },
   ];
   
@@ -148,32 +239,36 @@ const BrowseCourses = () => {
                     </div>
                   </div>
                   <CardTitle className="text-2xl mt-2">{selectedCourse.title}</CardTitle>
-                  <CardDescription className="text-base">{selectedCourse.longDescription}</CardDescription>
+                  <CardDescription className="text-base">{selectedCourse.longDescription || selectedCourse.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-3">Curriculum</h3>
-                    <ul className="space-y-2">
-                      {selectedCourse.curriculum.map((item, index) => (
-                        <li key={index} className="flex items-center">
-                          <BookOpen className="h-4 w-4 mr-2 text-muted-foreground" />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold mb-3">FAQs</h3>
-                    <div className="space-y-3">
-                      {selectedCourse.faqs.map((faq, index) => (
-                        <div key={index} className="border rounded-lg p-4">
-                          <h4 className="font-medium mb-2">{faq.question}</h4>
-                          <p className="text-muted-foreground text-sm">{faq.answer}</p>
-                        </div>
-                      ))}
+                  {selectedCourse.curriculum && selectedCourse.curriculum.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Curriculum</h3>
+                      <ul className="space-y-2">
+                        {selectedCourse.curriculum.map((item, index) => (
+                          <li key={index} className="flex items-center">
+                            <BookOpen className="h-4 w-4 mr-2 text-muted-foreground" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
+                  )}
+                  
+                  {selectedCourse.faqs && selectedCourse.faqs.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">FAQs</h3>
+                      <div className="space-y-3">
+                        {selectedCourse.faqs.map((faq, index) => (
+                          <div key={index} className="border rounded-lg p-4">
+                            <h4 className="font-medium mb-2">{faq.question}</h4>
+                            <p className="text-muted-foreground text-sm">{faq.answer}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
