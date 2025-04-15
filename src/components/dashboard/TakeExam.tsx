@@ -452,7 +452,7 @@ const TakeExam = () => {
               </div>
             )}
           </CardContent>
-          <CardFooter className="flex justify-between pt-4">
+          {/* <CardFooter className="flex justify-between pt-4">
             <Button variant="outline" onClick={returnToDashboard}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Return to Dashboard
@@ -461,7 +461,25 @@ const TakeExam = () => {
               <Trophy className="h-4 w-4 mr-2" />
               View Leaderboard
             </Button>
+          </CardFooter> */}
+          <CardFooter className="flex flex-col sm:flex-row justify-between gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={returnToDashboard}
+              className="w-full sm:w-auto"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Return to Dashboard
+            </Button>
+            <Button
+              onClick={viewLeaderboard}
+              className="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600"
+            >
+              <Trophy className="h-4 w-4 mr-2" />
+              View Leaderboard
+            </Button>
           </CardFooter>
+
         </Card>
       </div>
     );
@@ -534,7 +552,7 @@ const TakeExam = () => {
               </table>
             </div>
           </CardContent>
-          <CardFooter className="justify-between pt-4 border-t">
+          {/* <CardFooter className="justify-between pt-4 border-t">
             <Button variant="outline" onClick={() => setShowLeaderboard(false)}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Results
@@ -543,7 +561,25 @@ const TakeExam = () => {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Return to Dashboard
             </Button>
+          </CardFooter> */}
+          <CardFooter className="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setShowLeaderboard(false)}
+              className="w-full sm:w-auto"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Results
+            </Button>
+            <Button
+              onClick={returnToDashboard}
+              className="w-full sm:w-auto"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Return to Dashboard
+            </Button>
           </CardFooter>
+
         </Card>
       </div>
     );
@@ -571,7 +607,7 @@ const TakeExam = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4">
-      <div className="sticky top-0 bg-background z-10 py-4 border-b mb-6">
+      {/* <div className="sticky top-0 bg-background z-10 py-4 px-8 border-b mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
           <div>
             <h1 className="text-lg font-medium">{mockExam.title}</h1>
@@ -591,7 +627,31 @@ const TakeExam = () => {
             {formatTime(timeLeft)}
           </div>
         </div>
+      </div> */}
+      <div className="sticky top-0 z-10 bg-gray-100 border border-gray-300 shadow-lg px-6 py-4 sm:px-10 sm:py-5 mb-6 ">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground">
+              {mockExam.title}
+            </h1>
+            <div className="flex items-center text-sm text-muted-foreground mt-2">
+              <span className="mr-4">
+                {mockExam.questions.length} Questions
+              </span>
+              {timeLeft < 300 && (
+                <Badge variant="destructive" className="mr-2">
+                  Time running out
+                </Badge>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center text-lg font-semibold mt-3 sm:mt-0 text-green-600">
+            <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
+            {formatTime(timeLeft)}
+          </div>
+        </div>
       </div>
+
 
       <div className="space-y-8">
         {mockExam.questions.map((question, questionIndex) => (
@@ -610,15 +670,15 @@ const TakeExam = () => {
                   <div
                     key={index}
                     className={`border rounded-lg p-4 cursor-pointer transition-colors ${selectedAnswers[question.id] === index
-                        ? "bg-primary/10 border-primary"
-                        : "hover:bg-accent"
+                      ? "bg-primary/10 border-primary"
+                      : "hover:bg-accent"
                       }`}
                     onClick={() => handleAnswerSelect(question.id, index)}
                   >
                     <div className="flex items-center">
                       <div className={`flex items-center justify-center w-6 h-6 rounded-full mr-3 text-xs font-medium ${selectedAnswers[question.id] === index
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
                         }`}>
                         {String.fromCharCode(65 + index)}
                       </div>
