@@ -89,7 +89,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <div className="flex items-center justify-between px-6 py-4 border-b">
             <Link to="/" className="flex items-center space-x-2">
               <BookOpen className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold">CourseraLMS</span>
+              <span className="text-xl font-bold">ShekhaLagbe</span>
             </Link>
             <Button
               variant="ghost"
@@ -161,7 +161,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </Button>
             <Link to="/" className="flex items-center space-x-2">
               <BookOpen className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold">CourseraLMS</span>
+              <span className="text-lg font-bold">ShekhaLagbe</span>
             </Link>
             <Avatar className="h-8 w-8">
               {user?.avatar ? (

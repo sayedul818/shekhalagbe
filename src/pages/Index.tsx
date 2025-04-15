@@ -90,7 +90,7 @@ const Index = () => {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
               <BookOpen className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-2xl font-bold">CourseraLMS</span>
+              <span className="ml-2 text-2xl font-bold">ShekhaLagbe</span>
             </div>
             <div className="hidden md:flex md:items-center md:space-x-6">
               <Link to="/" className="text-foreground/60 hover:text-foreground">
@@ -129,9 +129,9 @@ const Index = () => {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="relative pt-6 pb-16 sm:pb-24">
             <nav className="flex items-center justify-between">
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <BookOpen className="h-8 w-8 text-primary" />
-                <span className="ml-2 text-2xl font-bold">CourseraLMS</span>
+                <span className="ml-2 text-2xl font-bold">ShekhaLagbe</span>
               </div>
               <div className="flex items-center gap-4">
                 <Link to="/signin">
@@ -140,14 +140,14 @@ const Index = () => {
                 <Link to="/signup">
                   <Button>Get Started</Button>
                 </Link>
-              </div>
+              </div> */}
             </nav>
 
             <div className="mt-16 sm:mt-24">
               <div className="text-center">
                 <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
                   <span className="block">Learn Without Limits</span>
-                  <span className="block text-primary">With CourseraLMS</span>
+                  <span className="block text-primary">With ShekhaLagbe</span>
                 </h1>
                 <p className="mx-auto mt-3 max-w-md text-base text-muted-foreground sm:text-lg md:mt-5 md:max-w-3xl md:text-xl">
                   Start, switch, or advance your career with our online courses.
@@ -171,7 +171,7 @@ const Index = () => {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              Why Choose CourseraLMS?
+              Why Choose ShekhaLagbe?
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
               Everything you need to succeed in your learning journey
@@ -296,10 +296,10 @@ const Index = () => {
           <div className="lg:grid lg:grid-cols-2 lg:gap-8">
             <div>
               <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-                About CourseraLMS
+                About ShekhaLagbe
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
-                CourseraLMS is a leading online learning platform that connects students
+                ShekhaLagbe is a leading online learning platform that connects students
                 with expert instructors from around the world. Our mission is to provide
                 high-quality education that's accessible to everyone.
               </p>
@@ -357,7 +357,7 @@ const Index = () => {
                   Ready to start learning?
                 </h2>
                 <p className="mt-4 text-lg text-primary-foreground/90">
-                  Join thousands of students already learning on CourseraLMS.
+                  Join thousands of students already learning on ShekhaLagbe.
                   Start your journey today!
                 </p>
                 <div className="mt-8">
