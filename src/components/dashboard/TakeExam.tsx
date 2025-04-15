@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +17,6 @@ import {
 import { Question, ExamSubmission } from "@/types";
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 
-// This would typically come from an API
 const mockExam = {
   id: "exam1",
   title: "JavaScript Fundamentals - Final Exam",
@@ -150,7 +148,6 @@ const mockExam = {
   ]
 };
 
-// Leaderboard data (would come from API)
 const mockLeaderboard = [
   { name: "Sadia Ahmed", score: 95, timeTaken: 18, rank: 1 },
   { name: "Rahat Khan", score: 90, timeTaken: 22, rank: 2 },
@@ -176,14 +173,12 @@ const TakeExam = () => {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [userScore, setUserScore] = useState({ score: 0, total: 0 });
   
-  // Format time as mm:ss
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
   
-  // Start the exam timer
   useEffect(() => {
     if (!examStarted || examSubmitted || showInstructions) return;
     
@@ -235,10 +230,8 @@ const TakeExam = () => {
       timeTaken
     };
     
-    // In a real app, this would be sent to a backend
     console.log("Exam submission:", submission);
     
-    // Calculate score
     const score = calculateScore(submission);
     setUserScore(score);
     
@@ -276,7 +269,6 @@ const TakeExam = () => {
     navigate('/dashboard/exams');
   };
   
-  // Show exam instructions page
   if (showInstructions && !examStarted) {
     return (
       <div className="max-w-3xl mx-auto px-4">
@@ -374,7 +366,6 @@ const TakeExam = () => {
     );
   }
   
-  // Show results page
   if (examSubmitted && showResults) {
     const percentage = (userScore.score / userScore.total) * 100;
     const isPassed = percentage >= 70;
@@ -458,7 +449,6 @@ const TakeExam = () => {
     );
   }
   
-  // Show leaderboard
   if (examSubmitted && showLeaderboard) {
     return (
       <div className="max-w-3xl mx-auto px-4">
@@ -541,7 +531,6 @@ const TakeExam = () => {
     );
   }
   
-  // If exam is submitted but not showing results or leaderboard
   if (examSubmitted && !showResults && !showLeaderboard) {
     return (
       <div className="max-w-3xl mx-auto px-4">
@@ -562,18 +551,15 @@ const TakeExam = () => {
     );
   }
   
-  // Exam in progress
-  const question = mockExam.questions[currentQuestion];
-  
   return (
     <div className="max-w-4xl mx-auto px-4">
       <div className="sticky top-0 bg-background z-10 py-4 border-b mb-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
           <div>
             <h1 className="text-lg font-medium">{mockExam.title}</h1>
             <div className="flex items-center text-sm text-muted-foreground mt-1">
               <span className="mr-4">
-                Question {currentQuestion + 1} of {mockExam.questions.length}
+                {mockExam.questions.length} Questions
               </span>
               {timeLeft < 300 && (
                 <Badge variant="destructive" className="mr-2">
@@ -582,104 +568,74 @@ const TakeExam = () => {
               )}
             </div>
           </div>
-          <div className="flex items-center text-lg font-semibold">
+          <div className="flex items-center text-lg font-semibold mt-2 sm:mt-0">
             <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
             {formatTime(timeLeft)}
           </div>
         </div>
-        <div className="flex mt-4 overflow-x-auto pb-2 scrollbar-none">
-          {mockExam.questions.map((_, index) => (
-            <Button
-              key={index}
-              variant={currentQuestion === index ? "default" : selectedAnswers[_.id] !== undefined ? "secondary" : "outline"}
-              size="sm"
-              className="mr-2 min-w-[40px]"
-              onClick={() => navigateToQuestion(index)}
-            >
-              {index + 1}
-            </Button>
-          ))}
-        </div>
       </div>
       
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <CardTitle className="text-lg">
-              Question {currentQuestion + 1}
-            </CardTitle>
-            <Menubar className="h-8">
-              <MenubarMenu>
-                <MenubarTrigger className="h-8 px-2 text-xs">Actions</MenubarTrigger>
-                <MenubarContent>
-                  <MenubarItem onClick={submitExam}>Submit Exam</MenubarItem>
-                </MenubarContent>
-              </MenubarMenu>
-            </Menubar>
-          </div>
-          <CardDescription className="text-base font-medium text-foreground mt-2">
-            {question.question}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {question.options.map((option, index) => (
-              <div
-                key={index}
-                className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                  selectedAnswers[question.id] === index
-                    ? "bg-primary/10 border-primary"
-                    : "hover:bg-accent"
-                }`}
-                onClick={() => handleAnswerSelect(question.id, index)}
-              >
-                <div className="flex items-center">
-                  <div className={`flex items-center justify-center w-6 h-6 rounded-full mr-3 text-xs font-medium ${
-                    selectedAnswers[question.id] === index
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}>
-                    {String.fromCharCode(65 + index)}
+      <div className="space-y-8">
+        {mockExam.questions.map((question, questionIndex) => (
+          <Card key={question.id} className="relative">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-start">
+                <span className="bg-primary/10 text-primary rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">
+                  {questionIndex + 1}
+                </span>
+                <span>{question.question}</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {question.options.map((option, index) => (
+                  <div
+                    key={index}
+                    className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                      selectedAnswers[question.id] === index
+                        ? "bg-primary/10 border-primary"
+                        : "hover:bg-accent"
+                    }`}
+                    onClick={() => handleAnswerSelect(question.id, index)}
+                  >
+                    <div className="flex items-center">
+                      <div className={`flex items-center justify-center w-6 h-6 rounded-full mr-3 text-xs font-medium ${
+                        selectedAnswers[question.id] === index
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}>
+                        {String.fromCharCode(65 + index)}
+                      </div>
+                      <span>{option}</span>
+                    </div>
                   </div>
-                  <span>{option}</span>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between border-t pt-4">
-          <Button
-            variant="outline"
-            onClick={() => navigateToQuestion(currentQuestion - 1)}
-            disabled={currentQuestion === 0}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Previous
-          </Button>
-          {currentQuestion < mockExam.questions.length - 1 ? (
-            <Button
-              onClick={() => navigateToQuestion(currentQuestion + 1)}
-            >
-              Next
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
-          ) : (
-            <Button 
-              onClick={submitExam}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              Submit Exam
-              <CheckCircle className="h-4 w-4 ml-2" />
-            </Button>
-          )}
-        </CardFooter>
-      </Card>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-      <div className="mt-4 flex justify-center">
+      <div className="sticky bottom-0 bg-background border-t py-4 mt-8">
+        <div className="max-w-4xl mx-auto px-4 flex justify-between items-center">
+          <div className="text-sm text-muted-foreground">
+            <span className="font-medium">{Object.keys(selectedAnswers).length}</span> of {mockExam.questions.length} questions answered
+          </div>
+          <Button 
+            onClick={submitExam}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Submit Exam
+            <CheckCircle className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="my-4 flex justify-center">
         <div className="bg-yellow-50 p-3 rounded-md text-sm text-yellow-800 flex items-center max-w-md">
           <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2 flex-shrink-0" />
           <p>
-            Your progress is automatically saved. You can navigate between questions freely before submitting.
+            Your progress is automatically saved. Take your time to review your answers before submitting.
           </p>
         </div>
       </div>
