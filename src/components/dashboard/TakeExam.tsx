@@ -5,8 +5,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Clock, ArrowLeft, ArrowRight, CheckCircle, AlertTriangle } from "lucide-react";
+import { 
+  Clock, 
+  ArrowLeft, 
+  ArrowRight, 
+  CheckCircle, 
+  AlertTriangle, 
+  Trophy,
+  Users,
+  BookOpen
+} from "lucide-react";
 import { Question, ExamSubmission } from "@/types";
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 
 // This would typically come from an API
 const mockExam = {
@@ -76,9 +86,80 @@ const mockExam = {
         "unshift()"
       ],
       correctOption: 0
+    },
+    {
+      id: "q6",
+      examId: "exam1",
+      question: "What is the output of: console.log(typeof null)?",
+      options: [
+        "null",
+        "undefined",
+        "object",
+        "string"
+      ],
+      correctOption: 2
+    },
+    {
+      id: "q7",
+      examId: "exam1",
+      question: "Which JavaScript method is used to remove the last element of an array?",
+      options: [
+        "shift()",
+        "pop()",
+        "splice()",
+        "slice()"
+      ],
+      correctOption: 1
+    },
+    {
+      id: "q8",
+      examId: "exam1",
+      question: "What does the 'this' keyword refer to in JavaScript?",
+      options: [
+        "Always refers to the global object",
+        "Depends on how a function is called",
+        "Always refers to the function itself",
+        "Refers to the nearest parent object"
+      ],
+      correctOption: 1
+    },
+    {
+      id: "q9",
+      examId: "exam1",
+      question: "Which of the following is NOT a JavaScript framework or library?",
+      options: [
+        "React",
+        "Angular",
+        "Django",
+        "Vue"
+      ],
+      correctOption: 2
+    },
+    {
+      id: "q10",
+      examId: "exam1",
+      question: "What is the correct way to check if a variable is an array in JavaScript?",
+      options: [
+        "typeof variable === 'array'",
+        "variable instanceof Array",
+        "variable.isArray()",
+        "Array.isArray(variable)"
+      ],
+      correctOption: 3
     }
   ]
 };
+
+// Leaderboard data (would come from API)
+const mockLeaderboard = [
+  { name: "Sadia Ahmed", score: 95, timeTaken: 18, rank: 1 },
+  { name: "Rahat Khan", score: 90, timeTaken: 22, rank: 2 },
+  { name: "Nusrat Jahan", score: 85, timeTaken: 25, rank: 3 },
+  { name: "Mehedi Hasan", score: 80, timeTaken: 23, rank: 4 },
+  { name: "Tasneem Rahman", score: 75, timeTaken: 20, rank: 5 },
+  { name: "Farhan Ahmed", score: 70, timeTaken: 28, rank: 6 },
+  { name: "Current User", score: 65, timeTaken: 24, rank: 7 },
+];
 
 const TakeExam = () => {
   const { examId } = useParams();
@@ -90,6 +171,10 @@ const TakeExam = () => {
   const [timeLeft, setTimeLeft] = useState(mockExam.timeLimit * 60); // in seconds
   const [examStarted, setExamStarted] = useState(false);
   const [examSubmitted, setExamSubmitted] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(true);
+  const [showResults, setShowResults] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [userScore, setUserScore] = useState({ score: 0, total: 0 });
   
   // Format time as mm:ss
   const formatTime = (seconds: number) => {
@@ -100,7 +185,7 @@ const TakeExam = () => {
   
   // Start the exam timer
   useEffect(() => {
-    if (!examStarted || examSubmitted) return;
+    if (!examStarted || examSubmitted || showInstructions) return;
     
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -114,9 +199,10 @@ const TakeExam = () => {
     }, 1000);
     
     return () => clearInterval(timer);
-  }, [examStarted, examSubmitted]);
+  }, [examStarted, examSubmitted, showInstructions]);
   
   const startExam = () => {
+    setShowInstructions(false);
     setExamStarted(true);
     toast({
       title: "Exam started",
@@ -154,18 +240,15 @@ const TakeExam = () => {
     
     // Calculate score
     const score = calculateScore(submission);
+    setUserScore(score);
     
     setExamSubmitted(true);
+    setShowResults(true);
     
     toast({
       title: "Exam submitted",
       description: `Your score: ${score.score}/${score.total}`,
     });
-    
-    // Navigate to results page
-    setTimeout(() => {
-      navigate('/dashboard/exams');
-    }, 2000);
   };
   
   const calculateScore = (submission: ExamSubmission) => {
@@ -183,57 +266,283 @@ const TakeExam = () => {
       total: mockExam.questions.length
     };
   };
+
+  const viewLeaderboard = () => {
+    setShowResults(false);
+    setShowLeaderboard(true);
+  };
+
+  const returnToDashboard = () => {
+    navigate('/dashboard/exams');
+  };
   
-  // If exam hasn't started yet
-  if (!examStarted) {
+  // Show exam instructions page
+  if (showInstructions && !examStarted) {
     return (
       <div className="max-w-3xl mx-auto px-4">
         <Card>
-          <CardHeader>
-            <CardTitle>{mockExam.title}</CardTitle>
-            <CardDescription>{mockExam.description}</CardDescription>
+          <CardHeader className="border-b">
+            <CardTitle className="text-xl">{mockExam.title}</CardTitle>
+            <CardDescription className="text-base">{mockExam.description}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between border-b pb-4">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">Time Limit</span>
-              </div>
-              <span>{mockExam.timeLimit} minutes</span>
+          <CardContent className="space-y-6 pt-6">
+            <div className="bg-blue-50 p-4 rounded-md">
+              <h3 className="text-lg font-medium text-blue-800 mb-2">Exam Instructions</h3>
+              <ul className="space-y-2 text-blue-700">
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>This exam consists of {mockExam.questions.length} multiple choice questions.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>You have {mockExam.timeLimit} minutes to complete the exam.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>You can navigate between questions using the numbered buttons or next/previous buttons.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Once you start the exam, the timer will begin and cannot be paused.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>If you don't complete the exam in the given time, it will be automatically submitted.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  <span>Make sure you have a stable internet connection before starting.</span>
+                </li>
+              </ul>
             </div>
-            <div className="flex items-center justify-between border-b pb-4">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">Questions</span>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-md">
+                <Clock className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">Time Limit</p>
+                  <p className="text-sm text-muted-foreground">{mockExam.timeLimit} minutes</p>
+                </div>
               </div>
-              <span>{mockExam.questions.length} multiple choice questions</span>
+              
+              <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-md">
+                <BookOpen className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">Questions</p>
+                  <p className="text-sm text-muted-foreground">{mockExam.questions.length} multiple choice</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-md">
+                <Trophy className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">Passing Score</p>
+                  <p className="text-sm text-muted-foreground">70% or higher</p>
+                </div>
+              </div>
             </div>
+            
             <div className="rounded-md bg-yellow-50 p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <AlertTriangle className="h-5 w-5 text-yellow-400" />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800">Attention needed</h3>
+                  <h3 className="text-sm font-medium text-yellow-800">Important Notice</h3>
                   <div className="mt-2 text-sm text-yellow-700">
                     <p>
-                      Once you start the exam, the timer will begin and cannot be paused. Make sure you have a stable internet connection and enough time to complete the exam.
+                      Once you start the exam, you must complete it in one session. Make sure you are prepared
+                      and have enough time before proceeding.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
           </CardContent>
-          <CardFooter>
-            <Button onClick={startExam} className="w-full">Start Exam</Button>
+          <CardFooter className="flex justify-between border-t pt-6">
+            <Button variant="outline" onClick={returnToDashboard}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Return to Dashboard
+            </Button>
+            <Button onClick={startExam} className="bg-green-600 hover:bg-green-700">
+              Start Exam
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
           </CardFooter>
         </Card>
       </div>
     );
   }
   
-  // If exam is submitted
-  if (examSubmitted) {
+  // Show results page
+  if (examSubmitted && showResults) {
+    const percentage = (userScore.score / userScore.total) * 100;
+    const isPassed = percentage >= 70;
+    
+    return (
+      <div className="max-w-3xl mx-auto px-4">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Exam Results</CardTitle>
+            <CardDescription>
+              {mockExam.title}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-8">
+            <div className="flex flex-col items-center py-6">
+              {isPassed ? (
+                <div className="h-24 w-24 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                  <CheckCircle className="h-12 w-12 text-green-600" />
+                </div>
+              ) : (
+                <div className="h-24 w-24 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                  <AlertTriangle className="h-12 w-12 text-red-600" />
+                </div>
+              )}
+              
+              <h2 className="text-3xl font-bold">{percentage.toFixed(0)}%</h2>
+              <p className={`text-lg font-medium ${isPassed ? 'text-green-600' : 'text-red-600'}`}>
+                {isPassed ? 'Passed' : 'Failed'}
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+              <div className="p-4 bg-gray-50 rounded-md">
+                <h3 className="text-lg font-medium mb-1">Score</h3>
+                <p className="text-2xl font-bold">{userScore.score}/{userScore.total}</p>
+              </div>
+              
+              <div className="p-4 bg-gray-50 rounded-md">
+                <h3 className="text-lg font-medium mb-1">Time Taken</h3>
+                <p className="text-2xl font-bold">
+                  {formatTime((mockExam.timeLimit * 60) - timeLeft)}
+                </p>
+              </div>
+              
+              <div className="p-4 bg-gray-50 rounded-md">
+                <h3 className="text-lg font-medium mb-1">Questions</h3>
+                <p className="text-2xl font-bold">
+                  {Object.keys(selectedAnswers).length}/{mockExam.questions.length}
+                </p>
+              </div>
+            </div>
+            
+            {isPassed ? (
+              <div className="bg-green-50 p-6 rounded-md text-center">
+                <h3 className="text-xl font-medium text-green-800 mb-2">Congratulations!</h3>
+                <p className="text-green-700">
+                  You have successfully passed this exam. Keep up the good work!
+                </p>
+              </div>
+            ) : (
+              <div className="bg-red-50 p-6 rounded-md text-center">
+                <h3 className="text-xl font-medium text-red-800 mb-2">Don't give up!</h3>
+                <p className="text-red-700">
+                  You didn't pass this time, but you can review the material and try again.
+                </p>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex justify-between pt-4">
+            <Button variant="outline" onClick={returnToDashboard}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Return to Dashboard
+            </Button>
+            <Button onClick={viewLeaderboard}>
+              <Trophy className="h-4 w-4 mr-2" />
+              View Leaderboard
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+  
+  // Show leaderboard
+  if (examSubmitted && showLeaderboard) {
+    return (
+      <div className="max-w-3xl mx-auto px-4">
+        <Card>
+          <CardHeader className="text-center border-b">
+            <CardTitle className="text-2xl">Exam Leaderboard</CardTitle>
+            <CardDescription>
+              {mockExam.title}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="px-4 py-3 text-left font-medium text-gray-600 text-sm">Rank</th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-600 text-sm">Student</th>
+                    <th className="px-4 py-3 text-center font-medium text-gray-600 text-sm">Score</th>
+                    <th className="px-4 py-3 text-center font-medium text-gray-600 text-sm">Time Taken</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockLeaderboard.map((entry, index) => (
+                    <tr 
+                      key={index} 
+                      className={`
+                        border-b 
+                        ${entry.name === "Current User" ? "bg-blue-50" : ""} 
+                        ${entry.rank <= 3 ? "font-medium" : ""}
+                      `}
+                    >
+                      <td className="px-4 py-3">
+                        {entry.rank <= 3 ? (
+                          <div className={`
+                            flex items-center justify-center w-6 h-6 rounded-full 
+                            ${entry.rank === 1 ? "bg-yellow-100 text-yellow-800" : 
+                              entry.rank === 2 ? "bg-gray-100 text-gray-800" : 
+                              "bg-amber-100 text-amber-800"}
+                          `}>
+                            {entry.rank}
+                          </div>
+                        ) : entry.rank}
+                      </td>
+                      <td className="px-4 py-3 flex items-center">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center mr-2">
+                          {entry.name.charAt(0)}
+                        </div>
+                        {entry.name}
+                        {entry.name === "Current User" && (
+                          <Badge className="ml-2 bg-blue-100 text-blue-800 hover:bg-blue-100">You</Badge>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {entry.score}/100
+                        <span className="text-xs ml-1 text-gray-500">
+                          ({entry.score}%)
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {entry.timeTaken} min
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+          <CardFooter className="justify-between pt-4 border-t">
+            <Button variant="outline" onClick={() => setShowLeaderboard(false)}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Results
+            </Button>
+            <Button onClick={returnToDashboard}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Return to Dashboard
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+  
+  // If exam is submitted but not showing results or leaderboard
+  if (examSubmitted && !showResults && !showLeaderboard) {
     return (
       <div className="max-w-3xl mx-auto px-4">
         <Card>
@@ -257,7 +566,7 @@ const TakeExam = () => {
   const question = mockExam.questions[currentQuestion];
   
   return (
-    <div className="max-w-3xl mx-auto px-4">
+    <div className="max-w-4xl mx-auto px-4">
       <div className="sticky top-0 bg-background z-10 py-4 border-b mb-6">
         <div className="flex justify-between items-center">
           <div>
@@ -295,9 +604,19 @@ const TakeExam = () => {
       
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            Question {currentQuestion + 1}
-          </CardTitle>
+          <div className="flex justify-between items-start">
+            <CardTitle className="text-lg">
+              Question {currentQuestion + 1}
+            </CardTitle>
+            <Menubar className="h-8">
+              <MenubarMenu>
+                <MenubarTrigger className="h-8 px-2 text-xs">Actions</MenubarTrigger>
+                <MenubarContent>
+                  <MenubarItem onClick={submitExam}>Submit Exam</MenubarItem>
+                </MenubarContent>
+              </MenubarMenu>
+            </Menubar>
+          </div>
           <CardDescription className="text-base font-medium text-foreground mt-2">
             {question.question}
           </CardDescription>
@@ -328,7 +647,7 @@ const TakeExam = () => {
             ))}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
+        <CardFooter className="flex justify-between border-t pt-4">
           <Button
             variant="outline"
             onClick={() => navigateToQuestion(currentQuestion - 1)}
@@ -355,6 +674,15 @@ const TakeExam = () => {
           )}
         </CardFooter>
       </Card>
+
+      <div className="mt-4 flex justify-center">
+        <div className="bg-yellow-50 p-3 rounded-md text-sm text-yellow-800 flex items-center max-w-md">
+          <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2 flex-shrink-0" />
+          <p>
+            Your progress is automatically saved. You can navigate between questions freely before submitting.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

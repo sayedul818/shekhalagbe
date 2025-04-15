@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,11 +8,53 @@ import {
   Award,
   CheckCircle,
   GraduationCap,
-  Star
+  Star,
+  Menu,
+  X
 } from "lucide-react";
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (mobileMenuOpen && !target.closest('#mobile-menu') && !target.closest('#menu-button')) {
+        setMobileMenuOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
+  
+  // Close mobile menu when window is resized to desktop size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setMobileMenuOpen(false);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  
+  // Handle smooth scrolling for anchor links
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setMobileMenuOpen(false);
+    }
+  };
+  
   const features = [
     {
       icon: <BookOpen className="h-6 w-6" />,
@@ -95,16 +138,16 @@ const Index = () => {
               <span className="ml-2 text-2xl font-bold">ShekhaLagbe</span>
             </div>
             <div className="hidden md:flex md:items-center md:space-x-6">
-              <Link to="/" className="text-foreground/60 hover:text-foreground">
+              <a href="#" onClick={(e) => scrollToSection(e, 'hero')} className="text-foreground/60 hover:text-foreground">
                 Home
-              </Link>
-              <a href="#courses" className="text-foreground/60 hover:text-foreground">
+              </a>
+              <a href="#courses" onClick={(e) => scrollToSection(e, 'courses')} className="text-foreground/60 hover:text-foreground">
                 Courses
               </a>
-              <a href="#instructors" className="text-foreground/60 hover:text-foreground">
+              <a href="#instructors" onClick={(e) => scrollToSection(e, 'instructors')} className="text-foreground/60 hover:text-foreground">
                 Instructors
               </a>
-              <a href="#about" className="text-foreground/60 hover:text-foreground">
+              <a href="#about" onClick={(e) => scrollToSection(e, 'about')} className="text-foreground/60 hover:text-foreground">
                 About
               </a>
               <Link to="/signin">
@@ -116,55 +159,76 @@ const Index = () => {
             </div>
             {/* Mobile menu button */}
             <div className="flex md:hidden">
-              <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              <Button 
+                id="menu-button"
+                variant="ghost" 
+                size="icon" 
+                className="md:hidden" 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
                 {mobileMenuOpen ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="h-6 w-6" />
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
+                  <Menu className="h-6 w-6" />
                 )}
               </Button>
             </div>
           </div>
         </div>
       </nav>
-      {mobileMenuOpen && (
-        <div className="md:hidden px-6 py-4 space-y-2 bg-background border-b">
-          <a href="#courses" className="block text-foreground/60 hover:text-foreground">Courses</a>
-          <a href="#instructors" className="block text-foreground/60 hover:text-foreground">Instructors</a>
-          <a href="#about" className="block text-foreground/60 hover:text-foreground">About</a>
-          <Link to="/signin" className="block">
-            <Button variant="ghost" className="w-full">Sign In</Button>
-          </Link>
-          <Link to="/signup" className="block">
-            <Button className="w-full">Get Started</Button>
-          </Link>
-        </div>
-      )}
       
-
+      {/* Mobile menu */}
+      <div
+        id="mobile-menu"
+        className={`md:hidden fixed inset-0 z-40 transform ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } transition-transform duration-300 ease-in-out`}
+        style={{ top: "64px", height: "calc(100% - 64px)" }}
+      >
+        <div className="bg-background h-full border-r shadow-lg px-6 py-4 space-y-4">
+          <a 
+            href="#" 
+            onClick={(e) => scrollToSection(e, 'hero')}
+            className="block py-2 text-foreground hover:text-primary"
+          >
+            Home
+          </a>
+          <a 
+            href="#courses" 
+            onClick={(e) => scrollToSection(e, 'courses')}
+            className="block py-2 text-foreground hover:text-primary"
+          >
+            Courses
+          </a>
+          <a 
+            href="#instructors" 
+            onClick={(e) => scrollToSection(e, 'instructors')}
+            className="block py-2 text-foreground hover:text-primary"
+          >
+            Instructors
+          </a>
+          <a 
+            href="#about" 
+            onClick={(e) => scrollToSection(e, 'about')}
+            className="block py-2 text-foreground hover:text-primary"
+          >
+            About
+          </a>
+          <div className="pt-4 border-t">
+            <Link to="/signin" className="block mb-4">
+              <Button variant="outline" className="w-full">Sign In</Button>
+            </Link>
+            <Link to="/signup" className="block">
+              <Button className="w-full">Get Started</Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+      
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div id="hero" className="relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="relative pt-6 pb-16 sm:pb-24">
-            <nav className="flex items-center justify-between">
-              {/* <div className="flex items-center">
-                <BookOpen className="h-8 w-8 text-primary" />
-                <span className="ml-2 text-2xl font-bold">ShekhaLagbe</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <Link to="/signin">
-                  <Button variant="ghost">Sign In</Button>
-                </Link>
-                <Link to="/signup">
-                  <Button>Get Started</Button>
-                </Link>
-              </div> */}
-            </nav>
-
             <div className="mt-16 sm:mt-24">
               <div className="text-center">
                 <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
@@ -220,7 +284,7 @@ const Index = () => {
       </div>
 
       {/* Popular Courses Section */}
-      <section id="courses" className="py-16 bg-background">
+      <section id="courses" className="py-16 bg-background scroll-mt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
@@ -267,7 +331,7 @@ const Index = () => {
       </section>
 
       {/* Featured Instructors Section */}
-      <section id="instructors" className="py-16 bg-accent">
+      <section id="instructors" className="py-16 bg-accent scroll-mt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
@@ -313,7 +377,7 @@ const Index = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-16 bg-background">
+      <section id="about" className="py-16 bg-background scroll-mt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-2 lg:gap-8">
             <div>
