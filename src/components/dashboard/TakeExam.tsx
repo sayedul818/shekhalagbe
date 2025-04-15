@@ -628,7 +628,7 @@ const TakeExam = () => {
           </div>
         </div>
       </div> */}
-      <div className="sticky top-0 z-10 bg-gray-100 border border-gray-300 shadow-lg px-6 py-4 sm:px-10 sm:py-5 mb-6 ">
+      <div className="top-0 z-10 bg-gray-100 border border-gray-300 shadow-lg px-6 py-4 sm:px-10 sm:py-5 mb-6 ">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
           <div>
             <h1 className="text-xl sm:text-2xl font-semibold text-foreground">
@@ -692,7 +692,7 @@ const TakeExam = () => {
         ))}
       </div>
 
-      <div className="sticky bottom-0 bg-background border-t py-4 mt-8">
+      <div className=" bottom-0 bg-background border-t py-4 mt-8">
         <div className="max-w-4xl mx-auto px-4 flex justify-between items-center">
           <div className="text-sm text-muted-foreground">
             <span className="font-medium">{Object.keys(selectedAnswers).length}</span> of {mockExam.questions.length} questions answered
