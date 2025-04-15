@@ -15,15 +15,15 @@ const ExamsList = () => {
   const { toast } = useToast();
   const [tabValue, setTabValue] = useState("upcoming");
   
-  // Mock exams data
+  // Updated mock exams data with today's date
   const upcomingExams = [
     { 
       id: "1", 
       title: "JavaScript Fundamentals - Final Exam", 
       course: "JavaScript Fundamentals",
       courseId: "course1",
-      startDate: "2025-04-20T10:00:00Z",
-      endDate: "2025-04-20T12:00:00Z",
+      startDate: new Date().toISOString(), // Set to current time
+      endDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
       timeLimit: 120,
       questions: 50,
       status: "scheduled",
@@ -33,8 +33,8 @@ const ExamsList = () => {
       title: "UI/UX Design Principles", 
       course: "UI/UX Design Fundamentals",
       courseId: "course2",
-      startDate: "2025-04-25T14:00:00Z",
-      endDate: "2025-04-25T15:30:00Z",
+      startDate: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutes from now
+      endDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
       timeLimit: 90,
       questions: 40,
       status: "scheduled",
