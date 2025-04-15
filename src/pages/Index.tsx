@@ -1,15 +1,17 @@
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { 
-  BookOpen, 
-  Users, 
-  Award, 
-  CheckCircle, 
+import {
+  BookOpen,
+  Users,
+  Award,
+  CheckCircle,
   GraduationCap,
   Star
 } from "lucide-react";
 
 const Index = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const features = [
     {
       icon: <BookOpen className="h-6 w-6" />,
@@ -114,15 +116,35 @@ const Index = () => {
             </div>
             {/* Mobile menu button */}
             <div className="flex md:hidden">
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+              <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                {mobileMenuOpen ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
               </Button>
             </div>
           </div>
         </div>
       </nav>
+      {mobileMenuOpen && (
+        <div className="md:hidden px-6 py-4 space-y-2 bg-background border-b">
+          <a href="#courses" className="block text-foreground/60 hover:text-foreground">Courses</a>
+          <a href="#instructors" className="block text-foreground/60 hover:text-foreground">Instructors</a>
+          <a href="#about" className="block text-foreground/60 hover:text-foreground">About</a>
+          <Link to="/signin" className="block">
+            <Button variant="ghost" className="w-full">Sign In</Button>
+          </Link>
+          <Link to="/signup" className="block">
+            <Button className="w-full">Get Started</Button>
+          </Link>
+        </div>
+      )}
+      
 
       {/* Hero Section */}
       <div className="relative overflow-hidden">
