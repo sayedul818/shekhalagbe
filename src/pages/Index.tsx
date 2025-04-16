@@ -1,482 +1,141 @@
 
-import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  BookOpen,
-  Users,
-  Award,
-  CheckCircle,
-  GraduationCap,
-  Star,
-  Menu,
-  X
-} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  // Close mobile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (mobileMenuOpen && !target.closest('#mobile-menu') && !target.closest('#menu-button')) {
-        setMobileMenuOpen(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [mobileMenuOpen]);
-  
-  // Close mobile menu when window is resized to desktop size
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setMobileMenuOpen(false);
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-  
-  // Handle smooth scrolling for anchor links
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setMobileMenuOpen(false);
-    }
-  };
-  
-  const features = [
-    {
-      icon: <BookOpen className="h-6 w-6" />,
-      title: "Diverse Courses",
-      description: "Access a wide range of courses taught by expert instructors",
-    },
-    {
-      icon: <Users className="h-6 w-6" />,
-      title: "Expert Teachers",
-      description: "Learn from industry professionals and experienced educators",
-    },
-    {
-      icon: <Award className="h-6 w-6" />,
-      title: "Certificates",
-      description: "Earn certificates upon successful course completion",
-    },
-  ];
-
-  const popularCourses = [
-    {
-      title: "Web Development Bootcamp",
-      instructor: "John Smith",
-      rating: 4.9,
-      students: 1200,
-      image: "https://images.unsplash.com/photo-1593720213428-28a5b9e94613",
-      category: "Programming",
-    },
-    {
-      title: "Digital Marketing Mastery",
-      instructor: "Sarah Johnson",
-      rating: 4.8,
-      students: 980,
-      image: "https://images.unsplash.com/photo-1557426272-fc759fdf7a8d",
-      category: "Marketing",
-    },
-    {
-      title: "Data Science Fundamentals",
-      instructor: "Michael Chen",
-      rating: 4.7,
-      students: 850,
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-      category: "Data Science",
-    },
-  ];
-
-  const instructors = [
-    {
-      name: "Dr. Emily Watson",
-      expertise: "Machine Learning",
-      students: 5000,
-      rating: 4.9,
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2",
-      courses: 8,
-    },
-    {
-      name: "Prof. David Miller",
-      expertise: "Software Engineering",
-      students: 4200,
-      rating: 4.8,
-      image: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5",
-      courses: 6,
-    },
-    {
-      name: "Lisa Anderson",
-      expertise: "Business Analytics",
-      students: 3800,
-      rating: 4.7,
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956",
-      courses: 5,
-    },
-  ];
+  const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center">
-              <BookOpen className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-2xl font-bold">ShekhaLagbe</span>
-            </div>
-            <div className="hidden md:flex md:items-center md:space-x-6">
-              <a href="#" onClick={(e) => scrollToSection(e, 'hero')} className="text-foreground/60 hover:text-foreground">
-                Home
-              </a>
-              <a href="#courses" onClick={(e) => scrollToSection(e, 'courses')} className="text-foreground/60 hover:text-foreground">
-                Courses
-              </a>
-              <a href="#instructors" onClick={(e) => scrollToSection(e, 'instructors')} className="text-foreground/60 hover:text-foreground">
-                Instructors
-              </a>
-              <a href="#about" onClick={(e) => scrollToSection(e, 'about')} className="text-foreground/60 hover:text-foreground">
-                About
-              </a>
-              <Link to="/signin">
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link to="/signup">
-                <Button>Get Started</Button>
-              </Link>
-            </div>
-            {/* Mobile menu button */}
-            <div className="flex md:hidden">
-              <Button 
-                id="menu-button"
-                variant="ghost" 
-                size="icon" 
-                className="md:hidden" 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <Menu className="h-6 w-6" />
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-      
-      {/* Mobile menu */}
-      <div
-        id="mobile-menu"
-        className={`md:hidden fixed inset-0 z-40 transform ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out`}
-        style={{ top: "64px", height: "calc(100% - 64px)" }}
-      >
-        <div className="bg-background h-full border-r shadow-lg px-6 py-4 space-y-4">
-          <a 
-            href="#" 
-            onClick={(e) => scrollToSection(e, 'hero')}
-            className="block py-2 text-foreground hover:text-primary"
-          >
-            Home
-          </a>
-          <a 
-            href="#courses" 
-            onClick={(e) => scrollToSection(e, 'courses')}
-            className="block py-2 text-foreground hover:text-primary"
-          >
-            Courses
-          </a>
-          <a 
-            href="#instructors" 
-            onClick={(e) => scrollToSection(e, 'instructors')}
-            className="block py-2 text-foreground hover:text-primary"
-          >
-            Instructors
-          </a>
-          <a 
-            href="#about" 
-            onClick={(e) => scrollToSection(e, 'about')}
-            className="block py-2 text-foreground hover:text-primary"
-          >
-            About
-          </a>
-          <div className="pt-4 border-t">
-            <Link to="/signin" className="block mb-4">
-              <Button variant="outline" className="w-full">Sign In</Button>
-            </Link>
-            <Link to="/signup" className="block">
-              <Button className="w-full">Get Started</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-      
-      {/* Hero Section */}
-      <div id="hero" className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="relative pt-6 pb-16 sm:pb-24">
-            <div className="mt-16 sm:mt-24">
-              <div className="text-center">
-                <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-                  <span className="block">Learn Without Limits</span>
-                  <span className="block text-primary">With ShekhaLagbe</span>
-                </h1>
-                <p className="mx-auto mt-3 max-w-md text-base text-muted-foreground sm:text-lg md:mt-5 md:max-w-3xl md:text-xl">
-                  Start, switch, or advance your career with our online courses.
-                  Learn from industry experts and gain real-world skills.
-                </p>
-                <div className="mx-auto mt-5 max-w-md sm:flex sm:justify-center md:mt-8">
-                  <Link to="/signup">
-                    <Button size="lg" className="w-full sm:w-auto">
-                      Join Now
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="bg-accent py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              Why Choose ShekhaLagbe?
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Everything you need to succeed in your learning journey
+    <div className="min-h-screen">
+      {/* Hero section */}
+      <header className="bg-gradient-to-r from-primary to-primary-foreground py-16 text-white">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex flex-col items-center text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">ShekhaLagbe Learning Platform</h1>
+            <p className="text-xl md:text-2xl mb-8 max-w-3xl">
+              Your complete solution for online education. Connect with teachers, access courses, and take exams all in one place.
             </p>
-          </div>
-
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="rounded-lg bg-card p-6 text-center shadow-sm"
-              >
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  {feature.icon}
-                </div>
-                <h3 className="mt-4 text-lg font-medium text-foreground">
-                  {feature.title}
-                </h3>
-                <p className="mt-2 text-muted-foreground">{feature.description}</p>
+            {user ? (
+              <Link to="/dashboard">
+                <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
+                  Go to Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/signin">
+                  <Button size="lg" className="bg-white text-primary hover:bg-gray-100">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+                    Create Account
+                  </Button>
+                </Link>
               </div>
-            ))}
+            )}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Popular Courses Section */}
-      <section id="courses" className="py-16 bg-background scroll-mt-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              Popular Courses
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Explore our most popular and highly-rated courses
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {popularCourses.map((course, index) => (
-              <div key={index} className="group relative overflow-hidden rounded-lg bg-card shadow-lg transition-transform hover:scale-105">
-                <div className="aspect-w-16 aspect-h-9">
-                  <img
-                    src={course.image}
-                    alt={course.title}
-                    className="h-48 w-full object-cover"
-                  />
-                </div>
-                <div className="p-6">
-                  <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                    {course.category}
-                  </span>
-                  <h3 className="mt-4 text-xl font-semibold text-foreground">
-                    {course.title}
-                  </h3>
-                  <p className="mt-2 flex items-center text-sm text-muted-foreground">
-                    <Users className="mr-2 h-4 w-4" />
-                    {course.students} students
-                  </p>
-                  <div className="mt-2 flex items-center">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="ml-1 text-sm font-medium">{course.rating}</span>
-                  </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Instructor: {course.instructor}
-                  </p>
-                </div>
-              </div>
-            ))}
+      {/* Features section */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4 md:px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Key Features</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-card rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Comprehensive Course Library</h3>
+              <p>Access hundreds of courses across multiple disciplines, taught by expert instructors.</p>
+            </div>
+            <div className="bg-card rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Interactive Learning Experience</h3>
+              <p>Engage with video lessons, quizzes, and hands-on exercises designed for maximum retention.</p>
+            </div>
+            <div className="bg-card rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Skill Certification</h3>
+              <p>Earn certificates upon course completion to showcase your skills to employers.</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Instructors Section */}
-      <section id="instructors" className="py-16 bg-accent scroll-mt-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-              Meet Our Expert Instructors
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Learn from industry experts with years of experience
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {instructors.map((instructor, index) => (
-              <div key={index} className="text-center">
-                <div className="relative mx-auto h-40 w-40 overflow-hidden rounded-full">
-                  <img
-                    src={instructor.image}
-                    alt={instructor.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <h3 className="mt-4 text-xl font-semibold text-foreground">
-                  {instructor.name}
-                </h3>
-                <p className="text-primary">{instructor.expertise}</p>
-                <div className="mt-2 flex items-center justify-center space-x-4">
-                  <span className="flex items-center text-sm text-muted-foreground">
-                    <Users className="mr-1 h-4 w-4" />
-                    {instructor.students} students
-                  </span>
-                  <span className="flex items-center text-sm text-muted-foreground">
-                    <Star className="mr-1 h-4 w-4 fill-yellow-400" />
-                    {instructor.rating}
-                  </span>
-                  <span className="flex items-center text-sm text-muted-foreground">
-                    <BookOpen className="mr-1 h-4 w-4" />
-                    {instructor.courses} courses
-                  </span>
-                </div>
-              </div>
-            ))}
+      {/* User roles section */}
+      <section className="py-16 bg-muted">
+        <div className="container mx-auto px-4 md:px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">For Everyone</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Students</h3>
+              <p className="mb-4">Learn at your own pace with access to a wide range of courses. Track your progress and connect with teachers directly.</p>
+              {!user && (
+                <Link to="/signup">
+                  <Button className="w-full">Join as Student</Button>
+                </Link>
+              )}
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Teachers</h3>
+              <p className="mb-4">Create and manage your courses, track student progress, and administer exams all from one dashboard.</p>
+              {!user && (
+                <Link to="/signup">
+                  <Button className="w-full" variant="outline">Join as Teacher</Button>
+                </Link>
+              )}
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-md">
+              <h3 className="text-xl font-semibold mb-4">Administrators</h3>
+              <p className="mb-4">Oversee the entire platform, manage users, and ensure quality education standards are maintained.</p>
+              {!user && (
+                <Link to="/signup">
+                  <Button className="w-full" variant="outline">Join as Admin</Button>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-16 bg-background scroll-mt-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+      {/* Footer */}
+      <footer className="bg-card text-card-foreground py-12">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-                About ShekhaLagbe
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                ShekhaLagbe is a leading online learning platform that connects students
-                with expert instructors from around the world. Our mission is to provide
-                high-quality education that's accessible to everyone.
-              </p>
-              <div className="mt-8 grid grid-cols-2 gap-8">
-                <div className="flex items-center">
-                  <GraduationCap className="h-12 w-12 text-primary" />
-                  <div className="ml-4">
-                    <h4 className="text-lg font-semibold text-foreground">50K+</h4>
-                    <p className="text-muted-foreground">Graduates</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <BookOpen className="h-12 w-12 text-primary" />
-                  <div className="ml-4">
-                    <h4 className="text-lg font-semibold text-foreground">200+</h4>
-                    <p className="text-muted-foreground">Courses</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Users className="h-12 w-12 text-primary" />
-                  <div className="ml-4">
-                    <h4 className="text-lg font-semibold text-foreground">100+</h4>
-                    <p className="text-muted-foreground">Expert Instructors</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Star className="h-12 w-12 text-primary" />
-                  <div className="ml-4">
-                    <h4 className="text-lg font-semibold text-foreground">4.8</h4>
-                    <p className="text-muted-foreground">Average Rating</p>
-                  </div>
-                </div>
-              </div>
+              <h3 className="text-lg font-semibold mb-4">ShekhaLagbe</h3>
+              <p>Your complete solution for online education.</p>
             </div>
-            <div className="mt-10 lg:mt-0">
-              <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-lg">
-                <img
-                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
-                  alt="Students collaborating"
-                  className="h-full w-full object-cover"
-                />
-              </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Links</h3>
+              <ul className="space-y-2">
+                <li><Link to="/" className="hover:underline">Home</Link></li>
+                <li><Link to="/courses" className="hover:underline">Courses</Link></li>
+                <li><Link to="/about" className="hover:underline">About Us</Link></li>
+                <li><Link to="/contact" className="hover:underline">Contact</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li><Link to="/terms" className="hover:underline">Terms of Service</Link></li>
+                <li><Link to="/privacy" className="hover:underline">Privacy Policy</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Connect</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="hover:underline">Twitter</a></li>
+                <li><a href="#" className="hover:underline">Facebook</a></li>
+                <li><a href="#" className="hover:underline">Instagram</a></li>
+                <li><a href="#" className="hover:underline">LinkedIn</a></li>
+              </ul>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <div className="bg-background py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl bg-primary px-6 py-10 sm:py-16 sm:px-12">
-            <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
-              <div>
-                <h2 className="text-3xl font-extrabold tracking-tight text-primary-foreground sm:text-4xl">
-                  Ready to start learning?
-                </h2>
-                <p className="mt-4 text-lg text-primary-foreground/90">
-                  Join thousands of students already learning on ShekhaLagbe.
-                  Start your journey today!
-                </p>
-                <div className="mt-8">
-                  <Link to="/signup">
-                    <Button
-                      variant="secondary"
-                      size="lg"
-                      className="w-full sm:w-auto"
-                    >
-                      Start Learning Now
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-              <div className="mt-8 grid grid-cols-2 gap-4 lg:mt-0">
-                {[
-                  "24/7 Support",
-                  "Expert Instructors",
-                  "Flexible Learning",
-                  "Verified Certificates",
-                ].map((feature) => (
-                  <div key={feature} className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-primary-foreground/90" />
-                    <span className="ml-2 text-primary-foreground/90">
-                      {feature}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="mt-8 pt-8 border-t text-center">
+            <p>&copy; {new Date().getFullYear()} ShekhaLagbe Learning Platform. All rights reserved.</p>
           </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 };
