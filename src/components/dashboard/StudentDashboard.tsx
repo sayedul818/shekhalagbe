@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -16,6 +17,83 @@ const StudentDashboard = () => {
   const { toast } = useToast();
   
   const [activeTab, setActiveTab] = useState('dashboard');
+  
+  // Add the missing course data
+  const courses = [
+    {
+      id: 1,
+      title: "Introduction to Web Development",
+      thumbnail: "https://images.unsplash.com/photo-1593720213428-28a5b9e94613",
+      progress: 65,
+      completedLessons: 13,
+      totalLessons: 20,
+      lastLesson: "CSS Flexbox",
+      teacher: "John Smith",
+      description: "Learn the fundamentals of web development with HTML, CSS and JavaScript.",
+      nextLessonId: 14
+    },
+    {
+      id: 2,
+      title: "Data Science Fundamentals",
+      thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
+      progress: 40,
+      completedLessons: 8,
+      totalLessons: 20,
+      lastLesson: "Data Visualization",
+      teacher: "Michael Chen",
+      description: "Master the basics of data science and analysis.",
+      nextLessonId: 9
+    },
+    {
+      id: 3,
+      title: "Digital Marketing Mastery",
+      thumbnail: "https://images.unsplash.com/photo-1557426272-fc759fdf7a8d",
+      progress: 25,
+      completedLessons: 5,
+      totalLessons: 20,
+      lastLesson: "Social Media Strategy",
+      teacher: "Sarah Johnson",
+      description: "Develop effective digital marketing strategies for businesses.",
+      nextLessonId: 6
+    }
+  ];
+
+  // Add missing exam data
+  const upcomingExams = [
+    {
+      id: 1,
+      title: "Web Development Mid-term",
+      date: "May 10, 2025",
+      time: "10:00 AM"
+    },
+    {
+      id: 2,
+      title: "Data Science Quiz",
+      date: "May 15, 2025",
+      time: "2:00 PM"
+    }
+  ];
+
+  // Add missing announcement data
+  const announcements = [
+    {
+      id: 1,
+      title: "Platform Maintenance",
+      date: "April 20, 2025",
+      content: "The platform will be down for maintenance on Sunday from 2:00 AM to 4:00 AM."
+    },
+    {
+      id: 2,
+      title: "New Courses Available",
+      date: "April 18, 2025",
+      content: "Check out our newly added courses on Mobile App Development and UI/UX Design."
+    }
+  ];
+
+  // Add missing function
+  const handleContinueLearning = (courseId: number, lessonId: number) => {
+    navigate(`/dashboard/courses/${courseId}/lessons/${lessonId}`);
+  };
   
   const handleEditProfile = () => {
     toast({
