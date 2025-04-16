@@ -13,10 +13,8 @@ import { User, Mail, Phone, School, Briefcase, Calendar, MapPin } from "lucide-r
 const ProfilePage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("personal");
   const [isEditing, setIsEditing] = useState(false);
   
-  // Mock profile data
   const [profileData, setProfileData] = useState({
     name: user?.name || "Student Name",
     email: user?.email || "student@example.com",
@@ -29,10 +27,13 @@ const ProfilePage = () => {
   });
 
   const handleSaveProfile = () => {
+    // Here we would typically make an API call to save the profile data
+    // For now, we'll just show a success toast
     setIsEditing(false);
     toast({
       title: "Profile updated",
       description: "Your profile has been updated successfully.",
+      variant: "default"
     });
   };
 

@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -18,8 +17,9 @@ const StudentDashboard = () => {
   
   const [activeTab, setActiveTab] = useState('dashboard');
   
-  // Add the missing course data
-  const courses = [
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
+  const [courses, setCourses] = useState([
     {
       id: 1,
       title: "Introduction to Web Development",
@@ -56,10 +56,9 @@ const StudentDashboard = () => {
       description: "Develop effective digital marketing strategies for businesses.",
       nextLessonId: 6
     }
-  ];
+  ]);
 
-  // Add missing exam data
-  const upcomingExams = [
+  const [upcomingExams, setUpcomingExams] = useState([
     {
       id: 1,
       title: "Web Development Mid-term",
@@ -72,10 +71,9 @@ const StudentDashboard = () => {
       date: "May 15, 2025",
       time: "2:00 PM"
     }
-  ];
+  ]);
 
-  // Add missing announcement data
-  const announcements = [
+  const [announcements, setAnnouncements] = useState([
     {
       id: 1,
       title: "Platform Maintenance",
@@ -88,9 +86,8 @@ const StudentDashboard = () => {
       date: "April 18, 2025",
       content: "Check out our newly added courses on Mobile App Development and UI/UX Design."
     }
-  ];
+  ]);
 
-  // Add missing function
   const handleContinueLearning = (courseId: number, lessonId: number) => {
     navigate(`/dashboard/courses/${courseId}/lessons/${lessonId}`);
   };
@@ -101,6 +98,10 @@ const StudentDashboard = () => {
       description: "Your profile has been updated successfully.",
     });
     setIsEditing(false);
+  };
+
+  const handleReadMoreClick = (announcement) => {
+    setSelectedAnnouncement(announcement);
   };
 
   const renderDashboard = () => {
@@ -196,7 +197,27 @@ const StudentDashboard = () => {
                 </p>
               </CardContent>
               <CardFooter>
-                <Button variant="outline">Read More</Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => handleReadMoreClick(announcement)}
+                    >
+                      Read More
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>{selectedAnnouncement?.title}</DialogTitle>
+                      <DialogDescription>
+                        Posted on {selectedAnnouncement?.date}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4">
+                      <p className="text-foreground">{selectedAnnouncement?.content}</p>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </CardFooter>
             </Card>
           ))}

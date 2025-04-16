@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,6 @@ const Index = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   
-  // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -36,7 +34,6 @@ const Index = () => {
     };
   }, [mobileMenuOpen]);
   
-  // Close mobile menu when window is resized to desktop size
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -50,7 +47,6 @@ const Index = () => {
     };
   }, []);
   
-  // Handle smooth scrolling for anchor links
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
@@ -63,6 +59,14 @@ const Index = () => {
   const handleSignOut = () => {
     signOut();
     navigate("/signin");
+  };
+
+  const handleCourseClick = (course) => {
+    if (user) {
+      navigate(`/dashboard/browse/${course.id}`);
+    } else {
+      navigate('/signin', { state: { redirectTo: `/dashboard/browse/${course.id}` } });
+    }
   };
 
   const features = [
@@ -84,13 +88,19 @@ const Index = () => {
   ];
 
   const popularCourses = [
-    {
+    { 
+      id: "1", 
       title: "Web Development Bootcamp",
       instructor: "John Smith",
       rating: 4.9,
       students: 1200,
       image: "https://images.unsplash.com/photo-1593720213428-28a5b9e94613",
       category: "Programming",
+      description: "Learn web development from scratch with this comprehensive bootcamp.",
+      longDescription: "Master modern web development with HTML, CSS, JavaScript, React, and Node.js. Build real-world projects and deploy them live.",
+      price: 49.99,
+      hours: 15,
+      level: "Beginner"
     },
     {
       title: "Digital Marketing Mastery",
@@ -99,6 +109,11 @@ const Index = () => {
       students: 980,
       image: "https://images.unsplash.com/photo-1557426272-fc759fdf7a8d",
       category: "Marketing",
+      description: "Learn digital marketing strategies and techniques to drive growth and success.",
+      longDescription: "Gain hands-on experience with tools like Google Analytics, SEMrush, and Mailchimp. Build a strong online presence and increase your online visibility.",
+      price: 39.99,
+      hours: 12,
+      level: "Intermediate"
     },
     {
       title: "Data Science Fundamentals",
@@ -107,6 +122,11 @@ const Index = () => {
       students: 850,
       image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
       category: "Data Science",
+      description: "Learn the basics of data science and gain the skills to analyze and interpret data.",
+      longDescription: "Master programming languages like Python and R. Learn data visualization techniques and build data models to solve real-world problems.",
+      price: 29.99,
+      hours: 10,
+      level: "Beginner"
     },
   ];
 
@@ -353,8 +373,12 @@ const Index = () => {
           </div>
 
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {popularCourses.map((course, index) => (
-              <div key={index} className="group relative overflow-hidden rounded-lg bg-card shadow-lg transition-transform hover:scale-105">
+            {popularCourses.map((course) => (
+              <Card 
+                key={course.id} 
+                className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => handleCourseClick(course)}
+              >
                 <div className="aspect-w-16 aspect-h-9">
                   <img
                     src={course.image}
@@ -381,7 +405,7 @@ const Index = () => {
                     Instructor: {course.instructor}
                   </p>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         </div>

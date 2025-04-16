@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -93,6 +92,9 @@ const Dashboard = () => {
             <Route path="exams/take/:examId" element={<TakeExam />} />
           </>
         )}
+
+        {/* Add course detail route */}
+        <Route path="browse/:courseId" element={<BrowseCourses />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
