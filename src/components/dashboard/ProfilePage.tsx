@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ const ProfilePage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState("personal");
   
   const [profileData, setProfileData] = useState({
     name: user?.name || "Student Name",
@@ -27,8 +27,6 @@ const ProfilePage = () => {
   });
 
   const handleSaveProfile = () => {
-    // Here we would typically make an API call to save the profile data
-    // For now, we'll just show a success toast
     setIsEditing(false);
     toast({
       title: "Profile updated",
@@ -103,7 +101,10 @@ const ProfilePage = () => {
             <CardDescription>Update your personal information</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+            <Tabs 
+              defaultValue={activeTab} 
+              onValueChange={setActiveTab}
+            >
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="personal">Personal Info</TabsTrigger>
                 <TabsTrigger value="education">Education & Career</TabsTrigger>
