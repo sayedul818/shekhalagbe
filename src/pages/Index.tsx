@@ -1,7 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {
   BookOpen,
   Users,
@@ -15,6 +17,8 @@ import {
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -55,6 +59,11 @@ const Index = () => {
     }
   };
   
+  const handleSignOut = () => {
+    signOut();
+    navigate("/signin");
+  };
+
   const features = [
     {
       icon: <BookOpen className="h-6 w-6" />,
@@ -150,14 +159,35 @@ const Index = () => {
               <a href="#about" onClick={(e) => scrollToSection(e, 'about')} className="text-foreground/60 hover:text-foreground">
                 About
               </a>
-              <Link to="/signin">
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link to="/signup">
-                <Button>Get Started</Button>
-              </Link>
+              
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="h-8 w-8 cursor-pointer">
+                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Link to="/signin">
+                    <Button variant="ghost">Sign In</Button>
+                  </Link>
+                  <Link to="/signup">
+                    <Button>Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
-            {/* Mobile menu button */}
             <div className="flex md:hidden">
               <Button 
                 id="menu-button"
@@ -215,12 +245,38 @@ const Index = () => {
             About
           </a>
           <div className="pt-4 border-t">
-            <Link to="/signin" className="block mb-4">
-              <Button variant="outline" className="w-full">Sign In</Button>
-            </Link>
-            <Link to="/signup" className="block">
-              <Button className="w-full">Get Started</Button>
-            </Link>
+            {user ? (
+              <>
+                <Button 
+                  variant="outline" 
+                  className="w-full mb-2"
+                  onClick={() => {
+                    navigate('/dashboard');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  Dashboard
+                </Button>
+                <Button 
+                  className="w-full"
+                  onClick={() => {
+                    handleSignOut();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/signin" className="block mb-4">
+                  <Button variant="outline" className="w-full">Sign In</Button>
+                </Link>
+                <Link to="/signup" className="block">
+                  <Button className="w-full">Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
