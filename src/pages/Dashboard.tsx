@@ -14,11 +14,8 @@ import MyCourses from "@/components/dashboard/MyCourses";
 import ExamsList from "@/components/dashboard/ExamsList";
 import CreateExam from "@/components/dashboard/CreateExam";
 import TakeExam from "@/components/dashboard/TakeExam";
+import CourseLesson from "@/components/dashboard/CourseLesson";
 import NotFound from "./NotFound";
-import { lazy, Suspense } from "react";
-
-// Lazy load the CourseLesson component
-const CourseLesson = lazy(() => import("@/components/dashboard/CourseLesson"));
 
 const Dashboard = () => {
   const { user, isLoading } = useAuth();
@@ -82,11 +79,7 @@ const Dashboard = () => {
           <>
             <Route path="browse" element={<BrowseCourses />} />
             <Route path="my-courses" element={<MyCourses />} />
-            <Route path="my-courses/:courseId/lessons/:lessonId" element={
-              <Suspense fallback={<div className="flex justify-center p-12">Loading lesson...</div>}>
-                <CourseLesson />
-              </Suspense>
-            } />
+            <Route path="my-courses/:courseId/lessons/:lessonId" element={<CourseLesson />} />
             <Route path="exams" element={<ExamsList />} />
             <Route path="exams/take/:examId" element={<TakeExam />} />
           </>
