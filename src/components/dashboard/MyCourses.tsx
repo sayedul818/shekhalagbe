@@ -1,13 +1,14 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { BookOpen, PlayCircle, Clock, CheckCircle, Lock, Award } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const MyCourses = () => {
   const [tabValue, setTabValue] = useState("in-progress");
+  const navigate = useNavigate();
 
   // Mock enrolled courses data
   const enrolledCourses = [
@@ -68,6 +69,29 @@ const MyCourses = () => {
     },
   ];
 
+  const handleContinueLearning = (courseId) => {
+    // Navigate to the first lesson of the course or a specific lesson
+    const course = enrolledCourses.find(c => c.id === courseId);
+    if (course) {
+      navigate(`/dashboard/my-courses/${courseId}/lessons/js-lesson-${course.completedModules + 1}`);
+    }
+  };
+
+  const handleViewCourseDetails = (courseId) => {
+    // Navigate to the course details view
+    navigate(`/dashboard/my-courses/${courseId}/lessons/js-lesson-1`);
+  };
+
+  const handleReviewCourse = (courseId) => {
+    // Navigate to the course details view for completed courses
+    navigate(`/dashboard/my-courses/${courseId}/lessons/js-lesson-1`);
+  };
+
+  const handleViewCertificate = (courseId) => {
+    // For now, just show the first lesson with a certificate view
+    navigate(`/dashboard/my-courses/${courseId}/lessons/js-lesson-1`);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -127,11 +151,19 @@ const MyCourses = () => {
                       </div>
                     </CardContent>
                     <CardFooter className="mt-auto">
-                      <Button className="mr-2">
+                      <Button 
+                        className="mr-2"
+                        onClick={() => handleContinueLearning(course.id)}
+                      >
                         <PlayCircle className="h-4 w-4 mr-2" />
                         Continue Learning
                       </Button>
-                      <Button variant="outline">View Course Details</Button>
+                      <Button 
+                        variant="outline"
+                        onClick={() => handleViewCourseDetails(course.id)}
+                      >
+                        View Course Details
+                      </Button>
                     </CardFooter>
                   </div>
                 </div>
@@ -193,12 +225,16 @@ const MyCourses = () => {
                       </div>
                     </CardContent>
                     <CardFooter className="mt-auto">
-                      <Button variant="outline" className="mr-2">
+                      <Button 
+                        variant="outline" 
+                        className="mr-2"
+                        onClick={() => handleReviewCourse(course.id)}
+                      >
                         <PlayCircle className="h-4 w-4 mr-2" />
                         Review Course
                       </Button>
                       {course.certificate && (
-                        <Button>
+                        <Button onClick={() => handleViewCertificate(course.id)}>
                           <Award className="h-4 w-4 mr-2" />
                           View Certificate
                         </Button>

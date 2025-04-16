@@ -88,8 +88,8 @@ const StudentDashboard = () => {
     }
   ]);
 
-  const handleContinueLearning = (courseId: number, lessonId: number) => {
-    navigate(`/dashboard/courses/${courseId}/lessons/${lessonId}`);
+  const handleContinueLearning = (courseId) => {
+    navigate(`/dashboard/my-courses/${courseId}/lessons/${courses.find(c => c.id === courseId)?.nextLessonId}`);
   };
   
   const handleEditProfile = () => {
@@ -142,7 +142,7 @@ const StudentDashboard = () => {
               <CardFooter className="p-4 pt-0">
                 <Button 
                   className="w-full"
-                  onClick={() => handleContinueLearning(course.id, course.nextLessonId)}
+                  onClick={() => handleContinueLearning(course.id)}
                 >
                   Continue Learning
                 </Button>

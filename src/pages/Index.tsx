@@ -101,9 +101,13 @@ const Index = () => {
       longDescription: "Master modern web development with HTML, CSS, JavaScript, React, and Node.js. Build real-world projects and deploy them live.",
       price: 49.99,
       hours: 15,
-      level: "Beginner"
+      level: "Beginner",
+      lessons: [
+        { id: "web-lesson-1", title: "Introduction to Web Development", completed: false, duration: "45 mins" }
+      ]
     },
     {
+      id: "2",
       title: "Digital Marketing Mastery",
       instructor: "Sarah Johnson",
       rating: 4.8,
@@ -114,9 +118,13 @@ const Index = () => {
       longDescription: "Gain hands-on experience with tools like Google Analytics, SEMrush, and Mailchimp. Build a strong online presence and increase your online visibility.",
       price: 39.99,
       hours: 12,
-      level: "Intermediate"
+      level: "Intermediate",
+      lessons: [
+        { id: "marketing-lesson-1", title: "Digital Marketing Fundamentals", completed: false, duration: "50 mins" }
+      ]
     },
     {
+      id: "3",
       title: "Data Science Fundamentals",
       instructor: "Michael Chen",
       rating: 4.7,
@@ -127,7 +135,10 @@ const Index = () => {
       longDescription: "Master programming languages like Python and R. Learn data visualization techniques and build data models to solve real-world problems.",
       price: 29.99,
       hours: 10,
-      level: "Beginner"
+      level: "Beginner",
+      lessons: [
+        { id: "data-lesson-1", title: "Introduction to Data Science", completed: false, duration: "60 mins" }
+      ]
     },
   ];
 
