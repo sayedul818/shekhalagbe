@@ -16,6 +16,9 @@ import CreateExam from "@/components/dashboard/CreateExam";
 import TakeExam from "@/components/dashboard/TakeExam";
 import CourseLesson from "@/components/dashboard/CourseLesson";
 import NotFound from "./NotFound";
+import ProfilePage from "@/components/dashboard/ProfilePage";
+import ReportsPage from "@/components/dashboard/ReportsPage";
+import SettingsPage from "@/components/dashboard/SettingsPage";
 
 const Dashboard = () => {
   const { user, isLoading } = useAuth();
@@ -55,11 +58,17 @@ const Dashboard = () => {
             )
           }
         />
+
+        {/* Common routes for all user types */}
+        <Route path="profile" element={<ProfilePage />} />
+
         {/* Admin routes */}
         {user.role === "admin" && (
           <>
             <Route path="users" element={<UsersList />} />
             <Route path="courses" element={<CoursesList />} />
+            <Route path="reports" element={<ReportsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </>
         )}
 
