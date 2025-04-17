@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -230,28 +231,7 @@ const StudentDashboard = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center border-b pb-4">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">Edit Profile</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Profile</DialogTitle>
-              <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="flex items-center justify-center mb-4">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={user?.avatar} />
-                  <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
-                </Avatar>
-              </div>
-              <Button onClick={handleEditProfile}>Save Changes</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* Edit Profile button removed from dashboard */}
       </div>
 
       {renderDashboard()}

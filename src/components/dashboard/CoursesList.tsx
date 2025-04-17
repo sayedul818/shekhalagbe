@@ -1,15 +1,27 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BookPlus, Search, Edit, Trash2, Eye, X, Plus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+
+// Price plans for courses
+const pricePlans = [
+  { id: 1, name: "Basic", price: 49.99, students: 10, storage: "1GB", description: "Perfect for small workshops and tutorials" },
+  { id: 2, name: "Standard", price: 99.99, students: 50, storage: "5GB", description: "Ideal for most educators and small classes" },
+  { id: 3, name: "Professional", price: 199.99, students: 100, storage: "20GB", description: "Great for established educators with larger audiences" },
+  { id: 4, name: "Enterprise", price: 399.99, students: "Unlimited", storage: "50GB", description: "Complete solution for institutions and organizations" }
+];
 
 const CoursesList = () => {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
+  const [showPricePlans, setShowPricePlans] = useState(false);
+  const { toast } = useToast();
   
   // Mock courses data
   const courses = [
@@ -86,6 +98,15 @@ const CoursesList = () => {
     course.teacher.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleSelectPlan = (planId) => {
+    toast({
+      title: "Plan selected",
+      description: `You've selected the ${pricePlans.find(p => p.id === planId).name} plan. You can now create your course.`,
+    });
+    setShowPricePlans(false);
+    // Here you would typically navigate to the course creation page or open another dialog
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -97,10 +118,77 @@ const CoursesList = () => {
             {user?.role === "admin" ? "View and manage all courses in the system" : "Manage your courses and content"}
           </p>
         </div>
-        <Button>
-          <BookPlus className="h-4 w-4 mr-2" />
-          Create New Course
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              <BookPlus className="h-4 w-4 mr-2" />
+              Create New Course
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[700px]">
+            <DialogHeader>
+              <DialogTitle>Select a Course Plan</DialogTitle>
+              <DialogDescription>
+                Choose the right plan for your teaching needs. Each plan offers different student capacity and storage options.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+              {pricePlans.map(plan => (
+                <Card key={plan.id} className={`overflow-hidden border-2 ${plan.name === "Professional" ? "border-primary" : "border-border"}`}>
+                  {plan.name === "Professional" && (
+                    <div className="bg-primary text-primary-foreground text-center py-1 text-xs font-medium">
+                      MOST POPULAR
+                    </div>
+                  )}
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xl">{plan.name}</CardTitle>
+                    <div className="mt-1">
+                      <span className="text-3xl font-bold">${plan.price}</span>
+                      <span className="text-muted-foreground"> /month</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <ul className="space-y-2 text-sm">
+                      <li className="flex items-center">
+                        <CheckIcon className="mr-2 h-4 w-4 text-primary" />
+                        <span>Up to {plan.students} students</span>
+                      </li>
+                      <li className="flex items-center">
+                        <CheckIcon className="mr-2 h-4 w-4 text-primary" />
+                        <span>{plan.storage} storage</span>
+                      </li>
+                      <li className="flex items-center">
+                        <CheckIcon className="mr-2 h-4 w-4 text-primary" />
+                        <span>Course analytics</span>
+                      </li>
+                      {plan.name !== "Basic" && (
+                        <li className="flex items-center">
+                          <CheckIcon className="mr-2 h-4 w-4 text-primary" />
+                          <span>Priority support</span>
+                        </li>
+                      )}
+                      {plan.name === "Enterprise" && (
+                        <li className="flex items-center">
+                          <CheckIcon className="mr-2 h-4 w-4 text-primary" />
+                          <span>Custom branding</span>
+                        </li>
+                      )}
+                    </ul>
+                  </CardContent>
+                  <CardFooter className="pt-0">
+                    <Button 
+                      className="w-full" 
+                      variant={plan.name === "Professional" ? "default" : "outline"}
+                      onClick={() => handleSelectPlan(plan.id)}
+                    >
+                      Select Plan
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>
@@ -199,5 +287,21 @@ const CoursesList = () => {
     </div>
   );
 };
+
+// Helper component for price plans checkmarks
+const CheckIcon = ({ className }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
 
 export default CoursesList;

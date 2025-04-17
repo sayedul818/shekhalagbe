@@ -33,10 +33,7 @@ const TeacherDashboard = () => {
           <h1 className="text-2xl font-bold tracking-tight">Teacher Dashboard</h1>
           <p className="text-muted-foreground">Manage your courses and students.</p>
         </div>
-        <Button>
-          <BookOpen className="h-4 w-4 mr-2" />
-          Create New Course
-        </Button>
+        {/* Removed "Create New Course" button from here */}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
