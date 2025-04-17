@@ -20,7 +20,8 @@ import {
   Bookmark,
   ArrowLeft,
   BookPlus,
-  Tag
+  Tag,
+  UserPlus
 } from "lucide-react";
 
 const ManageCoursePage = () => {
