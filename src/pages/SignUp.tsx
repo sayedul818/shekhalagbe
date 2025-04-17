@@ -55,7 +55,7 @@ export default function SignUp() {
         <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-4">
           <BookOpen className="h-8 w-8 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold text-primary">EduLearn</h1>
+        <h1 className="text-3xl font-bold text-primary">ShekhaLagbe</h1>
         <p className="text-muted-foreground">Your gateway to knowledge</p>
       </div>
       
@@ -113,8 +113,8 @@ export default function SignUp() {
               <Label>I want to join as</Label>
               <RadioGroup
                 defaultValue={role}
-                onValueChange={setRole}
-                className="flex space-x-2"
+                onValueChange={(value) => setRole(value as UserRole)}
+                className="flex flex-wrap gap-2"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="student" id="student" />
@@ -123,6 +123,10 @@ export default function SignUp() {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="teacher" id="teacher" />
                   <Label htmlFor="teacher">Teacher</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="admin" id="admin" />
+                  <Label htmlFor="admin">Admin</Label>
                 </div>
               </RadioGroup>
             </div>

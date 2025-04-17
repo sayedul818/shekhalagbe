@@ -116,12 +116,19 @@ const CreateCoursePage = () => {
     console.log("Selected plan:", selectedPlan);
     console.log("Selected period:", selectedPeriod);
     
-    toast({
-      title: "Course created!",
-      description: "Your course has been created successfully. You can now add content to it.",
+    // Navigate to the checkout page with plan data
+    navigate("/checkout", {
+      state: {
+        plan: {
+          ...selectedPlan,
+          period: selectedPeriod,
+          discountedPrice: getDiscountedPrice(),
+          originalPrice: getOriginalPrice(),
+          monthlyPrice: getMonthlyPrice(),
+        },
+        courseData: data
+      }
     });
-    
-    navigate("/dashboard/courses");
   };
 
   return (
@@ -296,7 +303,7 @@ const CreateCoursePage = () => {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-xl font-bold text-purple-900">
-                    {selectedPlan?.name} Web Hosting
+                    {selectedPlan?.name} Plan
                   </h3>
                   <div className="border-b border-border pb-4 pt-2">
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
