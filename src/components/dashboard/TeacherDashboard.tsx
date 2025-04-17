@@ -6,11 +6,15 @@ import {
   Award, 
   TrendingUp,
   UserPlus,
-  PlayCircle
+  PlayCircle,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const TeacherDashboard = () => {
+  const navigate = useNavigate();
+  
   // Mock stats
   const stats = [
     { title: "Total Courses", value: 8, icon: <BookOpen className="h-5 w-5" />, change: "+2 this year" },
@@ -20,11 +24,15 @@ const TeacherDashboard = () => {
   ];
 
   const myCourses = [
-    { title: "JavaScript Fundamentals", students: 124, rating: 4.8, lastUpdated: "2 days ago", progress: 90 },
-    { title: "Advanced React & Redux", students: 97, rating: 4.7, lastUpdated: "1 week ago", progress: 75 },
-    { title: "Node.js API Development", students: 68, rating: 4.5, lastUpdated: "2 weeks ago", progress: 60 },
-    { title: "Web Design Principles", students: 53, rating: 4.6, lastUpdated: "1 month ago", progress: 100 },
+    { id: "1", title: "JavaScript Fundamentals", students: 124, rating: 4.8, lastUpdated: "2 days ago", progress: 90 },
+    { id: "2", title: "Advanced React & Redux", students: 97, rating: 4.7, lastUpdated: "1 week ago", progress: 75 },
+    { id: "3", title: "Node.js API Development", students: 68, rating: 4.5, lastUpdated: "2 weeks ago", progress: 60 },
+    { id: "4", title: "Web Design Principles", students: 53, rating: 4.6, lastUpdated: "1 month ago", progress: 100 },
   ];
+
+  const handleManageCourse = (courseId) => {
+    navigate(`/dashboard/courses/manage/${courseId}`);
+  };
 
   return (
     <div className="space-y-6">
@@ -83,7 +91,13 @@ const TeacherDashboard = () => {
                         ></div>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">Manage</Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleManageCourse(course.id)}
+                    >
+                      Manage
+                    </Button>
                   </div>
                 </div>
               </div>

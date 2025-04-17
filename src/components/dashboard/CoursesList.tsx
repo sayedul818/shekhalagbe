@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
-// Price plans for courses
 const pricePlans = [
   { id: 1, name: "Basic", price: 49.99, students: 10, storage: "1GB", description: "Perfect for small workshops and tutorials" },
   { id: 2, name: "Standard", price: 99.99, students: 50, storage: "5GB", description: "Ideal for most educators and small classes" },
@@ -25,7 +23,6 @@ const CoursesList = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  // Mock courses data
   const courses = [
     { 
       id: "1", 
@@ -88,13 +85,11 @@ const CoursesList = () => {
       published: false
     },
   ];
-  
-  // Filter courses by role
+
   const filteredByRole = user?.role === "teacher" 
-    ? courses.filter(course => course.teacher === "Robert Johnson") // Mock filtering for the current teacher
+    ? courses.filter(course => course.teacher === "Robert Johnson")
     : courses;
-  
-  // Filter courses by search term
+
   const filteredCourses = filteredByRole.filter(course => 
     course.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     course.teacher.toLowerCase().includes(searchTerm.toLowerCase())
@@ -106,8 +101,11 @@ const CoursesList = () => {
       description: `You've selected the ${pricePlans.find(p => p.id === planId).name} plan. Now you can create your course.`,
     });
     
-    // Navigate to the new course creation page with the selected plan
     navigate(`/dashboard/courses/create?plan=${planId}`);
+  };
+
+  const handleManageCourse = (courseId) => {
+    navigate(`/dashboard/courses/manage/${courseId}`);
   };
 
   return (
@@ -266,10 +264,10 @@ const CoursesList = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end space-x-2">
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" onClick={() => navigate(`/dashboard/browse/${course.id}`)}>
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" onClick={() => handleManageCourse(course.id)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="icon">
@@ -301,7 +299,6 @@ const CoursesList = () => {
   );
 };
 
-// Helper component for price plans checkmarks
 const CheckIcon = ({ className }) => (
   <svg 
     xmlns="http://www.w3.org/2000/svg" 

@@ -9,6 +9,7 @@ import StudentDashboard from "@/components/dashboard/StudentDashboard";
 import UsersList from "@/components/dashboard/UsersList";
 import CoursesList from "@/components/dashboard/CoursesList";
 import CreateCoursePage from "@/components/dashboard/CreateCoursePage";
+import ManageCoursePage from "@/components/dashboard/ManageCoursePage";
 import StudentsList from "@/components/dashboard/StudentsList";
 import BrowseCourses from "@/components/dashboard/BrowseCourses";
 import MyCourses from "@/components/dashboard/MyCourses";
@@ -68,6 +69,7 @@ const Dashboard = () => {
           <>
             <Route path="users" element={<UsersList />} />
             <Route path="courses" element={<CoursesList />} />
+            <Route path="courses/manage/:courseId" element={<ManageCoursePage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </>
@@ -78,6 +80,7 @@ const Dashboard = () => {
           <>
             <Route path="courses" element={<CoursesList />} />
             <Route path="courses/create" element={<CreateCoursePage />} />
+            <Route path="courses/manage/:courseId" element={<ManageCoursePage />} />
             <Route path="students" element={<StudentsList />} />
             <Route path="exams" element={<ExamsList />} />
             <Route path="exams/create/:courseId" element={<CreateExam />} />
