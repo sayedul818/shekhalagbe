@@ -5,10 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, X, BookOpen, Star, Users, Clock, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const BrowseCourses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [enrolledCourses, setEnrolledCourses] = useState(() => {
+    const saved = localStorage.getItem("enrolledCourses");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const courses = [
     { 
@@ -206,6 +214,38 @@ const BrowseCourses = () => {
     course.level.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleEnroll = (courseId) => {
+    const course = courses.find(c => c.id === courseId);
+    if (!course) return;
+    
+    if (enrolledCourses.includes(courseId)) {
+      toast({
+        title: "Already Enrolled",
+        description: `You are already enrolled in ${course.title}`,
+        variant: "default",
+      });
+      navigate("/dashboard/my-courses");
+      return;
+    }
+    
+    const updatedEnrolledCourses = [...enrolledCourses, courseId];
+    setEnrolledCourses(updatedEnrolledCourses);
+    localStorage.setItem("enrolledCourses", JSON.stringify(updatedEnrolledCourses));
+    
+    toast({
+      title: "Enrollment Successful",
+      description: `You have successfully enrolled in ${course.title}`,
+      variant: "default",
+    });
+    
+    // Redirect to my courses
+    navigate("/dashboard/my-courses");
+  };
+
+  const isEnrolled = (courseId) => {
+    return enrolledCourses.includes(courseId);
+  };
+
   return (
     <div className="space-y-6">
       {selectedCourse ? (
@@ -288,7 +328,15 @@ const BrowseCourses = () => {
                     <Users className="h-4 w-4 mr-2" />
                     <span>{selectedCourse.students} students enrolled</span>
                   </div>
-                  <Button className="w-full">Enroll Now</Button>
+                  {isEnrolled(selectedCourse.id) ? (
+                    <Button className="w-full" onClick={() => navigate("/dashboard/my-courses")}>
+                      Go to Course
+                    </Button>
+                  ) : (
+                    <Button className="w-full" onClick={() => handleEnroll(selectedCourse.id)}>
+                      Enroll Now
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -372,7 +420,21 @@ const BrowseCourses = () => {
                   </CardContent>
                   <CardFooter className="p-4 pt-0 flex items-center justify-between">
                     <div className="text-lg font-bold">${course.price}</div>
-                    <Button>Enroll Now</Button>
+                    {isEnrolled(course.id) ? (
+                      <Button variant="outline" onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/dashboard/my-courses");
+                      }}>
+                        Go to Course
+                      </Button>
+                    ) : (
+                      <Button onClick={(e) => {
+                        e.stopPropagation();
+                        handleEnroll(course.id);
+                      }}>
+                        Enroll Now
+                      </Button>
+                    )}
                   </CardFooter>
                 </Card>
               ))
