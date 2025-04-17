@@ -28,12 +28,9 @@ const TeacherDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Teacher Dashboard</h1>
-          <p className="text-muted-foreground">Manage your courses and students.</p>
-        </div>
-        {/* Removed "Create New Course" button from here */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Teacher Dashboard</h1>
+        <p className="text-muted-foreground">Manage your courses and students.</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -4,16 +4,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { BookPlus, Search, Edit, Trash2, Eye, X, Plus } from "lucide-react";
+import { BookPlus, Search, Edit, Trash2, Eye, X, Plus, Clock, Check, Crown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 // Price plans for courses
 const pricePlans = [
   { id: 1, name: "Basic", price: 49.99, students: 10, storage: "1GB", description: "Perfect for small workshops and tutorials" },
   { id: 2, name: "Standard", price: 99.99, students: 50, storage: "5GB", description: "Ideal for most educators and small classes" },
-  { id: 3, name: "Professional", price: 199.99, students: 100, storage: "20GB", description: "Great for established educators with larger audiences" },
+  { id: 3, name: "Professional", price: 199.99, students: 100, storage: "20GB", description: "Great for established educators with larger audiences", popular: true },
   { id: 4, name: "Enterprise", price: 399.99, students: "Unlimited", storage: "50GB", description: "Complete solution for institutions and organizations" }
 ];
 
@@ -22,6 +23,7 @@ const CoursesList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showPricePlans, setShowPricePlans] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Mock courses data
   const courses = [
@@ -101,10 +103,11 @@ const CoursesList = () => {
   const handleSelectPlan = (planId) => {
     toast({
       title: "Plan selected",
-      description: `You've selected the ${pricePlans.find(p => p.id === planId).name} plan. You can now create your course.`,
+      description: `You've selected the ${pricePlans.find(p => p.id === planId).name} plan. Now you can create your course.`,
     });
-    setShowPricePlans(false);
-    // Here you would typically navigate to the course creation page or open another dialog
+    
+    // Navigate to the new course creation page with the selected plan
+    navigate(`/dashboard/courses/create?plan=${planId}`);
   };
 
   return (
@@ -125,7 +128,7 @@ const CoursesList = () => {
               Create New Course
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[700px]">
+          <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Select a Course Plan</DialogTitle>
               <DialogDescription>
@@ -134,14 +137,20 @@ const CoursesList = () => {
             </DialogHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
               {pricePlans.map(plan => (
-                <Card key={plan.id} className={`overflow-hidden border-2 ${plan.name === "Professional" ? "border-primary" : "border-border"}`}>
-                  {plan.name === "Professional" && (
+                <Card key={plan.id} className={`overflow-hidden border-2 ${plan.popular ? "border-primary shadow-md" : "border-border"}`}>
+                  {plan.popular && (
                     <div className="bg-primary text-primary-foreground text-center py-1 text-xs font-medium">
                       MOST POPULAR
                     </div>
                   )}
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
+                    <CardTitle className="text-xl flex items-center gap-2">
+                      {plan.name === "Basic" && <Clock className="h-5 w-5 text-blue-500" />}
+                      {plan.name === "Standard" && <Check className="h-5 w-5 text-green-500" />}
+                      {plan.name === "Professional" && <Crown className="h-5 w-5 text-amber-500" />}
+                      {plan.name === "Enterprise" && <BookPlus className="h-5 w-5 text-purple-500" />}
+                      {plan.name}
+                    </CardTitle>
                     <div className="mt-1">
                       <span className="text-3xl font-bold">${plan.price}</span>
                       <span className="text-muted-foreground"> /month</span>
@@ -178,7 +187,7 @@ const CoursesList = () => {
                   <CardFooter className="pt-0">
                     <Button 
                       className="w-full" 
-                      variant={plan.name === "Professional" ? "default" : "outline"}
+                      variant={plan.popular ? "default" : "outline"}
                       onClick={() => handleSelectPlan(plan.id)}
                     >
                       Select Plan
@@ -186,6 +195,10 @@ const CoursesList = () => {
                   </CardFooter>
                 </Card>
               ))}
+            </div>
+            <div className="mt-4 p-4 bg-blue-50 text-blue-800 rounded-lg text-sm">
+              <p className="font-medium">Limited Time Offer!</p>
+              <p>Get 3 months free with annual plans. Plus, a free domain name for all new courses.</p>
             </div>
           </DialogContent>
         </Dialog>

@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,6 +8,7 @@ import TeacherDashboard from "@/components/dashboard/TeacherDashboard";
 import StudentDashboard from "@/components/dashboard/StudentDashboard";
 import UsersList from "@/components/dashboard/UsersList";
 import CoursesList from "@/components/dashboard/CoursesList";
+import CreateCoursePage from "@/components/dashboard/CreateCoursePage";
 import StudentsList from "@/components/dashboard/StudentsList";
 import BrowseCourses from "@/components/dashboard/BrowseCourses";
 import MyCourses from "@/components/dashboard/MyCourses";
@@ -75,6 +77,7 @@ const Dashboard = () => {
         {user.role === "teacher" && (
           <>
             <Route path="courses" element={<CoursesList />} />
+            <Route path="courses/create" element={<CreateCoursePage />} />
             <Route path="students" element={<StudentsList />} />
             <Route path="exams" element={<ExamsList />} />
             <Route path="exams/create/:courseId" element={<CreateExam />} />
