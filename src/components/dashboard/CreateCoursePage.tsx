@@ -272,10 +272,10 @@ const CreateCoursePage = () => {
                     )}
                   />
                   
-                  <Button type="submit" className="w-full">
+                  {/* <Button type="submit" className="w-full">
                     Create Course
                     <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
+                  </Button> */}
                 </form>
               </Form>
             </CardContent>

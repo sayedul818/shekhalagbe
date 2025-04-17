@@ -55,7 +55,9 @@ export default function SignUp() {
         <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary/10 mb-4">
           <BookOpen className="h-8 w-8 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold text-primary">ShekhaLagbe</h1>
+        <Link to="/">
+          <h1 className="text-3xl font-bold text-primary">ShekhaLagbe</h1>
+        </Link>
         <p className="text-muted-foreground">Your gateway to knowledge</p>
       </div>
       

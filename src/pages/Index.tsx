@@ -177,7 +177,9 @@ const Index = () => {
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
               <BookOpen className="h-8 w-8 text-primary" />
+            <Link to="/">
               <span className="ml-2 text-2xl font-bold">ShekhaLagbe</span>
+            </Link>
             </div>
             <div className="hidden md:flex md:items-center md:space-x-6">
               <a href="#" onClick={(e) => scrollToSection(e, 'hero')} className="text-foreground/60 hover:text-foreground">
