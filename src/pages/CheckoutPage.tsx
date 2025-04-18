@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -23,7 +22,6 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const location = useLocation();
   
-  // Provide default values for courseData including the features array
   const courseData = location.state?.courseData || {
     title: "Sample Course",
     price: 6499.00,
@@ -37,14 +35,38 @@ export default function CheckoutPage() {
       "Library of Questions with Video Solutions",
       "Alternate Day Chapters",
       "Quant Aptitude + Logical Reasoning"
-    ]
+    ],
+    plan: {
+      name: "Basic",
+      price: 49.99,
+      period: "48"
+    }
   };
 
-  // Ensure features is always an array even if it's missing in courseData
   const features = Array.isArray(courseData.features) ? courseData.features : [];
 
-  // Ensure price is always a number for toFixed()
-  const price = typeof courseData.price === 'number' ? courseData.price : Number(courseData.price) || 0;
+  const calculateSubscriptionTotal = () => {
+    const basePlanPrice = courseData.plan?.price || 49.99;
+    const period = courseData.plan?.period || "48";
+    const months = parseInt(period);
+    
+    let discount = 0;
+    if (period === "12") discount = 0.15;
+    else if (period === "24") discount = 0.25;
+    else if (period === "48") discount = 0.75;
+
+    const subtotal = basePlanPrice * months;
+    const discountAmount = subtotal * discount;
+    return {
+      subtotal,
+      discountAmount,
+      final: subtotal - discountAmount
+    };
+  };
+
+  const coursePriceNum = typeof courseData.price === 'number' ? courseData.price : Number(courseData.price) || 0;
+  const subscriptionCalc = calculateSubscriptionTotal();
+  const totalPrice = coursePriceNum + subscriptionCalc.final;
 
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +99,6 @@ export default function CheckoutPage() {
       </div>
       
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Course Details (Left Side) */}
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-gray-900">{courseData.title}</h2>
           
@@ -121,17 +142,41 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Payment Details (Right Side) */}
         <Card>
           <CardHeader>
             <CardTitle>Payment Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span>Amount</span>
-                <span className="font-semibold">₹{price.toFixed(2)}</span>
+            <div className="space-y-4">
+              <div className="border-b pb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span>Course Price</span>
+                  <span className="font-semibold">₹{coursePriceNum.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between items-center mb-2">
+                  <span>Subscription ({courseData.plan?.period || 48} months)</span>
+                  <div className="text-right">
+                    <span className="text-muted-foreground line-through mr-2">
+                      ₹{subscriptionCalc.subtotal.toFixed(2)}
+                    </span>
+                    <span className="font-semibold">
+                      ₹{subscriptionCalc.final.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-green-600 text-sm">
+                  <span>Subscription Discount</span>
+                  <span>-₹{subscriptionCalc.discountAmount.toFixed(2)}</span>
+                </div>
               </div>
+
+              <div className="flex justify-between items-center pt-2 font-semibold">
+                <span>Total Amount</span>
+                <span className="text-lg">₹{totalPrice.toFixed(2)}</span>
+              </div>
+
               <p className="text-sm text-gray-500">
                 (18% GST included which is paid to the Government)
               </p>
@@ -182,7 +227,7 @@ export default function CheckoutPage() {
                   className="w-full text-lg py-6"
                   disabled={isLoading}
                 >
-                  Pay ₹{price.toFixed(2)}
+                  Pay ₹{totalPrice.toFixed(2)}
                 </Button>
               </div>
             </form>

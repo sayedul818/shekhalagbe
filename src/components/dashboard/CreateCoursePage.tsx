@@ -42,7 +42,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 
-// Mock data for plans - same as in CoursesList
 const pricePlans = [
   { id: 1, name: "Basic", price: 49.99, students: 10, storage: "1GB", description: "Perfect for small workshops and tutorials" },
   { id: 2, name: "Standard", price: 99.99, students: 50, storage: "5GB", description: "Ideal for most educators and small classes" },
@@ -115,7 +114,6 @@ const CreateCoursePage = () => {
     console.log("Selected plan:", selectedPlan);
     console.log("Selected period:", selectedPeriod);
     
-    // Navigate to the checkout page with course and plan data
     navigate("/checkout", {
       state: {
         courseData: {
@@ -128,14 +126,12 @@ const CreateCoursePage = () => {
             "Course analytics",
             selectedPlan.name !== "Basic" && "Priority support",
             selectedPlan.name === "Enterprise" && "Custom branding"
-          ].filter(Boolean)
-        },
-        plan: {
-          ...selectedPlan,
-          period: selectedPeriod,
-          discountedPrice: getDiscountedPrice(),
-          originalPrice: getOriginalPrice(),
-          monthlyPrice: getMonthlyPrice(),
+          ].filter(Boolean),
+          plan: {
+            name: selectedPlan.name,
+            price: selectedPlan.price,
+            period: selectedPeriod
+          }
         }
       }
     });
@@ -149,7 +145,6 @@ const CreateCoursePage = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Course Details Form */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -292,7 +287,6 @@ const CreateCoursePage = () => {
           </Card>
         </div>
         
-        {/* Checkout Card */}
         <div className="space-y-6">
           <Card>
             <CardHeader className="bg-violet-50 rounded-t-lg">
