@@ -46,7 +46,7 @@ const ManageCoursePage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center space-x-4">
           <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard/courses")}>
             <ArrowLeft className="h-5 w-5" />
@@ -59,11 +59,13 @@ const ManageCoursePage = () => {
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => window.open(`/dashboard/browse/${courseId}`, '_blank')}>
             <BookOpen className="h-4 w-4 mr-2" />
-            Preview Course
+            <span className="hidden sm:inline">Preview Course</span>
+            <span className="sm:hidden">Preview</span>
           </Button>
           <Button>
             <BookPlus className="h-4 w-4 mr-2" />
-            Publish Changes
+            <span className="hidden sm:inline">Publish Changes</span>
+            <span className="sm:hidden">Publish</span>
           </Button>
         </div>
       </div>
@@ -76,7 +78,7 @@ const ManageCoursePage = () => {
             <CardDescription>Key information about your course</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="flex items-center space-x-3">
                 <div className="bg-primary/10 p-2 rounded-full">
                   <Users className="h-5 w-5 text-primary" />
@@ -120,14 +122,14 @@ const ManageCoursePage = () => {
         {/* Course Management Tabs */}
         <div className="md:col-span-4">
           <Tabs defaultValue="content" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-2 md:grid-cols-7 w-full">
-              <TabsTrigger value="content">Content</TabsTrigger>
-              <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
-              <TabsTrigger value="students">Students</TabsTrigger>
-              <TabsTrigger value="assignments">Assignments</TabsTrigger>
-              <TabsTrigger value="engagement">Engagement</TabsTrigger>
-              <TabsTrigger value="communication">Communication</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsList className="flex flex-wrap w-full">
+              <TabsTrigger value="content" className="flex-1">Content</TabsTrigger>
+              <TabsTrigger value="quizzes" className="flex-1">Quizzes</TabsTrigger>
+              <TabsTrigger value="students" className="flex-1">Students</TabsTrigger>
+              <TabsTrigger value="assignments" className="flex-1">Assign.</TabsTrigger>
+              <TabsTrigger value="engagement" className="flex-1">Engage.</TabsTrigger>
+              <TabsTrigger value="communication" className="flex-1">Comms.</TabsTrigger>
+              <TabsTrigger value="settings" className="flex-1">Settings</TabsTrigger>
             </TabsList>
             
             {/* Content Tab */}
@@ -137,8 +139,8 @@ const ManageCoursePage = () => {
                   <CardTitle>Course Content</CardTitle>
                   <CardDescription>Manage your course curriculum, sections, and lessons</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between">
+                <CardContent className="space-y-4 overflow-x-auto">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                     <h3 className="text-lg font-medium">Curriculum</h3>
                     <Button>
                       <BookPlus className="h-4 w-4 mr-2" />
@@ -148,7 +150,7 @@ const ManageCoursePage = () => {
                   
                   {/* Section 1 */}
                   <div className="border rounded-md">
-                    <div className="flex items-center justify-between p-4 bg-gray-50">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 gap-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium">Section 1:</span>
                         <span className="font-semibold">Introduction to JavaScript</span>
@@ -160,32 +162,32 @@ const ManageCoursePage = () => {
                     </div>
                     <Separator />
                     <div className="p-4 space-y-3">
-                      <div className="flex items-center justify-between py-2 px-3 bg-gray-100 rounded-md">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
                         <div className="flex items-center space-x-3">
                           <Video className="h-4 w-4 text-gray-500" />
                           <span>Lesson 1: JavaScript Basics</span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
                           <Button variant="ghost" size="sm">Edit</Button>
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between py-2 px-3 bg-gray-100 rounded-md">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
                         <div className="flex items-center space-x-3">
                           <FileText className="h-4 w-4 text-gray-500" />
                           <span>Lesson 2: Variables and Data Types</span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
                           <Button variant="ghost" size="sm">Edit</Button>
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between py-2 px-3 bg-gray-100 rounded-md">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
                         <div className="flex items-center space-x-3">
                           <FileQuestion className="h-4 w-4 text-gray-500" />
                           <span>Quiz: JavaScript Basics</span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
                           <Button variant="ghost" size="sm">Edit</Button>
                         </div>
                       </div>
@@ -194,7 +196,7 @@ const ManageCoursePage = () => {
                   
                   {/* Section 2 */}
                   <div className="border rounded-md">
-                    <div className="flex items-center justify-between p-4 bg-gray-50">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 gap-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium">Section 2:</span>
                         <span className="font-semibold">Functions and Objects</span>
@@ -206,22 +208,22 @@ const ManageCoursePage = () => {
                     </div>
                     <Separator />
                     <div className="p-4 space-y-3">
-                      <div className="flex items-center justify-between py-2 px-3 bg-gray-100 rounded-md">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
                         <div className="flex items-center space-x-3">
                           <Video className="h-4 w-4 text-gray-500" />
                           <span>Lesson 3: Functions in JavaScript</span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
                           <Button variant="ghost" size="sm">Edit</Button>
                         </div>
                       </div>
                       
-                      <div className="flex items-center justify-between py-2 px-3 bg-gray-100 rounded-md">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
                         <div className="flex items-center space-x-3">
                           <FileText className="h-4 w-4 text-gray-500" />
                           <span>Lesson 4: Objects and Methods</span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
                           <Button variant="ghost" size="sm">Edit</Button>
                         </div>
                       </div>
@@ -246,7 +248,7 @@ const ManageCoursePage = () => {
                   <CardDescription>Create and manage quizzes, tests, and assessments</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between mb-6">
+                  <div className="flex flex-col sm:flex-row sm:justify-between mb-6 gap-2">
                     <div>
                       <h3 className="text-lg font-medium">Question Bank</h3>
                       <p className="text-sm text-muted-foreground">Reusable questions for your quizzes</p>
@@ -259,7 +261,7 @@ const ManageCoursePage = () => {
                   
                   <div className="space-y-4">
                     <div className="border rounded-md p-4">
-                      <div className="flex justify-between">
+                      <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
                         <h4 className="font-medium">JavaScript Basics Quiz</h4>
                         <div className="flex items-center space-x-2">
                           <Button variant="outline" size="sm">Edit</Button>
@@ -267,7 +269,7 @@ const ManageCoursePage = () => {
                         </div>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">10 questions • Time limit: 20 minutes</p>
-                      <div className="flex items-center mt-2 text-sm">
+                      <div className="flex flex-wrap items-center mt-2 text-sm gap-1">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">MCQ</span>
                         <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-2">Easy</span>
                         <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">Auto-graded</span>
@@ -275,7 +277,7 @@ const ManageCoursePage = () => {
                     </div>
                     
                     <div className="border rounded-md p-4">
-                      <div className="flex justify-between">
+                      <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
                         <h4 className="font-medium">Final Assessment</h4>
                         <div className="flex items-center space-x-2">
                           <Button variant="outline" size="sm">Edit</Button>
@@ -283,7 +285,7 @@ const ManageCoursePage = () => {
                         </div>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">25 questions • Time limit: 60 minutes</p>
-                      <div className="flex items-center mt-2 text-sm">
+                      <div className="flex flex-wrap items-center mt-2 text-sm gap-1">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">Mixed</span>
                         <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs mr-2">Medium</span>
                         <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">Manual Review</span>
@@ -302,7 +304,7 @@ const ManageCoursePage = () => {
                   <CardDescription>View and manage enrolled students</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between mb-6">
+                  <div className="flex flex-col sm:flex-row sm:justify-between mb-6 gap-2">
                     <div>
                       <h3 className="text-lg font-medium">Students</h3>
                       <p className="text-sm text-muted-foreground">124 students enrolled</p>
@@ -313,14 +315,14 @@ const ManageCoursePage = () => {
                     </Button>
                   </div>
                   
-                  <div className="border rounded-md overflow-hidden">
+                  <div className="border rounded-md overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-gray-50">
                         <tr>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Activity</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz Avg.</th>
+                          <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Activity</th>
+                          <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quiz Avg.</th>
                           <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                       </thead>
@@ -348,10 +350,10 @@ const ManageCoursePage = () => {
                               </div>
                               <div className="text-xs text-gray-500 mt-1">{student.progress}% complete</div>
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                            <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                               {student.lastActivity}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap">
+                            <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap">
                               <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                 student.quizAvg >= 80 ? 'bg-green-100 text-green-800' :
                                 student.quizAvg >= 70 ? 'bg-yellow-100 text-yellow-800' :
@@ -361,8 +363,10 @@ const ManageCoursePage = () => {
                               </span>
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                              <Button variant="ghost" size="sm">View</Button>
-                              <Button variant="ghost" size="sm">Message</Button>
+                              <div className="flex justify-end">
+                                <Button variant="ghost" size="sm">View</Button>
+                                <Button variant="ghost" size="sm" className="hidden sm:inline-flex">Message</Button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -381,7 +385,7 @@ const ManageCoursePage = () => {
                   <CardDescription>Create and manage assignments</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between mb-6">
+                  <div className="flex flex-col sm:flex-row sm:justify-between mb-6 gap-2">
                     <div>
                       <h3 className="text-lg font-medium">All Assignments</h3>
                       <p className="text-sm text-muted-foreground">Manage your course assignments</p>
@@ -394,30 +398,32 @@ const ManageCoursePage = () => {
                   
                   <div className="space-y-4">
                     <div className="border rounded-md p-4">
-                      <div className="flex justify-between">
+                      <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
                         <h4 className="font-medium">JavaScript Loops Project</h4>
                         <div className="flex items-center space-x-2">
                           <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm">View Submissions</Button>
+                          <Button variant="ghost" size="sm" className="hidden sm:inline-flex">View Submissions</Button>
+                          <Button variant="ghost" size="sm" className="sm:hidden">View</Button>
                         </div>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">Due: May 25, 2023 • 67 submissions</p>
-                      <div className="flex items-center mt-2 text-sm">
+                      <div className="flex flex-wrap items-center mt-2 text-sm gap-1">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">File Upload</span>
                         <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Resubmission allowed</span>
                       </div>
                     </div>
                     
                     <div className="border rounded-md p-4">
-                      <div className="flex justify-between">
+                      <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
                         <h4 className="font-medium">DOM Manipulation Exercise</h4>
                         <div className="flex items-center space-x-2">
                           <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm">View Submissions</Button>
+                          <Button variant="ghost" size="sm" className="hidden sm:inline-flex">View Submissions</Button>
+                          <Button variant="ghost" size="sm" className="sm:hidden">View</Button>
                         </div>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">Due: June 10, 2023 • 42 submissions</p>
-                      <div className="flex items-center mt-2 text-sm">
+                      <div className="flex flex-wrap items-center mt-2 text-sm gap-1">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">Written Response</span>
                         <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No resubmission</span>
                       </div>
@@ -435,14 +441,15 @@ const ManageCoursePage = () => {
                   <CardDescription>Monitor student engagement and activity</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between mb-6">
+                  <div className="flex flex-col sm:flex-row sm:justify-between mb-6 gap-2">
                     <div>
                       <h3 className="text-lg font-medium">Engagement Overview</h3>
                       <p className="text-sm text-muted-foreground">Monitor student engagement with your course</p>
                     </div>
                     <Button>
                       <PieChart className="h-4 w-4 mr-2" />
-                      View Full Report
+                      <span className="hidden sm:inline">View Full Report</span>
+                      <span className="sm:hidden">View Report</span>
                     </Button>
                   </div>
                   
@@ -502,14 +509,15 @@ const ManageCoursePage = () => {
                   <CardDescription>Manage communication with your students</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between mb-6">
+                  <div className="flex flex-col sm:flex-row sm:justify-between mb-6 gap-2">
                     <div>
                       <h3 className="text-lg font-medium">Communication Tools</h3>
                       <p className="text-sm text-muted-foreground">Connect with your students</p>
                     </div>
                     <Button>
                       <MessageSquare className="h-4 w-4 mr-2" />
-                      New Announcement
+                      <span className="hidden sm:inline">New Announcement</span>
+                      <span className="sm:hidden">Announce</span>
                     </Button>
                   </div>
                   
@@ -561,11 +569,11 @@ const ManageCoursePage = () => {
                         { student: "Robert Johnson", question: "Can you provide more examples of closures?", replies: 1, time: "1 week ago" },
                       ].map((item, i) => (
                         <div key={i} className="border-b pb-4 last:border-b-0 last:pb-0">
-                          <div className="flex items-start">
+                          <div className="flex flex-col sm:flex-row sm:items-start">
                             <div className="flex-shrink-0 h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
                               {item.student.charAt(0)}
                             </div>
-                            <div className="ml-3 flex-1">
+                            <div className="ml-0 sm:ml-3 mt-2 sm:mt-0 flex-1">
                               <p className="text-sm font-medium">{item.student}</p>
                               <p className="text-sm">{item.question}</p>
                               <div className="flex items-center text-xs text-muted-foreground mt-1">
@@ -574,7 +582,7 @@ const ManageCoursePage = () => {
                                 <span>{item.replies} replies</span>
                               </div>
                             </div>
-                            <Button variant="ghost" size="sm">Reply</Button>
+                            <Button variant="ghost" size="sm" className="mt-2 sm:mt-0">Reply</Button>
                           </div>
                         </div>
                       ))}
@@ -630,7 +638,7 @@ const ManageCoursePage = () => {
                     <div className="space-y-4">
                       <div>
                         <label className="text-sm font-medium">Access Type</label>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
                           <div className="border rounded-md p-3 flex items-start space-x-3">
                             <input type="radio" name="accessType" checked={course.accessType === "Paid"} />
                             <div>
@@ -669,7 +677,7 @@ const ManageCoursePage = () => {
                         </div>
                       ))}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <input 
                         type="text" 
                         className="flex-1 rounded-md border border-gray-300 p-2"

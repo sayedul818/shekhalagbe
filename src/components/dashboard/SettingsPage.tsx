@@ -67,11 +67,11 @@ const SettingsPage = () => {
       </div>
       
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid md:grid-cols-4 grid-cols-2 gap-2">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="notification">Notifications</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
+        <TabsList className="flex flex-wrap w-full">
+          <TabsTrigger value="general" className="flex-1">General</TabsTrigger>
+          <TabsTrigger value="notification" className="flex-1">Notifications</TabsTrigger>
+          <TabsTrigger value="appearance" className="flex-1">Appearance</TabsTrigger>
+          <TabsTrigger value="security" className="flex-1">Security</TabsTrigger>
         </TabsList>
         
         {/* General Settings */}
