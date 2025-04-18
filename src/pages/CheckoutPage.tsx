@@ -23,6 +23,7 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const location = useLocation();
   
+  // Provide default values for courseData including the features array
   const courseData = location.state?.courseData || {
     title: "Sample Course",
     price: 6499.00,
@@ -36,6 +37,9 @@ export default function CheckoutPage() {
       "Quant Aptitude + Logical Reasoning"
     ]
   };
+
+  // Ensure features is always an array even if it's missing in courseData
+  const features = courseData.features || [];
 
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,7 +99,7 @@ export default function CheckoutPage() {
             <div>
               <h3 className="font-medium mb-2">What you'll get:</h3>
               <ul className="space-y-2">
-                {courseData.features.map((feature, index) => (
+                {features.map((feature, index) => (
                   <li key={index} className="flex items-start">
                     <span className="mr-2 text-primary">•</span>
                     <span className="text-gray-600">{feature}</span>
