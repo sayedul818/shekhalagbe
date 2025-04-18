@@ -11,7 +11,6 @@ import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import CheckoutPage from "./pages/CheckoutPage";
 import { AuthProvider } from "./contexts/AuthContext";
-import CourseCheckoutPage from "./components/dashboard/CourseCheckoutPage";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +26,6 @@ const App = () => (
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/course-checkout/:courseId" element={<CourseCheckoutPage />} />
             <Route path="/dashboard/*" element={<Dashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

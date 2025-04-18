@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -102,8 +101,7 @@ const CoursesList = () => {
       description: `You've selected the ${pricePlans.find(p => p.id === planId).name} plan. Now you can create your course.`,
     });
     
-    // Navigate to the new course checkout page instead of create course
-    navigate(`/course-checkout/${planId}`);
+    navigate(`/dashboard/courses/create?plan=${planId}`);
   };
 
   const handleManageCourse = (courseId) => {
