@@ -41,6 +41,9 @@ export default function CheckoutPage() {
   // Ensure features is always an array even if it's missing in courseData
   const features = courseData.features || [];
 
+  // Ensure price is always a number for toFixed()
+  const price = typeof courseData.price === 'number' ? courseData.price : Number(courseData.price) || 0;
+
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !phone || !fullName) {
@@ -119,7 +122,7 @@ export default function CheckoutPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span>Amount</span>
-                <span className="font-semibold">₹{courseData.price.toFixed(2)}</span>
+                <span className="font-semibold">₹{price.toFixed(2)}</span>
               </div>
               <p className="text-sm text-gray-500">
                 (18% GST included which is paid to the Government)
@@ -171,7 +174,7 @@ export default function CheckoutPage() {
                   className="w-full text-lg py-6"
                   disabled={isLoading}
                 >
-                  Pay ₹{courseData.price.toFixed(2)}
+                  Pay ₹{price.toFixed(2)}
                 </Button>
               </div>
             </form>
