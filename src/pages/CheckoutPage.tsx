@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -40,7 +41,7 @@ export default function CheckoutPage() {
   };
 
   // Ensure features is always an array even if it's missing in courseData
-  const features = courseData.features || [];
+  const features = Array.isArray(courseData.features) ? courseData.features : [];
 
   // Ensure price is always a number for toFixed()
   const price = typeof courseData.price === 'number' ? courseData.price : Number(courseData.price) || 0;
