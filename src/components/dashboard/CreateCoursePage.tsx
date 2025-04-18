@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { 
@@ -116,17 +115,28 @@ const CreateCoursePage = () => {
     console.log("Selected plan:", selectedPlan);
     console.log("Selected period:", selectedPeriod);
     
-    // Navigate to the checkout page with plan data
+    // Navigate to the checkout page with course and plan data
     navigate("/checkout", {
       state: {
+        courseData: {
+          ...data,
+          duration: selectedPeriod === "48" ? "4 years" : selectedPeriod === "24" ? "2 years" : "1 year",
+          access: `${selectedPeriod} months`,
+          features: [
+            `Up to ${selectedPlan.students} students`,
+            `${selectedPlan.storage} storage`,
+            "Course analytics",
+            selectedPlan.name !== "Basic" && "Priority support",
+            selectedPlan.name === "Enterprise" && "Custom branding"
+          ].filter(Boolean)
+        },
         plan: {
           ...selectedPlan,
           period: selectedPeriod,
           discountedPrice: getDiscountedPrice(),
           originalPrice: getOriginalPrice(),
           monthlyPrice: getMonthlyPrice(),
-        },
-        courseData: data
+        }
       }
     });
   };

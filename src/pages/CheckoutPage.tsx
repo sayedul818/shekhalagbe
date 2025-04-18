@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -29,6 +28,8 @@ export default function CheckoutPage() {
     price: 6499.00,
     duration: "4 months",
     access: "One year",
+    description: "Sample course description",
+    thumbnail: "/lovable-uploads/d3bc180c-0abf-4922-aaac-c28c2389b3da.png",
     features: [
       "Complete Course Material",
       "Live Doubt Assistance",
@@ -79,11 +80,17 @@ export default function CheckoutPage() {
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-gray-900">{courseData.title}</h2>
           
+          {courseData.description && (
+            <p className="text-gray-600 leading-relaxed">
+              {courseData.description}
+            </p>
+          )}
+          
           <div className="relative overflow-hidden rounded-lg">
             <img 
-              src={courseData.image || "/lovable-uploads/d3bc180c-0abf-4922-aaac-c28c2389b3da.png"} 
+              src={courseData.thumbnail || "/lovable-uploads/d3bc180c-0abf-4922-aaac-c28c2389b3da.png"} 
               alt={courseData.title}
-              className="w-full object-cover rounded-lg"
+              className="w-full object-cover rounded-lg aspect-video"
             />
           </div>
           
