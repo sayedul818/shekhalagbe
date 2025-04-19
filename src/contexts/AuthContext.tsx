@@ -5,8 +5,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
+// Extended user type that includes metadata
+interface ExtendedUser extends User {
+  name?: string;
+  avatar?: string;
+  role?: "student" | "teacher" | "admin";
+}
+
 interface AuthContextType {
-  user: User | null;
+  user: ExtendedUser | null;
   session: Session | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
@@ -25,10 +32,22 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<ExtendedUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+
+  // Helper function to enrich user with metadata
+  const enrichUserWithMetadata = (user: User | null): ExtendedUser | null => {
+    if (!user) return null;
+    
+    return {
+      ...user,
+      name: user.user_metadata?.name || user.email?.split('@')[0] || '',
+      avatar: user.user_metadata?.avatar_url || '',
+      role: user.user_metadata?.role || 'student',
+    };
+  };
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -36,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       (event, session) => {
         if (event === 'SIGNED_IN') {
           setSession(session);
-          setUser(session?.user ?? null);
+          setUser(enrichUserWithMetadata(session?.user ?? null));
           toast({
             title: "Welcome back!",
             description: "You have successfully signed in.",
@@ -55,7 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      setUser(enrichUserWithMetadata(session?.user ?? null));
       setIsLoading(false);
     });
 
