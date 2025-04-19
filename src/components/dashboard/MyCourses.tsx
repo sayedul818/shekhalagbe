@@ -1,17 +1,20 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, PlayCircle, Clock, CheckCircle, Lock, Award, FileText, Video, FileQuestion, BookMarked, MessageCircle } from "lucide-react";
+import { BookOpen, PlayCircle, Clock, CheckCircle, Lock, Award, BookMarked } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import StudentDashboardFeatures from "./StudentDashboardFeatures";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const MyCourses = () => {
   const [tabValue, setTabValue] = useState("in-progress");
   const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Load enrolled courses from localStorage
@@ -121,31 +124,18 @@ const MyCourses = () => {
     enrolledCourseIds.includes(course.id) && course.progress === 100
   );
 
-  const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedResource, setSelectedResource] = useState(null);
 
   const handleContinueLearning = (courseId) => {
-    // Find the course and set it as the selected course for viewing
-    const course = allCoursesData.find(c => c.id === courseId);
-    if (course) {
-      setSelectedCourse(course);
-    }
+    setSelectedCourseId(courseId);
   };
 
   const handleViewCourseDetails = (courseId) => {
-    // Navigate to the course details view
-    const course = allCoursesData.find(c => c.id === courseId);
-    if (course) {
-      setSelectedCourse(course);
-    }
+    setSelectedCourseId(courseId);
   };
 
   const handleReviewCourse = (courseId) => {
-    // Set the selected course for completed courses
-    const course = allCoursesData.find(c => c.id === courseId);
-    if (course) {
-      setSelectedCourse(course);
-    }
+    setSelectedCourseId(courseId);
   };
 
   const handleViewCertificate = (courseId) => {
@@ -154,188 +144,17 @@ const MyCourses = () => {
   };
 
   const handleBackToCourseList = () => {
-    setSelectedCourse(null);
+    setSelectedCourseId(null);
     setSelectedResource(null);
   };
 
-  const handleResourceClick = (resource) => {
-    setSelectedResource(resource);
-  };
-
-  const ResourceIcon = ({ type }) => {
-    switch (type) {
-      case 'video':
-        return <Video className="h-5 w-5" />;
-      case 'pdf':
-        return <FileText className="h-5 w-5" />;
-      case 'quiz':
-        return <FileQuestion className="h-5 w-5" />;
-      default:
-        return <BookOpen className="h-5 w-5" />;
-    }
-  };
-
-  // Display course details and resources if a course is selected
-  if (selectedCourse) {
+  // If a course is selected for detailed learning view, show the student dashboard features
+  if (selectedCourseId) {
     return (
-      <div className="space-y-6">
-        <Button 
-          variant="outline" 
-          onClick={handleBackToCourseList}
-          className="mb-4"
-        >
-          <BookMarked className="h-4 w-4 mr-2" />
-          Back to My Courses
-        </Button>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="md:col-span-2">
-            <Card>
-              <div className="h-[250px] w-full overflow-hidden">
-                <img 
-                  src={selectedCourse.thumbnail} 
-                  alt={selectedCourse.title} 
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <CardHeader>
-                <CardTitle className="text-2xl">{selectedCourse.title}</CardTitle>
-                <CardDescription>
-                  Instructor: {selectedCourse.teacher} | 
-                  Progress: {selectedCourse.progress}% | 
-                  {selectedCourse.completedDate ? 
-                    ` Completed on ${selectedCourse.completedDate}` : 
-                    ` ${selectedCourse.completedModules} of ${selectedCourse.modules} modules completed`
-                  }
-                </CardDescription>
-              </CardHeader>
-              
-              {selectedResource ? (
-                <CardContent>
-                  <div className="bg-muted p-4 rounded-md mb-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center">
-                        <ResourceIcon type={selectedResource.type} />
-                        <h3 className="text-lg font-medium ml-2">
-                          {selectedResource.title}
-                        </h3>
-                      </div>
-                      <Badge variant="outline">
-                        {selectedResource.type === 'video' ? `${selectedResource.duration} mins` : 
-                         selectedResource.type === 'pdf' ? `${selectedResource.pages} pages` : 
-                         `${selectedResource.questions} questions`}
-                      </Badge>
-                    </div>
-                    
-                    <div className="bg-background p-6 rounded-md border">
-                      {selectedResource.type === 'video' ? (
-                        <div className="aspect-video bg-gray-100 flex justify-center items-center">
-                          <div className="text-center">
-                            <PlayCircle className="h-16 w-16 mx-auto text-muted-foreground mb-2" />
-                            <p className="text-lg font-medium">Video Player Placeholder</p>
-                            <p className="text-muted-foreground">{selectedResource.title} - {selectedResource.duration} minutes</p>
-                          </div>
-                        </div>
-                      ) : selectedResource.type === 'pdf' ? (
-                        <div className="aspect-[4/3] bg-gray-100 flex justify-center items-center">
-                          <div className="text-center">
-                            <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-2" />
-                            <p className="text-lg font-medium">PDF Document Placeholder</p>
-                            <p className="text-muted-foreground">{selectedResource.title} - {selectedResource.pages} pages</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="bg-gray-100 p-8 rounded-md flex flex-col items-center">
-                          <FileQuestion className="h-16 w-16 text-muted-foreground mb-2" />
-                          <p className="text-lg font-medium">Quiz Placeholder</p>
-                          <p className="text-muted-foreground mb-4">{selectedResource.title} - {selectedResource.questions} questions</p>
-                          <Button variant="default">Start Quiz</Button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <Button variant="outline" onClick={() => setSelectedResource(null)} className="w-full">
-                    Return to Course Materials
-                  </Button>
-                </CardContent>
-              ) : (
-                <CardContent>
-                  <h3 className="text-lg font-medium mb-4">Course Resources</h3>
-                  <div className="space-y-3">
-                    {selectedCourse.resources.map((resource, index) => (
-                      <div 
-                        key={index} 
-                        onClick={() => handleResourceClick(resource)}
-                        className="flex items-center justify-between p-3 border rounded-md hover:bg-muted cursor-pointer transition-colors"
-                      >
-                        <div className="flex items-center">
-                          <ResourceIcon type={resource.type} />
-                          <span className="ml-2">{resource.title}</span>
-                        </div>
-                        <Badge variant="outline">
-                          {resource.type === 'video' ? `${resource.duration} mins` : 
-                           resource.type === 'pdf' ? `${resource.pages} pages` : 
-                           `${resource.questions} questions`}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              )}
-              
-              <CardFooter>
-                <Button variant="outline" className="mr-3">
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  Discussion Forum
-                </Button>
-                <Button variant="outline">
-                  <BookMarked className="h-4 w-4 mr-2" />
-                  Notes
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-          
-          <div className="md:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>Course Progress</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between mb-1 text-sm">
-                      <span>{selectedCourse.completedModules} of {selectedCourse.modules} modules</span>
-                      <span>{selectedCourse.progress}% complete</span>
-                    </div>
-                    <Progress value={selectedCourse.progress} className="h-2" />
-                  </div>
-                  
-                  <div className="pt-4">
-                    <h4 className="text-sm font-medium mb-2">Activity</h4>
-                    <div className="text-sm text-muted-foreground">
-                      <p className="flex items-center">
-                        <Clock className="h-4 w-4 mr-2" />
-                        Last accessed {selectedCourse.lastAccessed || "Not yet accessed"}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {selectedCourse.certificate && (
-                    <div className="pt-4">
-                      <Button variant="outline" className="w-full" onClick={() => handleViewCertificate(selectedCourse.id)}>
-                        <Award className="h-4 w-4 mr-2" />
-                        View Certificate
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
+      <StudentDashboardFeatures 
+        courseId={selectedCourseId} 
+        onBack={handleBackToCourseList} 
+      />
     );
   }
 
@@ -347,7 +166,7 @@ const MyCourses = () => {
       </div>
 
       <Tabs defaultValue="in-progress" value={tabValue} onValueChange={setTabValue} className="space-y-4">
-        <TabsList>
+        <TabsList className={isMobile ? "w-full" : ""}>
           <TabsTrigger value="in-progress" className="relative">
             In Progress 
             <span className="ml-1 text-xs bg-primary text-white rounded-full px-1.5 inline-flex justify-center items-center">
@@ -367,8 +186,8 @@ const MyCourses = () => {
           {enrolledCourses.length > 0 ? (
             enrolledCourses.map((course) => (
               <Card key={course.id}>
-                <div className="md:flex">
-                  <div className="h-48 md:h-auto md:w-72 flex-shrink-0 overflow-hidden">
+                <div className={isMobile ? "flex flex-col" : "md:flex"}>
+                  <div className={isMobile ? "h-48" : "h-48 md:h-auto md:w-72 flex-shrink-0 overflow-hidden"}>
                     <img 
                       src={course.thumbnail} 
                       alt={course.title} 
@@ -397,9 +216,9 @@ const MyCourses = () => {
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="mt-auto">
+                    <CardFooter className={`mt-auto ${isMobile ? "flex-wrap gap-2" : ""}`}>
                       <Button 
-                        className="mr-2"
+                        className={isMobile ? "w-full" : "mr-2"}
                         onClick={() => handleContinueLearning(course.id)}
                       >
                         <PlayCircle className="h-4 w-4 mr-2" />
@@ -407,6 +226,7 @@ const MyCourses = () => {
                       </Button>
                       <Button 
                         variant="outline"
+                        className={isMobile ? "w-full" : ""}
                         onClick={() => handleViewCourseDetails(course.id)}
                       >
                         View Course Details
@@ -430,8 +250,8 @@ const MyCourses = () => {
           {completedCourses.length > 0 ? (
             completedCourses.map((course) => (
               <Card key={course.id}>
-                <div className="md:flex">
-                  <div className="h-48 md:h-auto md:w-72 flex-shrink-0 overflow-hidden">
+                <div className={isMobile ? "flex flex-col" : "md:flex"}>
+                  <div className={isMobile ? "h-48" : "h-48 md:h-auto md:w-72 flex-shrink-0 overflow-hidden"}>
                     <img 
                       src={course.thumbnail} 
                       alt={course.title} 
@@ -440,7 +260,7 @@ const MyCourses = () => {
                   </div>
                   <div className="flex flex-col flex-1">
                     <CardHeader>
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
                         <CardTitle>{course.title}</CardTitle>
                         {course.certificate && (
                           <div className="flex items-center text-green-600 bg-green-100 px-2 py-1 rounded text-sm">
@@ -471,17 +291,20 @@ const MyCourses = () => {
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="mt-auto">
+                    <CardFooter className={`mt-auto ${isMobile ? "flex-wrap gap-2" : ""}`}>
                       <Button 
                         variant="outline" 
-                        className="mr-2"
+                        className={isMobile ? "w-full" : "mr-2"}
                         onClick={() => handleReviewCourse(course.id)}
                       >
                         <PlayCircle className="h-4 w-4 mr-2" />
                         Review Course
                       </Button>
                       {course.certificate && (
-                        <Button onClick={() => handleViewCertificate(course.id)}>
+                        <Button 
+                          className={isMobile ? "w-full" : ""}
+                          onClick={() => handleViewCertificate(course.id)}
+                        >
                           <Award className="h-4 w-4 mr-2" />
                           View Certificate
                         </Button>

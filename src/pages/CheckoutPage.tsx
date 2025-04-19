@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { BookOpen } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function CheckoutPage() {
   const [email, setEmail] = useState("");
@@ -22,6 +23,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const location = useLocation();
+  const isMobile = useIsMobile();
   
   const courseData = location.state?.courseData || {
     title: "Sample Course",
@@ -47,10 +49,12 @@ export default function CheckoutPage() {
   const features = Array.isArray(courseData.features) ? courseData.features : [];
 
   const calculateSubscriptionTotal = () => {
+    // Get the specific course plan price rather than a fixed value
     const basePlanPrice = courseData.plan?.price || 49.99;
     const period = courseData.plan?.period || "48";
     const months = parseInt(period);
     
+    // Calculate appropriate discount based on subscription length
     let discount = 0;
     if (period === "12") discount = 0.15;
     else if (period === "24") discount = 0.25;
@@ -65,8 +69,10 @@ export default function CheckoutPage() {
     };
   };
 
+  // Calculate the course price from course data
   const coursePriceNum = typeof courseData.price === 'number' ? courseData.price : Number(courseData.price) || 0;
   const subscriptionCalc = calculateSubscriptionTotal();
+  // Final price is just the subscription price, not adding course price again
   const finalPrice = subscriptionCalc.final;
 
   const handleCheckout = (e: React.FormEvent) => {
@@ -86,7 +92,7 @@ export default function CheckoutPage() {
         description: "You have successfully enrolled in the course.",
       });
       setIsLoading(false);
-      navigate("/dashboard/courses");
+      navigate("/dashboard/my-courses");
     }, 1500);
   };
 
