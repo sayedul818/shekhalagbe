@@ -38,6 +38,10 @@ export default function SignUp() {
     try {
       await signUp(email, password, name, role);
       navigate("/dashboard");
+      toast({
+        title: "Account created",
+        description: "Your account has been created successfully. Welcome!",
+      });
     } catch (error: any) {
       toast({
         title: "Error",
