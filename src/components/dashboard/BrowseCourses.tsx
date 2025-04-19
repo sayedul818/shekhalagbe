@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -206,7 +205,7 @@ const BrowseCourses = () => {
       ]
     },
   ];
-  
+
   const filteredCourses = courses.filter(course => 
     course.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -238,7 +237,6 @@ const BrowseCourses = () => {
       variant: "default",
     });
     
-    // Redirect to my courses
     navigate("/dashboard/my-courses");
   };
 
@@ -249,99 +247,10 @@ const BrowseCourses = () => {
   return (
     <div className="space-y-6">
       {selectedCourse ? (
-        <div className="space-y-6">
-          <Button 
-            variant="outline" 
-            onClick={() => setSelectedCourse(null)}
-            className="mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Courses
-          </Button>
-          
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="md:col-span-2 space-y-6">
-              <Card>
-                <div className="h-[300px] w-full overflow-hidden">
-                  <img 
-                    src={selectedCourse.thumbnail} 
-                    alt={selectedCourse.title} 
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary">{selectedCourse.level}</Badge>
-                    <div className="flex items-center text-yellow-500">
-                      <Star className="h-4 w-4 fill-current" />
-                      <span className="ml-1 text-sm font-medium">{selectedCourse.rating}</span>
-                      <span className="ml-1 text-xs text-muted-foreground">({selectedCourse.reviews} reviews)</span>
-                    </div>
-                  </div>
-                  <CardTitle className="text-2xl mt-2">{selectedCourse.title}</CardTitle>
-                  <CardDescription className="text-base">{selectedCourse.longDescription || selectedCourse.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {selectedCourse.curriculum && selectedCourse.curriculum.length > 0 && (
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3">Curriculum</h3>
-                      <ul className="space-y-2">
-                        {selectedCourse.curriculum.map((item, index) => (
-                          <li key={index} className="flex items-center">
-                            <BookOpen className="h-4 w-4 mr-2 text-muted-foreground" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {selectedCourse.faqs && selectedCourse.faqs.length > 0 && (
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3">FAQs</h3>
-                      <div className="space-y-3">
-                        {selectedCourse.faqs.map((faq, index) => (
-                          <div key={index} className="border rounded-lg p-4">
-                            <h4 className="font-medium mb-2">{faq.question}</h4>
-                            <p className="text-muted-foreground text-sm">{faq.answer}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="md:col-span-1">
-              <Card className="sticky top-6">
-                <CardHeader>
-                  <CardTitle className="text-3xl font-bold">${selectedCourse.price}</CardTitle>
-                  <CardDescription>One-time payment</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center text-sm">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span>{selectedCourse.hours} hours of content</span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <Users className="h-4 w-4 mr-2" />
-                    <span>{selectedCourse.students} students enrolled</span>
-                  </div>
-                  {isEnrolled(selectedCourse.id) ? (
-                    <Button className="w-full" onClick={() => navigate("/dashboard/my-courses")}>
-                      Go to Course
-                    </Button>
-                  ) : (
-                    <Button className="w-full" onClick={() => handleEnroll(selectedCourse.id)}>
-                      Enroll Now
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
+        <CourseDetailView 
+          course={selectedCourse} 
+          onBack={() => setSelectedCourse(null)}
+        />
       ) : (
         <>
           <div>
@@ -380,7 +289,6 @@ const BrowseCourses = () => {
                 <Card 
                   key={course.id} 
                   className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => setSelectedCourse(course)}
                 >
                   <div className="h-40 w-full overflow-hidden">
                     <img 
@@ -420,21 +328,12 @@ const BrowseCourses = () => {
                   </CardContent>
                   <CardFooter className="p-4 pt-0 flex items-center justify-between">
                     <div className="text-lg font-bold">${course.price}</div>
-                    {isEnrolled(course.id) ? (
-                      <Button variant="outline" onClick={(e) => {
-                        e.stopPropagation();
-                        navigate("/dashboard/my-courses");
-                      }}>
-                        Go to Course
-                      </Button>
-                    ) : (
-                      <Button onClick={(e) => {
-                        e.stopPropagation();
-                        handleEnroll(course.id);
-                      }}>
-                        Enroll Now
-                      </Button>
-                    )}
+                    <Button onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedCourse(course);
+                    }}>
+                      Explore Course
+                    </Button>
                   </CardFooter>
                 </Card>
               ))
