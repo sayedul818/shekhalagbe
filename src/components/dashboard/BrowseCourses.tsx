@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +7,7 @@ import { Search, X, BookOpen, Star, Users, Clock, ArrowLeft } from "lucide-react
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import CourseDetailView from "./CourseDetailView"; // Add this import
 
 const BrowseCourses = () => {
   const [searchTerm, setSearchTerm] = useState("");
