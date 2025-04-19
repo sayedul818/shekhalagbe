@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -66,7 +67,7 @@ export default function CheckoutPage() {
 
   const coursePriceNum = typeof courseData.price === 'number' ? courseData.price : Number(courseData.price) || 0;
   const subscriptionCalc = calculateSubscriptionTotal();
-  const totalPrice = coursePriceNum + subscriptionCalc.final;
+  const finalPrice = subscriptionCalc.final;
 
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,7 +111,7 @@ export default function CheckoutPage() {
           
           <div className="relative overflow-hidden rounded-lg">
             <img 
-              src={courseData.thumbnail || "/lovable-uploads/d3bc180c-0abf-4922-aaac-c28c2389b3da.png"} 
+              src={courseData.thumbnail} 
               alt={courseData.title}
               className="w-full object-cover rounded-lg aspect-video"
             />
@@ -174,7 +175,7 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between items-center pt-2 font-semibold">
                 <span>Total Amount</span>
-                <span className="text-lg">₹{totalPrice.toFixed(2)}</span>
+                <span className="text-lg">₹{finalPrice.toFixed(2)}</span>
               </div>
 
               <p className="text-sm text-gray-500">
@@ -227,7 +228,7 @@ export default function CheckoutPage() {
                   className="w-full text-lg py-6"
                   disabled={isLoading}
                 >
-                  Pay ₹{totalPrice.toFixed(2)}
+                  Pay ₹{finalPrice.toFixed(2)}
                 </Button>
               </div>
             </form>
