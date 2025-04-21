@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Card,
@@ -29,6 +28,12 @@ import {
   Users,
   ArrowLeft,
 } from "lucide-react";
+import CourseCurriculum from "./courseCurriculam";
+import CourseQuiz from "./CourseQuiz";
+import CourseAssignment from "./courseAssignment";
+import CourseDiscussion from "./CourseDiscussion";
+import CourseNotes from "./CourseNotes";
+import TakeExam from "./TakeExam";
 
 interface StudentDashboardFeaturesProps {
   courseId: string;
@@ -273,6 +278,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
             renderLessonContent()
           ) : (
             <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+
               <TabsList className="w-full justify-start mb-4 overflow-x-auto">
                 <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
                 <TabsTrigger value="quizzes">Quizzes & Exams</TabsTrigger>
@@ -280,158 +286,27 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                 <TabsTrigger value="discussion">Discussion</TabsTrigger>
                 <TabsTrigger value="notes">Notes</TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="curriculum" className="space-y-4">
-                {courseData.curriculum.map((module) => (
-                  <Card key={module.id}>
-                    <CardHeader>
-                      <CardTitle>{module.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-3">
-                        {module.lessons.map((lesson) => (
-                          <li 
-                            key={lesson.id} 
-                            className={`p-3 border rounded-md flex justify-between items-center cursor-pointer hover:bg-muted transition-colors ${
-                              lesson.completed ? "border-green-200 bg-green-50 hover:bg-green-100/60" : ""
-                            }`}
-                            onClick={() => handleSelectLesson(lesson)}
-                          >
-                            <div className="flex items-center">
-                              {lesson.type === 'video' ? (
-                                <Video className="h-5 w-5 mr-3 text-primary" />
-                              ) : lesson.type === 'quiz' ? (
-                                <FileQuestion className="h-5 w-5 mr-3 text-primary" />
-                              ) : (
-                                <FileText className="h-5 w-5 mr-3 text-primary" />
-                              )}
-                              <div>
-                                <p className="font-medium">{lesson.title}</p>
-                                <p className="text-xs text-muted-foreground">{lesson.duration}</p>
-                              </div>
-                            </div>
-                            {lesson.completed && <CheckCircle className="h-5 w-5 text-green-600" />}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                ))}
+
+              <TabsContent value="curriculum">
+                <CourseCurriculum />
+              </TabsContent>
+
+              <TabsContent value="quizzes">
+                <TakeExam />
               </TabsContent>
               
-              <TabsContent value="quizzes" className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  {courseData.quizzes.map((quiz) => (
-                    <Card key={quiz.id}>
-                      <CardHeader>
-                        <CardTitle>{quiz.title}</CardTitle>
-                        <CardDescription>
-                          {quiz.questions} questions • {quiz.timeLimit} minutes
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        {quiz.status === "completed" ? (
-                          <div className="flex items-center space-x-2">
-                            <CheckCircle className="h-5 w-5 text-green-600" />
-                            <span>Completed with score: {quiz.score}%</span>
-                          </div>
-                        ) : (
-                          <p>Not yet attempted</p>
-                        )}
-                      </CardContent>
-                      <CardFooter>
-                        <Button variant={quiz.status === "completed" ? "outline" : "default"}>
-                          {quiz.status === "completed" ? "Review Quiz" : "Start Quiz"}
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
+              <TabsContent value="assignments">
+                <CourseAssignment />
+              </TabsContent>
+
+              <TabsContent value="discussion">
+                <CourseDiscussion />
               </TabsContent>
               
-              <TabsContent value="assignments" className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  {courseData.assignments.map((assignment) => (
-                    <Card key={assignment.id}>
-                      <CardHeader>
-                        <CardTitle>{assignment.title}</CardTitle>
-                        <CardDescription>
-                          Due: {new Date(assignment.dueDate).toLocaleDateString()}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        {assignment.status === "completed" ? (
-                          <div className="flex items-center space-x-2">
-                            <CheckCircle className="h-5 w-5 text-green-600" />
-                            <span>Completed with score: {assignment.score}%</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center space-x-2">
-                            <Clock className="h-5 w-5 text-amber-500" />
-                            <span>Pending submission</span>
-                          </div>
-                        )}
-                      </CardContent>
-                      <CardFooter>
-                        <Button variant={assignment.status === "completed" ? "outline" : "default"}>
-                          {assignment.status === "completed" ? "View Submission" : "Submit Assignment"}
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
+              <TabsContent value="notes">
+                <CourseNotes />
               </TabsContent>
-              
-              <TabsContent value="discussion" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Course Discussions</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {courseData.discussions.map((discussion) => (
-                      <div key={discussion.id} className="p-4 border rounded-md hover:bg-muted cursor-pointer">
-                        <div className="flex justify-between">
-                          <h3 className="font-medium">{discussion.title}</h3>
-                          <Badge variant="outline">{discussion.replies} replies</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">Last activity: {discussion.lastActive}</p>
-                      </div>
-                    ))}
-                  </CardContent>
-                  <CardFooter>
-                    <Button>Start New Discussion</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="notes" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Your Course Notes</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {courseData.notes.length > 0 ? (
-                      courseData.notes.map((note) => (
-                        <div key={note.id} className="p-4 border rounded-md">
-                          <div className="flex justify-between mb-2">
-                            <h3 className="font-medium">{note.title}</h3>
-                            <span className="text-sm text-muted-foreground">{new Date(note.date).toLocaleDateString()}</span>
-                          </div>
-                          <p className="text-sm">{note.content}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-8">
-                        <BookOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                        <p>No notes yet. Start taking notes during lessons!</p>
-                      </div>
-                    )}
-                  </CardContent>
-                  <CardFooter>
-                    <Button>Add New Note</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
+
             </Tabs>
           )}
         </div>
