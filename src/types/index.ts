@@ -1,3 +1,4 @@
+
 export type UserRole = "admin" | "teacher" | "student";
 
 export interface User {
@@ -79,13 +80,4 @@ export interface ExamSubmission {
     selectedOption: number;
   }[];
   timeTaken: number;
-}
-
-export interface Profile {
-  id: string;
-  name: string | null;
-  avatar_url: string | null;
-  role: string | null;
-  created_at: string;
-  updated_at: string;
 }

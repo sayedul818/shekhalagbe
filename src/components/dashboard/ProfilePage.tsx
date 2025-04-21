@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,18 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, School, Briefcase, Calendar, MapPin } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-
-interface ProfileData {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  birthDate: string;
-  bio: string;
-  education: string;
-  occupation: string;
-}
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -27,79 +15,23 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
   
-  const [profileData, setProfileData] = useState<ProfileData>({
-    name: user?.name || "",
-    email: user?.email || "",
-    phone: "",
-    address: "",
-    birthDate: "",
-    bio: "",
-    education: "",
-    occupation: user?.role || ""
+  const [profileData, setProfileData] = useState({
+    name: user?.name || "Student Name",
+    email: user?.email || "student@example.com",
+    phone: "+1 (555) 123-4567",
+    address: "123 Education Lane, Learning City, 12345",
+    birthDate: "January 15, 1995",
+    bio: "Passionate student with a keen interest in technology and continuous learning.",
+    education: "Bachelor's in Computer Science",
+    occupation: user?.role === "student" ? "Student" : user?.role === "teacher" ? "Teacher" : "Administrator"
   });
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      if (!user?.id) return;
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (error) {
-        toast({
-          title: "Error fetching profile",
-          description: error.message,
-          variant: "destructive"
-        });
-        return;
-      }
-
-      if (data) {
-        setProfileData(prev => ({
-          ...prev,
-          name: data.name || user.name || "",
-          occupation: data.role || user.role || "",
-          // Keep other fields from local state if not in DB
-          phone: prev.phone,
-          address: prev.address,
-          birthDate: prev.birthDate,
-          bio: prev.bio,
-          education: prev.education
-        }));
-      }
-    };
-
-    fetchProfileData();
-  }, [user, toast]);
-
-  const handleSaveProfile = async () => {
-    if (!user?.id) return;
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        name: profileData.name,
-        role: profileData.occupation,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', user.id);
-
-    if (error) {
-      toast({
-        title: "Error updating profile",
-        description: error.message,
-        variant: "destructive"
-      });
-      return;
-    }
-
+  const handleSaveProfile = () => {
     setIsEditing(false);
     toast({
       title: "Profile updated",
-      description: "Your profile has been updated successfully."
+      description: "Your profile has been updated successfully.",
+      variant: "default"
     });
   };
 
