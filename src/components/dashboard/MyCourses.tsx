@@ -1,30 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, PlayCircle, Clock, CheckCircle, Lock, Award, BookMarked } from "lucide-react";
+import { BookOpen, PlayCircle, Clock, CheckCircle, Lock, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
 import StudentDashboardFeatures from "./StudentDashboardFeatures";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const MyCourses = () => {
   const [tabValue, setTabValue] = useState("in-progress");
-  const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    // Load enrolled courses from localStorage
-    const saved = localStorage.getItem("enrolledCourses");
-    if (saved) {
-      setEnrolledCourseIds(JSON.parse(saved));
-    }
-  }, []);
-
-  // All available courses data (would come from an API in a real application)
   const allCoursesData = [
     { 
       id: "1", 
@@ -115,16 +104,8 @@ const MyCourses = () => {
     },
   ];
 
-  // Filter courses based on enrollment
-  const enrolledCourses = allCoursesData.filter(course => 
-    enrolledCourseIds.includes(course.id) && course.progress < 100
-  );
-  
-  const completedCourses = allCoursesData.filter(course => 
-    enrolledCourseIds.includes(course.id) && course.progress === 100
-  );
-
-  const [selectedResource, setSelectedResource] = useState(null);
+  const enrolledCourses = allCoursesData.filter(course => course.progress < 100);
+  const completedCourses = allCoursesData.filter(course => course.progress === 100);
 
   const handleContinueLearning = (courseId) => {
     setSelectedCourseId(courseId);
@@ -139,16 +120,13 @@ const MyCourses = () => {
   };
 
   const handleViewCertificate = (courseId) => {
-    // For now, just show a certificate view (placeholder)
     alert("Certificate view would open here");
   };
 
   const handleBackToCourseList = () => {
     setSelectedCourseId(null);
-    setSelectedResource(null);
   };
 
-  // If a course is selected for detailed learning view, show the student dashboard features
   if (selectedCourseId) {
     return (
       <StudentDashboardFeatures 
@@ -167,7 +145,7 @@ const MyCourses = () => {
 
       <Tabs defaultValue="in-progress" value={tabValue} onValueChange={setTabValue} className="space-y-4">
         <TabsList className={isMobile ? "w-full" : ""}>
-          <TabsTrigger value="in-progress" className="relative">
+          <TabsTrigger value="in-progress">
             In Progress 
             <span className="ml-1 text-xs bg-primary text-white rounded-full px-1.5 inline-flex justify-center items-center">
               {enrolledCourses.length}
@@ -323,7 +301,7 @@ const MyCourses = () => {
             </div>
           )}
         </TabsContent>
-        
+
         <TabsContent value="archived">
           <div className="text-center py-12 border rounded-md bg-gray-50">
             <Lock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
