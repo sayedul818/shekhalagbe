@@ -85,6 +85,7 @@ const Dashboard = () => {
             <Route path="exams" element={<ExamsList />} />
             <Route path="exams/create/:courseId" element={<CreateExam />} />
             <Route path="exams/edit/:examId" element={<CreateExam />} />
+            <Route path="settings" element={<SettingsPage />} />
           </>
         )}
 
@@ -96,6 +97,7 @@ const Dashboard = () => {
             <Route path="my-courses/:courseId/lessons/:lessonId" element={<CourseLesson />} />
             <Route path="exams" element={<ExamsList />} />
             <Route path="exams/take/:examId" element={<TakeExam />} />
+            <Route path="settings" element={<SettingsPage />} />
           </>
         )}
 

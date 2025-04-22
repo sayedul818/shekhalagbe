@@ -49,6 +49,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { label: "Users", icon: <Users className="h-5 w-5" />, path: "/dashboard/users" },
     { label: "Courses", icon: <Book className="h-5 w-5" />, path: "/dashboard/courses" },
     { label: "Reports", icon: <PieChart className="h-5 w-5" />, path: "/dashboard/reports" },
+    { label: "Profile", icon: <User className="h-5 w-5" />, path: "/dashboard/profile" },
     { label: "Settings", icon: <Settings className="h-5 w-5" />, path: "/dashboard/settings" },
   ];
 
@@ -57,6 +58,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { label: "My Courses", icon: <Book className="h-5 w-5" />, path: "/dashboard/courses" },
     { label: "Students", icon: <Users className="h-5 w-5" />, path: "/dashboard/students" },
     { label: "Exams", icon: <Award className="h-5 w-5" />, path: "/dashboard/exams" },
+    { label: "Profile", icon: <User className="h-5 w-5" />, path: "/dashboard/profile" },
+    { label: "Settings", icon: <Settings className="h-5 w-5" />, path: "/dashboard/settings" },
   ];
 
   const studentMenuItems = [
@@ -65,6 +68,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { label: "My Courses", icon: <Book className="h-5 w-5" />, path: "/dashboard/my-courses" },
     { label: "Exams", icon: <Award className="h-5 w-5" />, path: "/dashboard/exams" },
     { label: "Profile", icon: <User className="h-5 w-5" />, path: "/dashboard/profile" },
+    { label: "Settings", icon: <Settings className="h-5 w-5" />, path: "/dashboard/settings" },
   ];
 
   let menuItems;
