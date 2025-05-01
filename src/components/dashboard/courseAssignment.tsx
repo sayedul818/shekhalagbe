@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, FileCheck, Clock, FilePen, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { fetchCourseAssignments } from "@/lib/course-data";
 
 const CourseAssignment = () => {
   const { courseId } = useParams();
@@ -17,80 +18,32 @@ const CourseAssignment = () => {
   const [assignmentResponse, setAssignmentResponse] = useState("");
   const [fileUploaded, setFileUploaded] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [assignmentsData, setAssignmentsData] = useState([]);
+  const { toast } = useToast();
 
-  // Mock assignments data
-  const assignmentsData = [
-    {
-      id: "a1",
-      title: "JavaScript Fundamentals Assignment",
-      description: "Apply your knowledge of JavaScript basics by building a simple calculator",
-      instructions: `
-        <p>In this assignment, you'll build a simple calculator using JavaScript.</p>
-        <p>Requirements:</p>
-        <ul>
-          <li>Create a calculator with basic operations (add, subtract, multiply, divide)</li>
-          <li>Implement a clear button to reset the calculator</li>
-          <li>Style your calculator using CSS</li>
-          <li>Include error handling for division by zero</li>
-        </ul>
-        <p>Submission Guidelines:</p>
-        <ul>
-          <li>Submit your code as a ZIP file containing HTML, CSS, and JavaScript files</li>
-          <li>Include a README file explaining how to run your calculator</li>
-          <li>Add comments to your code explaining key functionality</li>
-        </ul>
-      `,
-      dueDate: "2025-05-15",
-      status: "not-started",
-      maxScore: 100
-    },
-    {
-      id: "a2",
-      title: "DOM Manipulation Project",
-      description: "Create a dynamic to-do list application using DOM manipulation",
-      instructions: `
-        <p>Create a to-do list application that allows users to:</p>
-        <ul>
-          <li>Add new tasks</li>
-          <li>Mark tasks as completed</li>
-          <li>Delete tasks</li>
-          <li>Filter tasks (all, active, completed)</li>
-        </ul>
-        <p>Submission Guidelines:</p>
-        <ul>
-          <li>Submit your code as a ZIP file</li>
-          <li>Use proper ES6+ syntax</li>
-          <li>Implement event delegation for better performance</li>
-        </ul>
-      `,
-      dueDate: "2025-05-30",
-      status: "not-started",
-      maxScore: 100
-    },
-    {
-      id: "a3",
-      title: "JavaScript OOP Concepts",
-      description: "Demonstrate object-oriented programming concepts in JavaScript",
-      instructions: `
-        <p>Build a library management system using OOP principles in JavaScript.</p>
-        <ul>
-          <li>Create classes for Book, Library, and User</li>
-          <li>Implement methods for checking out and returning books</li>
-          <li>Track book availability and user history</li>
-        </ul>
-        <p>Submission Guidelines:</p>
-        <ul>
-          <li>Submit a JavaScript file with your implementation</li>
-          <li>Include test cases demonstrating your system's functionality</li>
-        </ul>
-      `,
-      dueDate: "2025-06-15",
-      status: "submitted",
-      submissionDate: "2025-06-10",
-      grade: 95,
-      feedback: "Excellent work! Your implementation shows a strong understanding of OOP concepts. The class hierarchy is well-designed, and your code is clean and readable."
-    }
-  ];
+  useEffect(() => {
+    const loadAssignments = async () => {
+      if (!courseId) return;
+      
+      try {
+        setIsLoading(true);
+        const data = await fetchCourseAssignments(courseId);
+        setAssignmentsData(data);
+      } catch (error) {
+        console.error("Error loading assignment data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load course assignments",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadAssignments();
+  }, [courseId, toast]);
 
   const handleViewAssignment = (assignmentId: string) => {
     setActiveAssignmentId(assignmentId);
@@ -187,6 +140,14 @@ const CourseAssignment = () => {
         return null;
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   if (activeAssignment) {
     return (
@@ -364,9 +325,9 @@ const CourseAssignment = () => {
             <div className="py-4">
               <p className="mb-2 font-medium">Submission Summary:</p>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Assignment: {activeAssignment.title}</li>
+                <li>• Assignment: {activeAssignment?.title}</li>
                 <li>• File: {fileName}</li>
-                <li>• Due date: {formatDueDate(activeAssignment.dueDate)}</li>
+                <li>• Due date: {activeAssignment ? formatDueDate(activeAssignment.dueDate) : ''}</li>
               </ul>
             </div>
             

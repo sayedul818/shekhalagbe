@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, FileText, PlayCircle, Check, BookOpen } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Quiz } from "@/components/ui/quiz";
 import { FileCheck } from "@/components/ui/file-check";
+import { fetchCourseCurriculum } from "@/lib/course-data";
 
 const CourseCurriculum = () => {
   const { courseId } = useParams();
@@ -15,223 +17,38 @@ const CourseCurriculum = () => {
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [videoDialogOpen, setVideoDialogOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [curriculumModules, setCurriculumModules] = useState([]);
+  const { toast } = useToast();
 
-  // Mock curriculum data
-  const curriculumModules = [
-  {
-    id: "m1",
-    title: "Introduction to the Course",
-    description: "Get started with the fundamentals",
-    completed: true,
-    lessons: [
-      { 
-        id: "l1", 
-        type: "video", 
-        title: "Course Overview", 
-        duration: "10:30", 
-        completed: true,
-        videoUrl: "https://example.com/video1"
-      },
-      { 
-        id: "l2", 
-        type: "reading", 
-        title: "Course Materials Introduction", 
-        duration: "15 mins read", 
-        completed: true 
+  useEffect(() => {
+    const loadCurriculum = async () => {
+      if (!courseId) return;
+      
+      try {
+        setIsLoading(true);
+        const data = await fetchCourseCurriculum(courseId);
+        setCurriculumModules(data);
+      } catch (error) {
+        console.error("Error loading curriculum data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load course curriculum",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
       }
-    ]
-  },
-  {
-    id: "m2",
-    title: "Core Concepts",
-    description: "Learn the essential concepts",
-    completed: true,
-    lessons: [
-      { 
-        id: "l3", 
-        type: "video", 
-        title: "Understanding Variables", 
-        duration: "18:45", 
-        completed: true,
-        videoUrl: "https://example.com/video2"
-      },
-      { 
-        id: "l4", 
-        type: "quiz", 
-        title: "Variables Quiz", 
-        questions: 5, 
-        completed: true 
-      },
-      { 
-        id: "l5", 
-        type: "video", 
-        title: "Data Types Explained", 
-        duration: "22:10", 
-        completed: true,
-        videoUrl: "https://example.com/video3"
-      }
-    ]
-  },
-  {
-    id: "m3",
-    title: "Advanced Topics",
-    description: "Dive deeper into complex subjects",
-    completed: false,
-    lessons: [
-      { 
-        id: "l6", 
-        type: "video", 
-        title: "Functions and Scope", 
-        duration: "24:30", 
-        completed: true,
-        videoUrl: "https://example.com/video4"
-      },
-      { 
-        id: "l7", 
-        type: "reading", 
-        title: "Advanced Techniques", 
-        duration: "25 mins read", 
-        completed: false 
-      },
-      { 
-        id: "l8", 
-        type: "video", 
-        title: "Project Structure", 
-        duration: "15:45", 
-        completed: false,
-        videoUrl: "https://example.com/video5"
-      },
-      { 
-        id: "l9", 
-        type: "assignment", 
-        title: "Hands-on Project", 
-        dueDate: "2025-05-15", 
-        completed: false 
-      }
-    ]
-  },
-  {
-    id: "m4",
-    title: "Project Planning",
-    description: "Learn how to plan and structure real-world projects",
-    completed: false,
-    lessons: [
-      {
-        id: "l10",
-        type: "reading",
-        title: "Planning a Software Project",
-        duration: "20 mins read",
-        completed: false
-      },
-      {
-        id: "l11",
-        type: "assignment",
-        title: "Write a Project Proposal",
-        dueDate: "2025-05-18",
-        completed: false
-      }
-    ]
-  },
-  {
-    id: "m5",
-    title: "Team Collaboration",
-    description: "Understand how to work in teams effectively",
-    completed: false,
-    lessons: [
-      {
-        id: "l12",
-        type: "video",
-        title: "Effective Communication in Teams",
-        duration: "12:20",
-        completed: false,
-        videoUrl: "https://example.com/video6"
-      },
-      {
-        id: "l13",
-        type: "discussion",
-        title: "Share your team experience",
-        prompt: "Post your thoughts on collaborating in teams",
-        completed: false
-      }
-    ]
-  },
-  {
-    id: "m6",
-    title: "Debugging & Troubleshooting",
-    description: "Master the skills of finding and fixing bugs",
-    completed: false,
-    lessons: [
-      {
-        id: "l14",
-        type: "video",
-        title: "Debugging in JavaScript",
-        duration: "16:10",
-        completed: false,
-        videoUrl: "https://example.com/video7"
-      },
-      {
-        id: "l15",
-        type: "quiz",
-        title: "Debugging Quiz",
-        questions: 7,
-        completed: false
-      }
-    ]
-  },
-  {
-    id: "m7",
-    title: "Version Control with Git",
-    description: "Track and manage changes in your codebase",
-    completed: false,
-    lessons: [
-      {
-        id: "l16",
-        type: "video",
-        title: "Git Basics",
-        duration: "14:05",
-        completed: false,
-        videoUrl: "https://example.com/video8"
-      },
-      {
-        id: "l17",
-        type: "coding-challenge",
-        title: "Git Workflow Practice",
-        challengeLink: "https://example.com/git-challenge",
-        completed: false
-      }
-    ]
-  },
-  {
-    id: "m8",
-    title: "Final Project",
-    description: "Apply everything you’ve learned in a capstone project",
-    completed: false,
-    lessons: [
-      {
-        id: "l18",
-        type: "project",
-        title: "Build a Mini App",
-        description: "Use HTML, CSS, JS, and Git to complete your own project",
-        dueDate: "2025-06-01",
-        completed: false
-      },
-      {
-        id: "l19",
-        type: "video",
-        title: "Capstone Project Walkthrough",
-        duration: "30:00",
-        completed: false,
-        videoUrl: "https://example.com/video9"
-      }
-    ]
-  }
-];
+    };
+    
+    loadCurriculum();
+  }, [courseId, toast]);
 
   const totalLessons = curriculumModules.reduce((acc, module) => acc + module.lessons.length, 0);
   const completedLessons = curriculumModules.reduce((acc, module) => {
     return acc + module.lessons.filter(lesson => lesson.completed).length;
   }, 0);
-  const progressPercentage = Math.floor((completedLessons / totalLessons) * 100);
+  const progressPercentage = totalLessons > 0 ? Math.floor((completedLessons / totalLessons) * 100) : 0;
 
   const handleModuleToggle = (moduleId: string) => {
     if (activeModuleId === moduleId) {
@@ -272,6 +89,14 @@ const CourseCurriculum = () => {
       description: "Lesson marked as complete",
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4 max-w-5xl">

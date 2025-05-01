@@ -1,31 +1,53 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusCircle, Search, Edit, Trash2, UserPlus, X } from "lucide-react";
+import { fetchUsersListData } from "@/data/api-data";
+import { useToast } from "@/hooks/use-toast";
 
 const UsersList = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
   
-  // Mock users data
-  const users = [
-    { id: "1", name: "John Doe", email: "john@example.com", role: "student", joined: "Apr 10, 2023" },
-    { id: "2", name: "Jane Smith", email: "jane@example.com", role: "student", joined: "May 15, 2023" },
-    { id: "3", name: "Robert Johnson", email: "robert@example.com", role: "teacher", joined: "Jan 05, 2023" },
-    { id: "4", name: "Emily Davis", email: "emily@example.com", role: "teacher", joined: "Feb 20, 2023" },
-    { id: "5", name: "Michael Brown", email: "michael@example.com", role: "admin", joined: "Mar 12, 2023" },
-    { id: "6", name: "Sarah Wilson", email: "sarah@example.com", role: "student", joined: "Jun 30, 2023" },
-    { id: "7", name: "David Thompson", email: "david@example.com", role: "student", joined: "Jul 22, 2023" },
-    { id: "8", name: "Lisa Martinez", email: "lisa@example.com", role: "teacher", joined: "Aug 18, 2023" },
-  ];
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchUsersListData();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error loading users data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load users data",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadUsers();
+  }, [toast]);
   
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
