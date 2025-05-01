@@ -399,12 +399,76 @@ export const allCoursesData: Course[] = [
   },
 ];
 
+// Adding the data from MyCourses.tsx
+export const myCoursesData = {
+  enrolledCourses: allCoursesData.filter(course => course.progress < 100),
+  completedCourses: allCoursesData.filter(course => course.progress === 100)
+};
+
+// Exams data that was in ExamsList.tsx
+export const examsData = {
+  upcomingExams: [
+    {
+      id: "1",
+      title: "JavaScript Fundamentals - Final Exam",
+      course: "JavaScript Fundamentals",
+      courseId: "course1",
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+      timeLimit: 120,
+      questions: 50,
+      status: "scheduled",
+    },
+    {
+      id: "2",
+      title: "UI/UX Design Principles",
+      course: "UI/UX Design Fundamentals",
+      courseId: "course2",
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+      timeLimit: 90,
+      questions: 40,
+      status: "scheduled",
+    },
+  ],
+  completedExams: [
+    {
+      id: "3",
+      title: "HTML & CSS Basics - Final Assessment",
+      course: "HTML & CSS Basics",
+      courseId: "course3",
+      completedDate: "2025-03-15T15:45:00Z",
+      score: 92,
+      maxScore: 100,
+      timeTaken: 85,
+      rank: 3,
+      totalParticipants: 124,
+    },
+    {
+      id: "4",
+      title: "Web Development Introduction",
+      course: "Introduction to Web Development",
+      courseId: "course4",
+      completedDate: "2025-02-20T11:30:00Z",
+      score: 85,
+      maxScore: 100,
+      timeTaken: 65,
+      rank: 12,
+      totalParticipants: 156,
+    },
+  ],
+};
+
 // Helper functions to access the data (simulating API calls)
 export const fetchUserData = (userId: string): Promise<User | undefined> => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
       const user = usersData.find(u => u.id === userId);
-      resolve(user);
+      if (user) {
+        resolve(user);
+      } else {
+        reject(new Error("User not found"));
+      }
     }, 200); // Simulating network delay
   });
 };
@@ -460,15 +524,33 @@ export function getCourseById(courseId: string): Promise<Course | undefined> {
 
 // Simulate updating profile data
 export const updateUserProfile = (userId: string, profileData: Partial<User>): Promise<User> => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
       const userIndex = usersData.findIndex(u => u.id === userId);
       if (userIndex >= 0) {
         usersData[userIndex] = { ...usersData[userIndex], ...profileData };
         resolve(usersData[userIndex]);
       } else {
-        throw new Error("User not found");
+        reject(new Error("User not found"));
       }
     }, 300);
+  });
+};
+
+// New function to fetch exams data
+export const fetchExamsData = (): Promise<typeof examsData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(examsData);
+    }, 300);
+  });
+};
+
+// New function to fetch my courses data
+export const fetchMyCourses = (): Promise<typeof myCoursesData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(myCoursesData);
+    }, 250);
   });
 };

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,65 +8,38 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { ExamCard } from "@/components/exams/ExamCard";
 import { CompletedExamCard } from "@/components/exams/CompletedExamCard";
+import { fetchExamsData } from "@/data/api-data";
 
 const ExamsList = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [tabValue, setTabValue] = useState("upcoming");
+  const [isLoading, setIsLoading] = useState(true);
+  const [upcomingExams, setUpcomingExams] = useState([]);
+  const [completedExams, setCompletedExams] = useState([]);
 
-  // Updated mock exams data with today's date
-  const upcomingExams = [
-    {
-      id: "1",
-      title: "JavaScript Fundamentals - Final Exam",
-      course: "JavaScript Fundamentals",
-      courseId: "course1",
-      startDate: new Date().toISOString(), // Set to current time
-      endDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-      timeLimit: 120,
-      questions: 50,
-      status: "scheduled",
-    },
-    {
-      id: "2",
-      title: "UI/UX Design Principles",
-      course: "UI/UX Design Fundamentals",
-      courseId: "course2",
-      startDate: new Date().toISOString(), // 1 minutes from now
-      endDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-      timeLimit: 90,
-      questions: 40,
-      status: "scheduled",
-    },
-  ];
-
-  const completedExams = [
-    {
-      id: "3",
-      title: "HTML & CSS Basics - Final Assessment",
-      course: "HTML & CSS Basics",
-      courseId: "course3",
-      completedDate: "2025-03-15T15:45:00Z",
-      score: 92,
-      maxScore: 100,
-      timeTaken: 85,
-      rank: 3,
-      totalParticipants: 124,
-    },
-    {
-      id: "4",
-      title: "Web Development Introduction",
-      course: "Introduction to Web Development",
-      courseId: "course4",
-      completedDate: "2025-02-20T11:30:00Z",
-      score: 85,
-      maxScore: 100,
-      timeTaken: 65,
-      rank: 12,
-      totalParticipants: 156,
-    },
-  ];
+  useEffect(() => {
+    const loadExamsData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchExamsData();
+        setUpcomingExams(data.upcomingExams);
+        setCompletedExams(data.completedExams);
+      } catch (error) {
+        console.error("Error loading exams data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load exams data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadExamsData();
+  }, [toast]);
 
   const handleCreateExam = () => {
     navigate("/dashboard/exams/create/course1");
@@ -82,6 +55,14 @@ const ExamsList = () => {
   const handleTakeExam = (examId: string) => {
     navigate(`/dashboard/exams/take/${examId}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
