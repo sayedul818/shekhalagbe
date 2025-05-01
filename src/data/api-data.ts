@@ -1,4 +1,3 @@
-
 // Mock API data store for the entire application
 
 interface User {
@@ -552,5 +551,839 @@ export const fetchMyCourses = (): Promise<typeof myCoursesData> => {
     setTimeout(() => {
       resolve(myCoursesData);
     }, 250);
+  });
+};
+
+// Additional interfaces for course-related data
+interface CourseModule {
+  id: string;
+  title: string;
+  description: string;
+  lessons: number;
+  duration: string;
+}
+
+interface CourseQuiz {
+  id: string;
+  title: string;
+  questions: number;
+  timeLimit: number;
+  dueDate: string;
+  completed?: boolean;
+  score?: number;
+}
+
+interface CourseLesson {
+  id: string;
+  title: string;
+  completed: boolean;
+  duration: string;
+}
+
+interface CourseNote {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  moduleId: string;
+}
+
+interface CourseDiscussion {
+  id: string;
+  title: string;
+  user: string;
+  avatar: string;
+  date: string;
+  content: string;
+  replies: number;
+}
+
+interface CourseAssignment {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  submitted: boolean;
+  grade?: string;
+  feedback?: string;
+}
+
+interface CourseCurriculumItem {
+  id: string;
+  title: string;
+  type: "video" | "reading" | "quiz" | "assignment";
+  duration?: string;
+  completed: boolean;
+}
+
+interface CourseStudent {
+  id: string;
+  name: string;
+  email: string;
+  progress: number;
+  lastActive: string;
+  enrolled: string;
+}
+
+interface ExamQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctOption: number;
+}
+
+// CreateCoursePage data
+export const createCourseData = {
+  categories: [
+    "Web Development",
+    "Mobile Development",
+    "Data Science",
+    "AI & Machine Learning",
+    "Design",
+    "Business",
+    "Marketing",
+    "Personal Development"
+  ],
+  levels: ["Beginner", "Intermediate", "Advanced", "All Levels"],
+  languages: ["English", "Spanish", "French", "German", "Chinese", "Japanese", "Korean"]
+};
+
+// CoursesList data
+export const coursesListData = {
+  courses: [
+    {
+      id: "cl1",
+      title: "JavaScript Fundamentals",
+      students: 124,
+      rating: 4.8,
+      lastUpdated: "May 1, 2025",
+      status: "published",
+      thumbnail: "https://images.unsplash.com/photo-1587620962725-abab7fe55159"
+    },
+    {
+      id: "cl2",
+      title: "Advanced React & Redux",
+      students: 97,
+      rating: 4.7,
+      lastUpdated: "April 28, 2025",
+      status: "published",
+      thumbnail: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2"
+    },
+    {
+      id: "cl3",
+      title: "Node.js API Development",
+      students: 68,
+      rating: 4.5,
+      lastUpdated: "April 20, 2025",
+      status: "draft",
+      thumbnail: "https://images.unsplash.com/photo-1593720219276-0b1eacd0aef4"
+    }
+  ]
+};
+
+// CourseQuiz data
+export const courseQuizzesData = {
+  quizzes: [
+    {
+      id: "q1",
+      title: "JavaScript Basics Quiz",
+      questions: 10,
+      timeLimit: 15,
+      dueDate: "May 10, 2025",
+      completed: false
+    },
+    {
+      id: "q2",
+      title: "Advanced Functions Quiz",
+      questions: 8,
+      timeLimit: 12,
+      dueDate: "May 15, 2025",
+      completed: true,
+      score: 85
+    },
+    {
+      id: "q3",
+      title: "DOM Manipulation",
+      questions: 12,
+      timeLimit: 20,
+      dueDate: "May 20, 2025",
+      completed: false
+    }
+  ]
+};
+
+// CourseNotes data
+export const courseNotesData = {
+  notes: [
+    {
+      id: "n1",
+      title: "JavaScript Variables and Data Types",
+      content: "Notes about variables, let vs const, and primitive data types in JavaScript.",
+      createdAt: "April 28, 2025",
+      updatedAt: "April 30, 2025",
+      moduleId: "m1"
+    },
+    {
+      id: "n2",
+      title: "Functions and Scope",
+      content: "Understanding function declarations, expressions, and scope in JavaScript.",
+      createdAt: "April 29, 2025",
+      updatedAt: "April 29, 2025",
+      moduleId: "m2"
+    }
+  ]
+};
+
+// CourseDiscussions data
+export const courseDiscussionsData = {
+  discussions: [
+    {
+      id: "d1",
+      title: "How to handle state in complex React applications?",
+      user: "John Smith",
+      avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36",
+      date: "2 days ago",
+      content: "I'm working on a complex React app and struggling with state management. Would Redux be overkill for this?",
+      replies: 8
+    },
+    {
+      id: "d2",
+      title: "Best practices for API error handling",
+      user: "Maria Garcia",
+      avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956",
+      date: "1 week ago",
+      content: "What's the best way to handle API errors in a React application? Should I use try/catch or handle them in a middleware?",
+      replies: 5
+    }
+  ]
+};
+
+// CourseModules data
+export const courseModulesData = {
+  modules: [
+    {
+      id: "m1",
+      title: "Introduction to JavaScript",
+      description: "Learn the basics of JavaScript programming language.",
+      lessons: 5,
+      duration: "2 hours 30 mins"
+    },
+    {
+      id: "m2",
+      title: "Working with Functions",
+      description: "Understanding functions and their role in JavaScript.",
+      lessons: 4,
+      duration: "2 hours"
+    },
+    {
+      id: "m3",
+      title: "Objects and Arrays",
+      description: "Mastering JavaScript data structures.",
+      lessons: 6,
+      duration: "3 hours 15 mins"
+    }
+  ]
+};
+
+// CourseLessons data (expanded from what was in CourseLesson.tsx)
+export const courseLessonsData = {
+  lessons: [
+    {
+      id: "js-lesson-8",
+      title: "Functions and Callbacks",
+      completed: true,
+      duration: "45 mins"
+    },
+    {
+      id: "js-lesson-9",
+      title: "Working with Objects",
+      completed: false,
+      duration: "50 mins"
+    },
+    {
+      id: "js-lesson-10",
+      title: "Arrays and Array Methods",
+      completed: false,
+      duration: "40 mins"
+    },
+    {
+      id: "js-lesson-11",
+      title: "DOM Manipulation",
+      completed: false,
+      duration: "55 mins"
+    },
+    {
+      id: "js-lesson-12",
+      title: "Event Handling",
+      completed: false,
+      duration: "45 mins"
+    }
+  ],
+  courses: [
+    {
+      id: "1",
+      title: "JavaScript Fundamentals",
+      thumbnail: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
+      progress: 60,
+      completedLessons: 8,
+      totalLessons: 12,
+      description: "Master the fundamentals of JavaScript with practical exercises and real-world examples.",
+      teacher: "Robert Johnson",
+      lessons: [
+        { id: "js-lesson-8", title: "Functions and Callbacks", completed: true, duration: "45 mins" },
+        { id: "js-lesson-9", title: "Working with Objects", completed: false, duration: "50 mins" },
+        { id: "js-lesson-10", title: "Arrays and Array Methods", completed: false, duration: "40 mins" },
+        { id: "js-lesson-11", title: "DOM Manipulation", completed: false, duration: "55 mins" },
+        { id: "js-lesson-12", title: "Event Handling", completed: false, duration: "45 mins" }
+      ]
+    },
+    {
+      id: "2",
+      title: "Advanced React & Redux",
+      thumbnail: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2",
+      progress: 35,
+      completedLessons: 5,
+      totalLessons: 14,
+      description: "Learn advanced React concepts and state management with Redux.",
+      teacher: "Emily Davis",
+      lessons: [
+        { id: "react-lesson-5", title: "Redux Middleware", completed: true, duration: "60 mins" },
+        { id: "react-lesson-6", title: "Redux Toolkit Overview", completed: false, duration: "45 mins" },
+        { id: "react-lesson-7", title: "Creating Slices", completed: false, duration: "50 mins" },
+        { id: "react-lesson-8", title: "Async Thunks", completed: false, duration: "55 mins" },
+        { id: "react-lesson-9", title: "Performance Optimization", completed: false, duration: "65 mins" }
+      ]
+    },
+    {
+      id: "3",
+      title: "Node.js API Development",
+      thumbnail: "https://images.unsplash.com/photo-1527689368864-3a821dbccc34",
+      progress: 80,
+      completedLessons: 10,
+      totalLessons: 12,
+      description: "Build scalable APIs with Node.js, Express, and MongoDB.",
+      teacher: "Michael Chen",
+      lessons: [
+        { id: "node-lesson-10", title: "Authentication & Authorization", completed: true, duration: "70 mins" },
+        { id: "node-lesson-11", title: "Advanced Error Handling", completed: false, duration: "45 mins" },
+        { id: "node-lesson-12", title: "API Documentation", completed: false, duration: "40 mins" }
+      ]
+    }
+  ]
+};
+
+// CourseAssignments data
+export const courseAssignmentsData = {
+  assignments: [
+    {
+      id: "a1",
+      title: "Build a Todo List App",
+      description: "Create a simple todo list app using HTML, CSS, and JavaScript.",
+      dueDate: "May 12, 2025",
+      submitted: false
+    },
+    {
+      id: "a2",
+      title: "React Components Library",
+      description: "Build a reusable component library with React and Styled Components.",
+      dueDate: "May 5, 2025",
+      submitted: true,
+      grade: "A",
+      feedback: "Excellent work on the component architecture and documentation."
+    },
+    {
+      id: "a3",
+      title: "RESTful API Implementation",
+      description: "Implement a RESTful API with Node.js and Express.",
+      dueDate: "May 20, 2025",
+      submitted: false
+    }
+  ]
+};
+
+// CourseCurriculum data
+export const courseCurriculumData = {
+  sections: [
+    {
+      id: "s1",
+      title: "Getting Started",
+      items: [
+        { id: "i1", title: "Introduction", type: "video", duration: "10 mins", completed: true },
+        { id: "i2", title: "Setting Up Your Environment", type: "video", duration: "15 mins", completed: true },
+        { id: "i3", title: "Basic Concepts Quiz", type: "quiz", completed: true }
+      ]
+    },
+    {
+      id: "s2",
+      title: "Core Concepts",
+      items: [
+        { id: "i4", title: "Data Types and Variables", type: "video", duration: "25 mins", completed: true },
+        { id: "i5", title: "Control Flow", type: "reading", completed: false },
+        { id: "i6", title: "Functions", type: "video", duration: "30 mins", completed: false },
+        { id: "i7", title: "First Assignment", type: "assignment", completed: false }
+      ]
+    },
+    {
+      id: "s3",
+      title: "Advanced Topics",
+      items: [
+        { id: "i8", title: "Object-Oriented Programming", type: "video", duration: "45 mins", completed: false },
+        { id: "i9", title: "Asynchronous JavaScript", type: "video", duration: "40 mins", completed: false },
+        { id: "i10", title: "Final Project", type: "assignment", completed: false }
+      ]
+    }
+  ]
+};
+
+// BrowseCourses data
+export const browseCoursesData = {
+  categories: [
+    "All Categories",
+    "Web Development",
+    "Mobile Development",
+    "Data Science",
+    "Design",
+    "Business",
+    "Marketing"
+  ],
+  levels: ["All Levels", "Beginner", "Intermediate", "Advanced"],
+  courses: [
+    {
+      id: "bc1",
+      title: "JavaScript Fundamentals",
+      instructor: "Robert Johnson",
+      rating: 4.8,
+      students: 13540,
+      price: 59.99,
+      thumbnail: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
+      category: "Web Development",
+      level: "Beginner",
+      bestseller: true
+    },
+    {
+      id: "bc2",
+      title: "Advanced React & Redux",
+      instructor: "Emily Davis",
+      rating: 4.7,
+      students: 8920,
+      price: 79.99,
+      thumbnail: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2",
+      category: "Web Development",
+      level: "Intermediate"
+    },
+    {
+      id: "bc3",
+      title: "Python for Data Science",
+      instructor: "Michael Chen",
+      rating: 4.9,
+      students: 15200,
+      price: 69.99,
+      thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+      category: "Data Science",
+      level: "Beginner",
+      bestseller: true
+    },
+    {
+      id: "bc4",
+      title: "Flutter App Development",
+      instructor: "Sarah Williams",
+      rating: 4.6,
+      students: 7450,
+      price: 89.99,
+      thumbnail: "https://images.unsplash.com/photo-1551650975-87deedd944c3",
+      category: "Mobile Development",
+      level: "Intermediate"
+    }
+  ]
+};
+
+// ManageCourse data
+export const manageCourseData = {
+  course: {
+    id: "mc1",
+    title: "JavaScript Fundamentals",
+    description: "A comprehensive introduction to JavaScript programming language.",
+    thumbnail: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
+    enrolled: 124,
+    rating: 4.8,
+    lastUpdated: "April 28, 2025",
+    status: "published",
+    modules: 8,
+    totalLessons: 42,
+    totalDuration: "32 hours"
+  },
+  students: [
+    {
+      id: "s1",
+      name: "John Doe",
+      email: "john@example.com",
+      progress: 85,
+      lastActive: "2 days ago"
+    },
+    {
+      id: "s2",
+      name: "Jane Smith",
+      email: "jane@example.com",
+      progress: 72,
+      lastActive: "Yesterday"
+    },
+    {
+      id: "s3",
+      name: "Michael Brown",
+      email: "michael@example.com",
+      progress: 35,
+      lastActive: "1 week ago"
+    }
+  ]
+};
+
+// StudentDashboardFeatures data
+export const studentDashboardFeaturesData = {
+  course: {
+    id: "1",
+    title: "JavaScript Fundamentals",
+    teacher: "Robert Johnson",
+    progress: 65,
+    modules: 8,
+    completedModules: 5,
+    thumbnail: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
+    nextLesson: {
+      id: "l14",
+      title: "Asynchronous JavaScript",
+      module: "Advanced JavaScript Concepts"
+    }
+  },
+  features: [
+    { id: "f1", title: "Lessons", icon: "BookOpen", path: "lessons" },
+    { id: "f2", title: "Quizzes", icon: "CheckSquare", path: "quizzes" },
+    { id: "f3", title: "Notes", icon: "FileText", path: "notes" },
+    { id: "f4", title: "Discussions", icon: "MessageCircle", path: "discussions" },
+    { id: "f5", title: "Assignments", icon: "Clipboard", path: "assignments" }
+  ],
+  announcements: [
+    {
+      id: "a1",
+      title: "New Quiz Available",
+      date: "May 2, 2025",
+      content: "A new quiz on JavaScript Promises is now available. Please complete it by May 10."
+    },
+    {
+      id: "a2",
+      title: "Live Coding Session",
+      date: "April 30, 2025",
+      content: "Join us for a live coding session on May 5 at 3:00 PM EST."
+    }
+  ],
+  upcomingDeadlines: [
+    {
+      id: "d1",
+      title: "JavaScript Promises Quiz",
+      due: "May 10, 2025",
+      type: "quiz"
+    },
+    {
+      id: "d2",
+      title: "Build a REST API",
+      due: "May 15, 2025",
+      type: "assignment"
+    }
+  ]
+};
+
+// TakeExam data
+export const takeExamData = {
+  exam: {
+    id: "e1",
+    title: "JavaScript Fundamentals - Final Exam",
+    courseId: "course1",
+    timeLimit: 120, // in minutes
+    questions: [
+      {
+        id: "q1",
+        question: "Which of the following is NOT a JavaScript data type?",
+        options: ["String", "Boolean", "Integer", "Symbol"],
+        correctOption: 2
+      },
+      {
+        id: "q2",
+        question: "Which method is used to add elements to the end of an array?",
+        options: ["push()", "pop()", "shift()", "unshift()"],
+        correctOption: 0
+      },
+      {
+        id: "q3",
+        question: "What does the === operator do in JavaScript?",
+        options: [
+          "Assigns a value",
+          "Compares values only",
+          "Compares values and types",
+          "Logical OR"
+        ],
+        correctOption: 2
+      },
+      {
+        id: "q4",
+        question: "Which function is used to parse a string to an integer in JavaScript?",
+        options: ["Integer.parse()", "parseInteger()", "parseInt()", "Number.parseInteger()"],
+        correctOption: 2
+      },
+      {
+        id: "q5",
+        question: "What does JSON.stringify() do?",
+        options: [
+          "Parses JSON to an object",
+          "Converts an object to a JSON string",
+          "Validates JSON format",
+          "None of the above"
+        ],
+        correctOption: 1
+      }
+    ]
+  }
+};
+
+// UsersList data
+export const usersListData = {
+  users: [
+    {
+      id: "u1",
+      name: "John Smith",
+      email: "john@example.com",
+      role: "student",
+      joinDate: "Jan 15, 2025",
+      status: "active",
+      courses: 3
+    },
+    {
+      id: "u2",
+      name: "Maria Garcia",
+      email: "maria@example.com",
+      role: "student",
+      joinDate: "Feb 10, 2025",
+      status: "active",
+      courses: 2
+    },
+    {
+      id: "u3",
+      name: "Robert Johnson",
+      email: "robert@example.com",
+      role: "teacher",
+      joinDate: "Dec 5, 2024",
+      status: "active",
+      courses: 5
+    },
+    {
+      id: "u4",
+      name: "Sarah Williams",
+      email: "sarah@example.com",
+      role: "teacher",
+      joinDate: "Mar 20, 2025",
+      status: "active",
+      courses: 2
+    },
+    {
+      id: "u5",
+      name: "David Chen",
+      email: "david@example.com",
+      role: "admin",
+      joinDate: "Nov 12, 2024",
+      status: "active",
+      courses: 0
+    }
+  ]
+};
+
+// CourseDetailView data
+export const courseDetailViewData = {
+  course: {
+    id: "cd1",
+    title: "JavaScript Fundamentals",
+    instructor: "Robert Johnson",
+    rating: 4.8,
+    students: 13540,
+    price: 59.99,
+    thumbnail: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
+    category: "Web Development",
+    level: "Beginner",
+    lastUpdated: "April 2025",
+    description: "A comprehensive introduction to JavaScript programming language with hands-on projects and exercises.",
+    whatYouWillLearn: [
+      "Understand core JavaScript concepts",
+      "Work with DOM manipulation",
+      "Handle events and callbacks",
+      "Create interactive web applications",
+      "Implement asynchronous JavaScript"
+    ],
+    prerequisites: [
+      "Basic HTML and CSS knowledge",
+      "No prior programming experience required",
+      "A modern web browser and text editor"
+    ],
+    modules: [
+      {
+        id: "m1",
+        title: "Introduction to JavaScript",
+        lessons: 5,
+        duration: "2 hours 30 mins"
+      },
+      {
+        id: "m2",
+        title: "Working with Functions",
+        lessons: 4,
+        duration: "2 hours"
+      },
+      {
+        id: "m3",
+        title: "Objects and Arrays",
+        lessons: 6,
+        duration: "3 hours 15 mins"
+      }
+    ]
+  },
+  reviews: [
+    {
+      id: "r1",
+      user: "John D.",
+      rating: 5,
+      date: "April 15, 2025",
+      content: "Excellent course! The explanations are clear and the exercises are practical."
+    },
+    {
+      id: "r2",
+      user: "Sarah W.",
+      rating: 4,
+      date: "April 10, 2025",
+      content: "Good introduction to JavaScript. I would have liked more advanced topics."
+    },
+    {
+      id: "r3",
+      user: "Michael B.",
+      rating: 5,
+      date: "April 5, 2025",
+      content: "The instructor is engaging and explains concepts well. Highly recommended!"
+    }
+  ]
+};
+
+// New functions to access the added data
+export const fetchCreateCourseData = (): Promise<typeof createCourseData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(createCourseData);
+    }, 250);
+  });
+};
+
+export const fetchCoursesList = (): Promise<typeof coursesListData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(coursesListData);
+    }, 250);
+  });
+};
+
+export const fetchCourseQuizzes = (courseId: string): Promise<typeof courseQuizzesData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(courseQuizzesData);
+    }, 300);
+  });
+};
+
+export const fetchCourseNotes = (courseId: string): Promise<typeof courseNotesData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(courseNotesData);
+    }, 300);
+  });
+};
+
+export const fetchCourseLessons = (courseId: string): Promise<any> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const course = courseLessonsData.courses.find(c => c.id === courseId);
+      resolve(course);
+    }, 300);
+  });
+};
+
+export const fetchCourseDiscussions = (courseId: string): Promise<typeof courseDiscussionsData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(courseDiscussionsData);
+    }, 300);
+  });
+};
+
+export const fetchCourseModules = (courseId: string): Promise<typeof courseModulesData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(courseModulesData);
+    }, 300);
+  });
+};
+
+export const fetchCourseAssignments = (courseId: string): Promise<typeof courseAssignmentsData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(courseAssignmentsData);
+    }, 300);
+  });
+};
+
+export const fetchCourseCurriculum = (courseId: string): Promise<typeof courseCurriculumData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(courseCurriculumData);
+    }, 300);
+  });
+};
+
+export const fetchBrowseCoursesData = (): Promise<typeof browseCoursesData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(browseCoursesData);
+    }, 250);
+  });
+};
+
+export const fetchManageCourseData = (courseId: string): Promise<typeof manageCourseData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(manageCourseData);
+    }, 300);
+  });
+};
+
+export const fetchStudentDashboardFeaturesData = (courseId: string): Promise<typeof studentDashboardFeaturesData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(studentDashboardFeaturesData);
+    }, 300);
+  });
+};
+
+export const fetchExamTakeData = (examId: string): Promise<typeof takeExamData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(takeExamData);
+    }, 300);
+  });
+};
+
+export const fetchUsersListData = (): Promise<typeof usersListData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(usersListData);
+    }, 250);
+  });
+};
+
+export const fetchCourseDetailData = (courseId: string): Promise<typeof courseDetailViewData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(courseDetailViewData);
+    }, 300);
   });
 };
