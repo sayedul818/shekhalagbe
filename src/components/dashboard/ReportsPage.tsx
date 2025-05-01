@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -15,43 +16,49 @@ import {
   Cell
 } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { fetchReportsData } from "@/data/api-data";
+import { useToast } from "@/hooks/use-toast";
 
 const ReportsPage = () => {
-  // Mock data for enrollment chart
-  const enrollmentData = [
-    { month: 'Jan', students: 65 },
-    { month: 'Feb', students: 78 },
-    { month: 'Mar', students: 90 },
-    { month: 'Apr', students: 105 },
-    { month: 'May', students: 125 },
-    { month: 'Jun', students: 142 },
-    { month: 'Jul', students: 138 },
-    { month: 'Aug', students: 152 },
-    { month: 'Sep', students: 170 },
-    { month: 'Oct', students: 195 },
-    { month: 'Nov', students: 220 },
-    { month: 'Dec', students: 256 }
-  ];
-  
-  // Mock data for course distribution
-  const courseDistributionData = [
-    { name: 'Web Development', value: 40 },
-    { name: 'Data Science', value: 30 },
-    { name: 'Mobile App Dev', value: 20 },
-    { name: 'UI/UX Design', value: 10 }
-  ];
-  
+  const [isLoading, setIsLoading] = useState(true);
+  const [enrollmentData, setEnrollmentData] = useState([]);
+  const [courseDistributionData, setCourseDistributionData] = useState([]);
+  const [topPerformingCourses, setTopPerformingCourses] = useState([]);
+  const { toast } = useToast();
+
   // Colors for pie chart
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
   
-  // Mock data for top performing courses
-  const topPerformingCourses = [
-    { id: 1, title: 'JavaScript Fundamentals', enrollment: 128, rating: 4.8, completion: 92 },
-    { id: 2, title: 'Advanced React & Redux', enrollment: 97, rating: 4.7, completion: 88 },
-    { id: 3, title: 'Data Science Bootcamp', enrollment: 85, rating: 4.9, completion: 95 },
-    { id: 4, title: 'Mobile App Development', enrollment: 76, rating: 4.6, completion: 85 },
-    { id: 5, title: 'UI/UX Design Principles', enrollment: 68, rating: 4.5, completion: 82 }
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchReportsData();
+        setEnrollmentData(data.enrollmentData);
+        setCourseDistributionData(data.courseDistributionData);
+        setTopPerformingCourses(data.topPerformingCourses);
+      } catch (error) {
+        console.error("Error loading reports data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load reports data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, [toast]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">

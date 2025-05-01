@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Users, 
@@ -9,22 +10,61 @@ import {
   BookPlus,
   ClipboardCheck
 } from "lucide-react";
+import { fetchAdminDashboardData } from "@/data/api-data";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminDashboard = () => {
-  // Mock stats
-  const stats = [
-    { title: "Total Students", value: 1256, icon: <Users className="h-5 w-5" />, change: "+12% from last month" },
-    { title: "Total Teachers", value: 73, icon: <BookOpen className="h-5 w-5" />, change: "+5% from last month" },
-    { title: "Total Courses", value: 142, icon: <BookPlus className="h-5 w-5" />, change: "+8% from last month" },
-    { title: "Total Exams", value: 320, icon: <ClipboardCheck className="h-5 w-5" />, change: "+15% from last month" },
-  ];
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState([]);
+  const [recentActions, setRecentActions] = useState([]);
+  const [popularCourses, setPopularCourses] = useState([]);
 
-  const recentActions = [
-    { action: "New student registered", time: "5 minutes ago", icon: <UserPlus className="h-4 w-4" /> },
-    { action: "New course created", time: "1 hour ago", icon: <BookPlus className="h-4 w-4" /> },
-    { action: "Exam results published", time: "3 hours ago", icon: <Award className="h-4 w-4" /> },
-    { action: "Course enrollment increased", time: "12 hours ago", icon: <TrendingUp className="h-4 w-4" /> },
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchAdminDashboardData();
+        setStats(data.stats);
+        setRecentActions(data.recentActions);
+        setPopularCourses(data.popularCourses);
+      } catch (error) {
+        console.error("Error loading admin dashboard data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load dashboard data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, [toast]);
+
+  // Function to get the icon component based on the icon name from API
+  const getIconComponent = (iconName) => {
+    const icons = {
+      Users: <Users className="h-5 w-5" />,
+      BookOpen: <BookOpen className="h-5 w-5" />,
+      BookPlus: <BookPlus className="h-5 w-5" />,
+      ClipboardCheck: <ClipboardCheck className="h-5 w-5" />,
+      UserPlus: <UserPlus className="h-4 w-4" />,
+      Award: <Award className="h-4 w-4" />,
+      TrendingUp: <TrendingUp className="h-4 w-4" />
+    };
+    
+    return icons[iconName] || <BookOpen className="h-5 w-5" />;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -39,7 +79,7 @@ const AdminDashboard = () => {
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
               <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                {stat.icon}
+                {getIconComponent(stat.icon)}
               </div>
             </CardHeader>
             <CardContent>
@@ -61,7 +101,7 @@ const AdminDashboard = () => {
               {recentActions.map((action, i) => (
                 <div key={i} className="flex items-start space-x-4">
                   <div className="bg-primary/10 p-2 rounded-full text-primary">
-                    {action.icon}
+                    {getIconComponent(action.icon)}
                   </div>
                   <div>
                     <p className="font-medium">{action.action}</p>
@@ -80,19 +120,17 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[1, 2, 3, 4].map((_, i) => (
+              {popularCourses.map((course, i) => (
                 <div key={i} className="flex items-center space-x-4">
                   <div className="h-10 w-10 rounded bg-gray-200 flex items-center justify-center">
                     <BookOpen className="h-5 w-5 text-gray-500" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium">
-                      {["Web Development Bootcamp", "Data Science Fundamentals", "UI/UX Design Masterclass", "Python for Machine Learning"][i]}
-                    </p>
+                    <p className="font-medium">{course.title}</p>
                     <div className="flex items-center text-sm text-muted-foreground">
-                      <span>{[89, 76, 64, 52][i]} students</span>
+                      <span>{course.students} students</span>
                       <span className="mx-2">•</span>
-                      <span>{[12, 10, 8, 6][i]} modules</span>
+                      <span>{course.modules} modules</span>
                     </div>
                   </div>
                 </div>

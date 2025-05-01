@@ -1,28 +1,52 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, X, Mail, Eye } from "lucide-react";
+import { fetchStudentsList } from "@/data/api-data";
+import { useToast } from "@/hooks/use-toast";
 
 const StudentsList = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [students, setStudents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
   
-  // Mock students data
-  const students = [
-    { id: "1", name: "John Doe", email: "john@example.com", progress: 85, lastActive: "Today", enrolled: "Apr 10, 2023" },
-    { id: "2", name: "Jane Smith", email: "jane@example.com", progress: 72, lastActive: "Yesterday", enrolled: "May 15, 2023" },
-    { id: "3", name: "Michael Lee", email: "michael@example.com", progress: 65, lastActive: "3 days ago", enrolled: "Jan 05, 2023" },
-    { id: "4", name: "Sarah Wilson", email: "sarah@example.com", progress: 92, lastActive: "Today", enrolled: "Feb 20, 2023" },
-    { id: "5", name: "David Thompson", email: "david@example.com", progress: 45, lastActive: "1 week ago", enrolled: "Mar 12, 2023" },
-    { id: "6", name: "Emma Johnson", email: "emma@example.com", progress: 78, lastActive: "2 days ago", enrolled: "Jun 30, 2023" },
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchStudentsList();
+        setStudents(data);
+      } catch (error) {
+        console.error("Error loading students list:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load students data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, [toast]);
   
   const filteredStudents = students.filter(student => 
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     student.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

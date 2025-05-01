@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,32 +9,96 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, School, Briefcase, Calendar, MapPin } from "lucide-react";
+import { fetchUserData, updateUserProfile } from "@/data/api-data";
 
 const ProfilePage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
+  const [isLoading, setIsLoading] = useState(true);
   
   const [profileData, setProfileData] = useState({
-    name: user?.name || "Student Name",
-    email: user?.email || "student@example.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Education Lane, Learning City, 12345",
-    birthDate: "January 15, 1995",
-    bio: "Passionate student with a keen interest in technology and continuous learning.",
-    education: "Bachelor's in Computer Science",
-    occupation: user?.role === "student" ? "Student" : user?.role === "teacher" ? "Teacher" : "Administrator"
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    birthDate: "",
+    bio: "",
+    education: "",
+    occupation: ""
   });
 
-  const handleSaveProfile = () => {
-    setIsEditing(false);
-    toast({
-      title: "Profile updated",
-      description: "Your profile has been updated successfully.",
-      variant: "default"
-    });
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (!user?.id) return;
+      
+      try {
+        setIsLoading(true);
+        const userData = await fetchUserData(user.id);
+        if (userData) {
+          setProfileData({
+            name: userData.name || "",
+            email: userData.email || "",
+            phone: userData.phone || "",
+            address: userData.address || "",
+            birthDate: userData.birthDate || "",
+            bio: userData.bio || "",
+            education: userData.education || "",
+            occupation: userData.occupation || ""
+          });
+        }
+      } catch (error) {
+        console.error("Error loading user profile data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load profile data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadUserData();
+  }, [user, toast]);
+
+  const handleSaveProfile = async () => {
+    if (!user?.id) return;
+    
+    try {
+      await updateUserProfile(user.id, profileData);
+      setIsEditing(false);
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully.",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
+      });
+    }
   };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -61,7 +126,7 @@ const ProfilePage = () => {
             <Avatar className="h-32 w-32 mb-4">
               <AvatarImage src={user?.avatar} />
               <AvatarFallback className="text-2xl">
-                {profileData.name.charAt(0)}
+                {profileData.name ? getInitials(profileData.name) : "U"}
               </AvatarFallback>
             </Avatar>
             <h3 className="text-xl font-bold">{profileData.name}</h3>

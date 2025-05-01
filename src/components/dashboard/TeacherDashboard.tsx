@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Users, 
@@ -11,28 +12,67 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { fetchTeacherDashboardData } from "@/data/api-data";
+import { useToast } from "@/hooks/use-toast";
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [upcomingExams, setUpcomingExams] = useState([]);
+  const [activityTimes, setActivityTimes] = useState([]);
   
-  // Mock stats
-  const stats = [
-    { title: "Total Courses", value: 8, icon: <BookOpen className="h-5 w-5" />, change: "+2 this year" },
-    { title: "Active Students", value: 342, icon: <Users className="h-5 w-5" />, change: "+27 this month" },
-    { title: "Course Views", value: 2845, icon: <PlayCircle className="h-5 w-5" />, change: "+18% from last month" },
-    { title: "Exams Created", value: 23, icon: <Award className="h-5 w-5" />, change: "+5 this month" },
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchTeacherDashboardData();
+        setStats(data.stats);
+        setCourses(data.courses);
+        setRecentActivities(data.recentActivities);
+        setUpcomingExams(data.upcomingExams);
+        setActivityTimes(data.activityTimes);
+      } catch (error) {
+        console.error("Error loading teacher dashboard data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load dashboard data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, [toast]);
 
-  const myCourses = [
-    { id: "1", title: "JavaScript Fundamentals", students: 124, rating: 4.8, lastUpdated: "2 days ago", progress: 90 },
-    { id: "2", title: "Advanced React & Redux", students: 97, rating: 4.7, lastUpdated: "1 week ago", progress: 75 },
-    { id: "3", title: "Node.js API Development", students: 68, rating: 4.5, lastUpdated: "2 weeks ago", progress: 60 },
-    { id: "4", title: "Web Design Principles", students: 53, rating: 4.6, lastUpdated: "1 month ago", progress: 100 },
-  ];
+  // Function to get the icon component based on the icon name from API
+  const getIconComponent = (iconName) => {
+    const icons = {
+      Users: <Users className="h-5 w-5" />,
+      BookOpen: <BookOpen className="h-5 w-5" />,
+      Award: <Award className="h-5 w-5" />,
+      PlayCircle: <PlayCircle className="h-5 w-5" />,
+    };
+    
+    return icons[iconName] || <BookOpen className="h-5 w-5" />;
+  };
 
   const handleManageCourse = (courseId) => {
     navigate(`/dashboard/courses/manage/${courseId}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -47,7 +87,7 @@ const TeacherDashboard = () => {
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
               <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                {stat.icon}
+                {getIconComponent(stat.icon)}
               </div>
             </CardHeader>
             <CardContent>
@@ -65,7 +105,7 @@ const TeacherDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {myCourses.map((course, i) => (
+            {courses.map((course, i) => (
               <div key={i} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -114,19 +154,14 @@ const TeacherDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                "John Smith enrolled in JavaScript Fundamentals",
-                "Maria Garcia completed Module 3 in Advanced React",
-                "Robert Johnson started Module 1 in Node.js API Development",
-                "Sarah Williams submitted Quiz 2 in Web Design Principles"
-              ].map((activity, i) => (
+              {recentActivities.map((activity, i) => (
                 <div key={i} className="flex items-start space-x-4">
                   <div className="bg-primary/10 p-2 rounded-full text-primary">
                     <UserPlus className="h-4 w-4" />
                   </div>
                   <div>
                     <p className="font-medium">{activity}</p>
-                    <p className="text-sm text-muted-foreground">{["1 hour", "3 hours", "1 day", "2 days"][i]} ago</p>
+                    <p className="text-sm text-muted-foreground">{activityTimes[i]} ago</p>
                   </div>
                 </div>
               ))}
@@ -141,12 +176,7 @@ const TeacherDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                { course: "JavaScript Fundamentals", exam: "Final Assessment", date: "Tomorrow, 10:00 AM" },
-                { course: "Advanced React & Redux", exam: "Redux Middleware", date: "May 20, 2:00 PM" },
-                { course: "Node.js API Development", exam: "REST API Design", date: "May 25, 3:30 PM" },
-                { course: "Web Design Principles", exam: "UI/UX Principles", date: "June 2, 11:00 AM" }
-              ].map((exam, i) => (
+              {upcomingExams.map((exam, i) => (
                 <div key={i} className="border-l-4 border-primary pl-4 py-1">
                   <p className="font-medium">{exam.exam}</p>
                   <p className="text-sm text-muted-foreground">{exam.course}</p>

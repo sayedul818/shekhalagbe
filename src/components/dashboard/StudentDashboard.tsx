@@ -1,112 +1,71 @@
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { PlayCircle, User, BookOpen, GraduationCap } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PlayCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { fetchStudentDashboardData } from "@/data/api-data";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   
-  const [activeTab, setActiveTab] = useState('dashboard');
-  
+  const [isLoading, setIsLoading] = useState(true);
+  const [courses, setCourses] = useState([]);
+  const [upcomingExams, setUpcomingExams] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      title: "Introduction to Web Development",
-      thumbnail: "https://images.unsplash.com/photo-1593720213428-28a5b9e94613",
-      progress: 65,
-      completedLessons: 13,
-      totalLessons: 20,
-      lastLesson: "CSS Flexbox",
-      teacher: "John Smith",
-      description: "Learn the fundamentals of web development with HTML, CSS and JavaScript.",
-      nextLessonId: 14
-    },
-    {
-      id: 2,
-      title: "Data Science Fundamentals",
-      thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
-      progress: 40,
-      completedLessons: 8,
-      totalLessons: 20,
-      lastLesson: "Data Visualization",
-      teacher: "Michael Chen",
-      description: "Master the basics of data science and analysis.",
-      nextLessonId: 9
-    },
-    {
-      id: 3,
-      title: "Digital Marketing Mastery",
-      thumbnail: "https://images.unsplash.com/photo-1557426272-fc759fdf7a8d",
-      progress: 25,
-      completedLessons: 5,
-      totalLessons: 20,
-      lastLesson: "Social Media Strategy",
-      teacher: "Sarah Johnson",
-      description: "Develop effective digital marketing strategies for businesses.",
-      nextLessonId: 6
-    }
-  ]);
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchStudentDashboardData();
+        setCourses(data.courses);
+        setUpcomingExams(data.upcomingExams);
+        setAnnouncements(data.announcements);
+      } catch (error) {
+        console.error("Error loading student dashboard data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load dashboard data",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const [upcomingExams, setUpcomingExams] = useState([
-    {
-      id: 1,
-      title: "Web Development Mid-term",
-      date: "May 10, 2025",
-      time: "10:00 AM"
-    },
-    {
-      id: 2,
-      title: "Data Science Quiz",
-      date: "May 15, 2025",
-      time: "2:00 PM"
-    }
-  ]);
-
-  const [announcements, setAnnouncements] = useState([
-    {
-      id: 1,
-      title: "Platform Maintenance",
-      date: "April 20, 2025",
-      content: "The platform will be down for maintenance on Sunday from 2:00 AM to 4:00 AM."
-    },
-    {
-      id: 2,
-      title: "New Courses Available",
-      date: "April 18, 2025",
-      content: "Check out our newly added courses on Mobile App Development and UI/UX Design."
-    }
-  ]);
+    loadData();
+  }, [toast]);
 
   const handleContinueLearning = (courseId) => {
     navigate(`/dashboard/my-courses/${courseId}/lessons/${courses.find(c => c.id === courseId)?.nextLessonId}`);
-  };
-  
-  const handleEditProfile = () => {
-    toast({
-      title: "Profile updated",
-      description: "Your profile has been updated successfully.",
-    });
-    setIsEditing(false);
   };
 
   const handleReadMoreClick = (announcement) => {
     setSelectedAnnouncement(announcement);
   };
 
-  const renderDashboard = () => {
+  if (isLoading) {
     return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center border-b pb-4">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+      </div>
+
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Continue Learning</h2>
@@ -224,17 +183,6 @@ const StudentDashboard = () => {
           ))}
         </div>
       </div>
-    );
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center border-b pb-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        {/* Edit Profile button removed from dashboard */}
-      </div>
-
-      {renderDashboard()}
     </div>
   );
 };
