@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -61,7 +60,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
     const loadCourseData = async () => {
       try {
         setIsLoading(true);
-        const data = await fetchStudentDashboardFeaturesData(courseId);
+        const data = await fetchStudentDashboardFeaturesData();
         setCourseData(data);
       } catch (error) {
         console.error("Error loading course data:", error);
@@ -471,12 +470,16 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                       <div>
                         <Input placeholder="Note title" className="mb-2" />
                         <div className="flex space-x-2 mb-2">
-                          <Select placeholder="Select module" className="flex-1">
-                            {/* Options would go here */}
-                          </Select>
-                          <Select placeholder="Select lesson" className="flex-1">
-                            {/* Options would go here */}
-                          </Select>
+                          <div className="flex-1">
+                            <CustomSelect placeholder="Select module" className="flex-1">
+                              {/* Options would go here */}
+                            </CustomSelect>
+                          </div>
+                          <div className="flex-1">
+                            <CustomSelect placeholder="Select lesson" className="flex-1">
+                              {/* Options would go here */}
+                            </CustomSelect>
+                          </div>
                         </div>
                         <Textarea 
                           placeholder="Write your note here..." 
@@ -501,9 +504,11 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                   <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold">Course Discussions</h2>
                     <div className="flex space-x-2">
-                      <Select placeholder="Filter by" className="w-[120px]">
-                        {/* Options would go here */}
-                      </Select>
+                      <div className="w-[120px]">
+                        <CustomSelect placeholder="Filter by">
+                          {/* Options would go here */}
+                        </CustomSelect>
+                      </div>
                       <Button>
                         <Plus className="h-4 w-4 mr-1" />
                         New Topic
@@ -690,12 +695,13 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
   );
 };
 
-// Add missing Select component to avoid errors
-function Select({ children, placeholder, className }) {
+// Updated CustomSelect component to properly handle children
+function CustomSelect({ children, placeholder, className }) {
   return (
     <div className={`${className} flex items-center justify-between bg-background border rounded-md px-3 py-2 text-sm`}>
       <span className="text-muted-foreground">{placeholder}</span>
       <span className="text-muted-foreground">▼</span>
+      {children}
     </div>
   );
 }
