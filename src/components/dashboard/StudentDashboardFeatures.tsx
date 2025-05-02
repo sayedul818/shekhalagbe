@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Card,
@@ -47,6 +48,13 @@ import { fetchStudentDashboardFeaturesData } from "@/lib/course-data";
 interface StudentDashboardFeaturesProps {
   courseId: string;
   onBack: () => void;
+}
+
+// Define CustomSelect interface to avoid TypeScript errors
+interface CustomSelectProps {
+  children: React.ReactNode;
+  placeholder: string;
+  className?: string;
 }
 
 const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeaturesProps) => {
@@ -472,12 +480,12 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                         <div className="flex space-x-2 mb-2">
                           <div className="flex-1">
                             <CustomSelect placeholder="Select module" className="flex-1">
-                              {/* Options would go here */}
+                              <div>{/* Options would go here */}</div>
                             </CustomSelect>
                           </div>
                           <div className="flex-1">
                             <CustomSelect placeholder="Select lesson" className="flex-1">
-                              {/* Options would go here */}
+                              <div>{/* Options would go here */}</div>
                             </CustomSelect>
                           </div>
                         </div>
@@ -505,8 +513,8 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                     <h2 className="text-xl font-semibold">Course Discussions</h2>
                     <div className="flex space-x-2">
                       <div className="w-[120px]">
-                        <CustomSelect placeholder="Filter by">
-                          {/* Options would go here */}
+                        <CustomSelect placeholder="Filter by" className="w-full">
+                          <div>{/* Options would go here */}</div>
                         </CustomSelect>
                       </div>
                       <Button>
@@ -695,10 +703,10 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
   );
 };
 
-// Updated CustomSelect component to properly handle children
-function CustomSelect({ children, placeholder, className }) {
+// CustomSelect component with proper TypeScript interface
+function CustomSelect({ children, placeholder, className }: CustomSelectProps) {
   return (
-    <div className={`${className} flex items-center justify-between bg-background border rounded-md px-3 py-2 text-sm`}>
+    <div className={`${className || ''} flex items-center justify-between bg-background border rounded-md px-3 py-2 text-sm`}>
       <span className="text-muted-foreground">{placeholder}</span>
       <span className="text-muted-foreground">▼</span>
       {children}
