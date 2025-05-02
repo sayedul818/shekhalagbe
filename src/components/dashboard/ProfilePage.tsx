@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin, Calendar, School, Briefcase } from "lucide-react";
 import { fetchUserData, updateUserProfile } from "@/lib/course-data";
+import { UserPreferences } from "@/types/course";
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -37,11 +38,26 @@ const ProfilePage = () => {
         setIsLoading(true);
         const userData = await fetchUserData(user.id);
         if (userData) {
-          // Handle both old and new preference structures
-          const phone = userData.preferences?.contactPreferences?.phone || "";
-          const birthDate = userData.preferences?.personalInfo?.birthDate || "";
-          const education = userData.preferences?.personalInfo?.education || "";
-          const occupation = userData.preferences?.personalInfo?.occupation || "";
+          // Extract preferences data with fallbacks for both structures
+          let phone = "";
+          let birthDate = "";
+          let education = "";
+          let occupation = "";
+          
+          if (userData.preferences) {
+            const prefs = userData.preferences as UserPreferences;
+            
+            // Try to get from new structure first
+            if (prefs.contactPreferences) {
+              phone = prefs.contactPreferences.phone || "";
+            }
+            
+            if (prefs.personalInfo) {
+              birthDate = prefs.personalInfo.birthDate || "";
+              education = prefs.personalInfo.education || "";
+              occupation = prefs.personalInfo.occupation || "";
+            }
+          }
           
           setProfileData({
             name: userData.name || "",
