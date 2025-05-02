@@ -1,4 +1,5 @@
 
+
 export type UserRole = "admin" | "teacher" | "student";
 
 export interface User {
@@ -81,3 +82,7 @@ export interface ExamSubmission {
   }[];
   timeTaken: number;
 }
+
+// Add exported type for curriculum item types
+export type CurriculumItemType = "video" | "reading" | "quiz" | "assignment";
+

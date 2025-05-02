@@ -9,12 +9,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Quiz } from "@/components/ui/quiz";
 import { FileCheck } from "@/components/ui/file-check";
 import { fetchCourseCurriculum } from "@/lib/course-data";
+import { CurriculumItemType } from "@/types";
 
 // Define interfaces for curriculum data structure
 interface CurriculumItem {
   id: string;
   title: string;
-  type: "video" | "reading" | "quiz" | "assignment";
+  type: CurriculumItemType;
   duration?: string;
   completed: boolean;
   questions?: number;
@@ -52,7 +53,11 @@ const CourseCurriculum = () => {
           id: section.id,
           title: section.title,
           description: "", // Add a default description since it's required
-          lessons: section.items,
+          lessons: section.items.map(item => ({
+            ...item,
+            // Ensure the type is one of the allowed types in our CurriculumItemType
+            type: validateItemType(item.type)
+          })),
           completed: section.items.every(item => item.completed)
         }));
         
@@ -71,6 +76,14 @@ const CourseCurriculum = () => {
     
     loadCurriculum();
   }, [courseId, toast]);
+
+  // Helper function to validate and ensure type is one of the allowed values
+  const validateItemType = (type: string): CurriculumItemType => {
+    const validTypes: CurriculumItemType[] = ["video", "reading", "quiz", "assignment"];
+    return validTypes.includes(type as CurriculumItemType) 
+      ? type as CurriculumItemType 
+      : "reading"; // Fallback to 'reading' if type is not valid
+  };
 
   const totalLessons = curriculumModules.reduce((acc, module) => acc + module.lessons.length, 0);
   const completedLessons = curriculumModules.reduce((acc, module) => {
