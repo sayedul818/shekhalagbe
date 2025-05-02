@@ -7,6 +7,20 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from "@/hooks/use-toast";
 import { fetchCourseAssignments } from "@/lib/course-data";
 
+// Define interfaces for assignment data structure
+interface Assignment {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  status: string;
+  instructions?: string;
+  maxScore?: number;
+  grade?: string;
+  feedback?: string;
+  submissionDate?: string;
+}
+
 const CourseAssignment = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -19,7 +33,7 @@ const CourseAssignment = () => {
   const [fileUploaded, setFileUploaded] = useState(false);
   const [fileName, setFileName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [assignmentsData, setAssignmentsData] = useState([]);
+  const [assignmentsData, setAssignmentsData] = useState<Assignment[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -29,7 +43,15 @@ const CourseAssignment = () => {
       try {
         setIsLoading(true);
         const data = await fetchCourseAssignments(courseId);
-        setAssignmentsData(data);
+        
+        // Transform the API response to match our component's expected structure
+        const transformedAssignments = data.assignments.map(assignment => ({
+          ...assignment,
+          status: assignment.submitted ? "submitted" : "not-started",
+          instructions: assignment.description
+        }));
+        
+        setAssignmentsData(transformedAssignments);
       } catch (error) {
         console.error("Error loading assignment data:", error);
         toast({
@@ -193,7 +215,7 @@ const CourseAssignment = () => {
                   <h3 className="font-medium">Assignment Instructions</h3>
                   <div 
                     className="text-sm mt-2 prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: activeAssignment.instructions }}
+                    dangerouslySetInnerHTML={{ __html: activeAssignment.instructions || "" }}
                   />
                 </div>
               </div>
@@ -208,7 +230,7 @@ const CourseAssignment = () => {
                     <h4 className="font-medium">Your Submission</h4>
                   </div>
                   <p className="text-sm text-muted-foreground mb-2">
-                    Submitted on {activeAssignment.submissionDate}
+                    Submitted on {activeAssignment.submissionDate || ""}
                   </p>
                   <div className="bg-white border rounded-md p-3 mb-4 text-sm">
                     <p>I've completed the assignment according to the requirements. My implementation includes error handling for division by zero and a clean UI design.</p>

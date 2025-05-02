@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,7 @@ const UsersList = () => {
       try {
         setIsLoading(true);
         const data = await fetchUsersListData();
-        setUsers(data);
+        setUsers(data.users); // Fix: Extract the users array from the response
       } catch (error) {
         console.error("Error loading users data:", error);
         toast({
@@ -117,7 +116,7 @@ const UsersList = () => {
                           {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                         </span>
                       </TableCell>
-                      <TableCell>{user.joined}</TableCell>
+                      <TableCell>{user.joinDate}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end space-x-2">
                           <Button variant="ghost" size="icon">

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,25 @@ import { Quiz } from "@/components/ui/quiz";
 import { FileCheck } from "@/components/ui/file-check";
 import { fetchCourseCurriculum } from "@/lib/course-data";
 
+// Define interfaces for curriculum data structure
+interface CurriculumItem {
+  id: string;
+  title: string;
+  type: "video" | "reading" | "quiz" | "assignment";
+  duration?: string;
+  completed: boolean;
+  questions?: number;
+  dueDate?: string;
+}
+
+interface CurriculumModule {
+  id: string;
+  title: string;
+  description: string;
+  lessons: CurriculumItem[];
+  completed?: boolean;
+}
+
 const CourseCurriculum = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -18,7 +36,7 @@ const CourseCurriculum = () => {
   const [videoDialogOpen, setVideoDialogOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [curriculumModules, setCurriculumModules] = useState([]);
+  const [curriculumModules, setCurriculumModules] = useState<CurriculumModule[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -28,7 +46,17 @@ const CourseCurriculum = () => {
       try {
         setIsLoading(true);
         const data = await fetchCourseCurriculum(courseId);
-        setCurriculumModules(data);
+        
+        // Transform the data structure to match what the component expects
+        const transformedModules = data.sections.map(section => ({
+          id: section.id,
+          title: section.title,
+          description: "", // Add a default description since it's required
+          lessons: section.items,
+          completed: section.items.every(item => item.completed)
+        }));
+        
+        setCurriculumModules(transformedModules);
       } catch (error) {
         console.error("Error loading curriculum data:", error);
         toast({
