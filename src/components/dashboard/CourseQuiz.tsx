@@ -20,6 +20,22 @@ interface Quiz {
   score?: number;
 }
 
+// Define an interface to match what the API actually returns
+interface ApiQuiz {
+  id: string;
+  title: string;
+  description: string;
+  timeLimit: string | number;
+  totalQuestions: number;
+  passingScore: number;
+  questions: {
+    id: number;
+    text: string;
+    options: string[];
+    correctAnswer: number;
+  }[];
+}
+
 const CourseQuiz = ({ courseId }: CourseComponentProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -34,25 +50,19 @@ const CourseQuiz = ({ courseId }: CourseComponentProps) => {
         setIsLoading(true);
         const data = await fetchCourseQuizzes(courseId);
         
-        // Transform the data to match our Quiz interface
-        const transformedQuizzes: Quiz[] = data.quizzes.map(quiz => {
-          // Create a Quiz object with required properties and default values for missing ones
-          return {
-            id: quiz.id,
-            title: quiz.title,
-            description: quiz.description,
-            // Use totalQuestions property for the questions count
-            questions: quiz.totalQuestions || 0,
-            // Convert timeLimit to a number if it's a string
-            timeLimit: typeof quiz.timeLimit === 'string' 
-              ? parseInt(quiz.timeLimit, 10) 
-              : quiz.timeLimit || 0,
-            // These properties don't exist in the API response, so provide default values
-            status: "pending", // Default to pending
-            score: undefined, // Default to undefined
-            dueDate: undefined // Default to undefined
-          };
-        });
+        // Transform the API quiz data to match our Quiz interface
+        const transformedQuizzes: Quiz[] = data.quizzes.map((apiQuiz: ApiQuiz) => ({
+          id: apiQuiz.id,
+          title: apiQuiz.title,
+          description: apiQuiz.description,
+          questions: apiQuiz.totalQuestions || 0,
+          timeLimit: typeof apiQuiz.timeLimit === 'string' 
+            ? parseInt(apiQuiz.timeLimit, 10) 
+            : apiQuiz.timeLimit as number || 0,
+          status: "pending", // Default status since API doesn't provide it
+          score: undefined,  // Default score since API doesn't provide it
+          dueDate: undefined // Default dueDate since API doesn't provide it
+        }));
         
         setQuizzes(transformedQuizzes);
       } catch (error) {
