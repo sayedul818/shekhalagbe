@@ -39,15 +39,15 @@ const CourseQuiz = ({ courseId }: CourseComponentProps) => {
           id: quiz.id,
           title: quiz.title,
           description: quiz.description,
-          // Ensure questions is a number
+          // Use totalQuestions property for the questions count
           questions: quiz.totalQuestions || 0,
           // Convert timeLimit to a number if it's a string
           timeLimit: typeof quiz.timeLimit === 'string' 
             ? parseInt(quiz.timeLimit, 10) 
             : quiz.timeLimit || 0,
-          // Set default values for optional properties that might be missing
+          // Set default values for properties that might be missing in the API response
           status: quiz.status || "pending",
-          score: quiz.score || undefined,
+          score: quiz.score !== undefined ? quiz.score : undefined,
           dueDate: quiz.dueDate || undefined
         }));
         
