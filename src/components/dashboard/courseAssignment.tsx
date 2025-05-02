@@ -19,6 +19,17 @@ interface Assignment {
   maxScore: number;
 }
 
+// This is the interface we use to represent the API response
+interface ApiAssignment {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  submitted: boolean;
+  grade?: string;
+  feedback?: string;
+}
+
 const CourseAssignment = ({ courseId }: CourseComponentProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -33,15 +44,28 @@ const CourseAssignment = ({ courseId }: CourseComponentProps) => {
         const data = await fetchCourseAssignments(courseId);
         
         // Transform API data to match our Assignment interface
-        const transformedAssignments: Assignment[] = (data.assignments || []).map(assignment => ({
-          id: assignment.id || `assignment-${Math.random().toString(36).substr(2, 9)}`,
-          title: assignment.title || "Untitled Assignment",
-          description: assignment.description || "No description provided",
-          dueDate: assignment.dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          status: assignment.status || "pending",
-          score: assignment.score,
-          maxScore: assignment.maxScore || 100
-        }));
+        const transformedAssignments: Assignment[] = (data.assignments || []).map((assignment: ApiAssignment) => {
+          // Determine status based on submitted flag and due date
+          let status: "completed" | "pending" | "late" = "pending";
+          if (assignment.submitted) {
+            status = "completed";
+          } else if (new Date(assignment.dueDate) < new Date()) {
+            status = "late";
+          }
+          
+          // Extract score from grade if available
+          const score = assignment.grade ? parseInt(assignment.grade, 10) : undefined;
+          
+          return {
+            id: assignment.id || `assignment-${Math.random().toString(36).substr(2, 9)}`,
+            title: assignment.title || "Untitled Assignment",
+            description: assignment.description || "No description provided",
+            dueDate: assignment.dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            status: status,
+            score: score,
+            maxScore: 100 // Default max score
+          };
+        });
         
         setAssignments(transformedAssignments);
       } catch (error) {
