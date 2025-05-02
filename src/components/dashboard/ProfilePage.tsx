@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,12 +40,12 @@ const ProfilePage = () => {
           setProfileData({
             name: userData.name || "",
             email: userData.email || "",
-            phone: userData.phone || "",
-            address: userData.address || "",
-            birthDate: userData.birthDate || "",
+            phone: userData.phone || "", // Will be undefined from API, but handled in state
+            address: userData.location || "", // Using location from API as address
+            birthDate: userData.birthDate || "", // Will be undefined from API, but handled in state
             bio: userData.bio || "",
-            education: userData.education || "",
-            occupation: userData.occupation || ""
+            education: userData.education || "", // Will be undefined from API, but handled in state
+            occupation: userData.occupation || "" // Will be undefined from API, but handled in state
           });
         }
       } catch (error) {
@@ -66,7 +67,13 @@ const ProfilePage = () => {
     if (!user?.id) return;
     
     try {
-      await updateUserProfile(user.id, profileData);
+      // Transform back to match API expectations if needed
+      const apiData = {
+        ...profileData,
+        location: profileData.address,
+      };
+      
+      await updateUserProfile(user.id, apiData);
       setIsEditing(false);
       toast({
         title: "Profile updated",

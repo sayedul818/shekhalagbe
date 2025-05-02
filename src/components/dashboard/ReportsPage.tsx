@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,22 +20,32 @@ import { useToast } from "@/hooks/use-toast";
 
 const ReportsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [enrollmentData, setEnrollmentData] = useState([]);
-  const [courseDistributionData, setCourseDistributionData] = useState([]);
-  const [topPerformingCourses, setTopPerformingCourses] = useState([]);
+  const [monthlyRevenue, setMonthlyRevenue] = useState(null);
+  const [courseEngagement, setCourseEngagement] = useState(null);
+  const [coursesCompletionRates, setCoursesCompletionRates] = useState([]);
+  const [topPerformingStudents, setTopPerformingStudents] = useState([]);
   const { toast } = useToast();
 
   // Colors for pie chart
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  
+  // Transform the courseCompletionRates into a format suitable for pie chart
+  const courseDistributionData = coursesCompletionRates.map(course => ({
+    name: course.title,
+    value: course.completion
+  }));
   
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
         const data = await fetchReportsData();
-        setEnrollmentData(data.enrollmentData);
-        setCourseDistributionData(data.courseDistributionData);
-        setTopPerformingCourses(data.topPerformingCourses);
+        
+        setCourseEngagement(data.courseEngagement);
+        setCoursesCompletionRates(data.coursesCompletionRates || []);
+        setTopPerformingStudents(data.topPerformingStudents || []);
+        setMonthlyRevenue(data.monthlyRevenue);
+        
       } catch (error) {
         console.error("Error loading reports data:", error);
         toast({
@@ -88,7 +97,10 @@ const ReportsPage = () => {
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={enrollmentData}
+                    data={monthlyRevenue?.labels.map((label, i) => ({
+                      month: label,
+                      students: monthlyRevenue?.data[i],
+                    }))}
                     margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
@@ -158,9 +170,9 @@ const ReportsPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {topPerformingCourses.map((course) => (
+                  {topPerformingStudents.map((course) => (
                     <TableRow key={course.id}>
-                      <TableCell className="font-medium">{course.title}</TableCell>
+                      <TableCell className="font-medium">{course.name}</TableCell>
                       <TableCell>{course.enrollment}</TableCell>
                       <TableCell>{course.rating}</TableCell>
                       <TableCell>{course.completion}%</TableCell>

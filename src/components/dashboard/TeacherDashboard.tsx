@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -12,7 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { fetchTeacherDashboardData } from "@/data/api-data";
+import { fetchTeacherDashboardData } from "@/lib/course-data";
 import { useToast } from "@/hooks/use-toast";
 
 const TeacherDashboard = () => {
@@ -20,21 +19,28 @@ const TeacherDashboard = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState([]);
-  const [courses, setCourses] = useState([]);
-  const [recentActivities, setRecentActivities] = useState([]);
-  const [upcomingExams, setUpcomingExams] = useState([]);
-  const [activityTimes, setActivityTimes] = useState([]);
+  const [coursePerformance, setCoursePerformance] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [courseEngagement, setCourseEngagement] = useState(null);
   
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
         const data = await fetchTeacherDashboardData();
-        setStats(data.stats);
-        setCourses(data.courses);
-        setRecentActivities(data.recentActivities);
-        setUpcomingExams(data.upcomingExams);
-        setActivityTimes(data.activityTimes);
+        
+        // Transform the stats object into an array for rendering
+        const statsArray = [
+          { title: "Total Courses", value: data.stats.totalCourses, change: "+2 from last month", icon: "BookOpen" },
+          { title: "Total Students", value: data.stats.totalStudents, change: "+15% from last month", icon: "Users" },
+          { title: "Completion Rate", value: data.stats.courseCompletionRate + "%", change: "+5% from last month", icon: "Award" },
+          { title: "Average Rating", value: data.stats.averageRating, change: "+0.2 from last month", icon: "Award" },
+        ];
+        
+        setStats(statsArray);
+        setCoursePerformance(data.coursePerformance || []);
+        setRecentActivity(data.recentActivity || []);
+        setCourseEngagement(data.courseEngagement);
       } catch (error) {
         console.error("Error loading teacher dashboard data:", error);
         toast({
@@ -105,7 +111,7 @@ const TeacherDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {courses.map((course, i) => (
+            {coursePerformance.map((course, i) => (
               <div key={i} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -123,11 +129,11 @@ const TeacherDashboard = () => {
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="text-right text-sm">
-                      <p>Updated {course.lastUpdated}</p>
+                      <p>Completion: {course.completion}%</p>
                       <div className="h-2 w-32 bg-gray-200 rounded-full mt-1">
                         <div 
                           className="h-2 bg-primary rounded-full" 
-                          style={{ width: `${course.progress}%` }}
+                          style={{ width: `${course.completion}%` }}
                         ></div>
                       </div>
                     </div>
@@ -154,14 +160,14 @@ const TeacherDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActivities.map((activity, i) => (
+              {recentActivity.map((activity, i) => (
                 <div key={i} className="flex items-start space-x-4">
                   <div className="bg-primary/10 p-2 rounded-full text-primary">
                     <UserPlus className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="font-medium">{activity}</p>
-                    <p className="text-sm text-muted-foreground">{activityTimes[i]} ago</p>
+                    <p className="font-medium">{activity.content}</p>
+                    <p className="text-sm text-muted-foreground">{activity.date}</p>
                   </div>
                 </div>
               ))}
@@ -171,18 +177,28 @@ const TeacherDashboard = () => {
 
         <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Upcoming Exams</CardTitle>
-            <CardDescription>Exams scheduled for your courses</CardDescription>
+            <CardTitle>Course Engagement</CardTitle>
+            <CardDescription>Student activity in your courses</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {upcomingExams.map((exam, i) => (
-                <div key={i} className="border-l-4 border-primary pl-4 py-1">
-                  <p className="font-medium">{exam.exam}</p>
-                  <p className="text-sm text-muted-foreground">{exam.course}</p>
-                  <p className="text-sm font-medium text-primary">{exam.date}</p>
-                </div>
-              ))}
+            <div className="h-80">
+              {courseEngagement && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={courseEngagement.labels.map((label, i) => ({
+                    name: label,
+                    views: courseEngagement.datasets[0].data[i],
+                    assignments: courseEngagement.datasets[1].data[i],
+                  }))}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="views" fill="#8884d8" name="Video Views" />
+                    <Bar dataKey="assignments" fill="#82ca9d" name="Assignments Completed" />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </CardContent>
         </Card>

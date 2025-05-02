@@ -1,55 +1,44 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { PlayCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
+import { BookOpen, Calendar, Clock, CheckCircle, BookmarkIcon } from "lucide-react";
 import { fetchStudentDashboardData } from "@/lib/course-data";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { toast } = useToast();
-  
   const [isLoading, setIsLoading] = useState(true);
-  const [courses, setCourses] = useState([]);
-  const [upcomingExams, setUpcomingExams] = useState([]);
-  const [announcements, setAnnouncements] = useState([]);
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [progressGraph, setProgressGraph] = useState(null);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [courseProgress, setCourseProgress] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
         const data = await fetchStudentDashboardData();
-        setCourses(data.courses);
-        setUpcomingExams(data.upcomingExams);
-        setAnnouncements(data.announcements);
+        setStats(data.stats);
+        setProgressGraph(data.progressGraph);
+        setRecentActivity(data.recentActivity || []);
+        setCourseProgress(data.courseProgress || []);
       } catch (error) {
         console.error("Error loading student dashboard data:", error);
         toast({
           title: "Error",
           description: "Failed to load dashboard data",
-          variant: "destructive"
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
       }
     };
-
+    
     loadData();
   }, [toast]);
-
-  const handleContinueLearning = (courseId) => {
-    navigate(`/dashboard/my-courses/${courseId}/lessons/${courses.find(c => c.id === courseId)?.nextLessonId}`);
-  };
-
-  const handleReadMoreClick = (announcement) => {
-    setSelectedAnnouncement(announcement);
-  };
 
   if (isLoading) {
     return (
@@ -61,127 +50,97 @@ const StudentDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center border-b pb-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Student Dashboard</h1>
+        <p className="text-muted-foreground">Track your learning progress and upcoming tasks.</p>
       </div>
 
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Continue Learning</h2>
-          <p className="text-muted-foreground">Pick up where you left off</p>
-        </div>
-        
-        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {courses.map((course, index) => (
-            <Card key={index} className="flex flex-col">
-              <div className="aspect-video relative overflow-hidden rounded-t-lg">
-                <div className="absolute inset-0 bg-black/60 z-10" />
-                <img 
-                  src={course.thumbnail} 
-                  alt={course.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute bottom-4 left-4 z-20">
-                  <h3 className="text-white font-semibold">{course.title}</h3>
-                  <p className="text-white/80 text-sm">{course.progress}% complete</p>
-                </div>
-                <div className="absolute top-4 right-4 z-20">
-                  <PlayCircle className="h-8 w-8 text-white" />
-                </div>
-              </div>
-              <CardContent className="flex-1 p-4">
-                <Progress value={course.progress} className="mb-4" />
-                <p className="text-sm text-muted-foreground mb-2">
-                  {course.completedLessons} of {course.totalLessons} lessons completed
-                </p>
-                <p className="text-sm font-medium">Last viewed: {course.lastLesson}</p>
-                <p className="text-xs text-muted-foreground mt-1">Instructor: {course.teacher}</p>
-                <p className="text-sm mt-2">{course.description}</p>
-              </CardContent>
-              <CardFooter className="p-4 pt-0">
-                <Button 
-                  className="w-full"
-                  onClick={() => handleContinueLearning(course.id)}
-                >
-                  Continue Learning
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-        
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Upcoming Exams</h2>
-          <p className="text-muted-foreground">Prepare for your upcoming assessments</p>
-        </div>
-        
-        <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
-          {upcomingExams.map((exam, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle>{exam.title}</CardTitle>
-                <CardDescription>
-                  {exam.date} at {exam.time}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Best of luck with your exam!
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" onClick={() => navigate(`/dashboard/exams/take/${exam.id}`)}>
-                  View Exam Details
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-        
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Recent Announcements</h2>
-          <p className="text-muted-foreground">Stay informed with the latest updates</p>
-        </div>
-        
-        <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
-          {announcements.map((announcement, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle>{announcement.title}</CardTitle>
-                <CardDescription>{announcement.date}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {announcement.content}
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => handleReadMoreClick(announcement)}
-                    >
-                      Read More
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>{selectedAnnouncement?.title}</DialogTitle>
-                      <DialogDescription>
-                        Posted on {selectedAnnouncement?.date}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="mt-4">
-                      <p className="text-foreground">{selectedAnnouncement?.content}</p>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Enrolled Courses</CardTitle>
+            <BookOpen className="h-4 w-4 text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.enrolledCourses}</div>
+            <p className="text-xs text-muted-foreground">+10% from last month</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Completed Courses</CardTitle>
+            <CheckCircle className="h-4 w-4 text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.completedCourses}</div>
+            <p className="text-xs text-muted-foreground">+5% from last month</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Upcoming Assignments</CardTitle>
+            <Calendar className="h-4 w-4 text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.upcomingAssignments}</div>
+            <p className="text-xs text-muted-foreground">-2% from last month</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+            <BookmarkIcon className="h-4 w-4 text-gray-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats?.averageScore}</div>
+            <p className="text-xs text-muted-foreground">+3% from last month</p>
+          </CardContent>
+        </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Course Progress</CardTitle>
+          <CardDescription>Your progress across all enrolled courses</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {courseProgress.map((course) => (
+              <div key={course.id} className="space-y-2">
+                <div className="flex justify-between">
+                  <h3 className="text-sm font-medium">{course.title}</h3>
+                  <span className="text-xs text-muted-foreground">{course.progress}%</span>
+                </div>
+                <Progress value={course.progress} />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Activity</CardTitle>
+          <CardDescription>Your latest activities on the platform</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {recentActivity.map((activity) => (
+            <div key={activity.id} className="flex items-center border-b pb-2 last:border-b-0">
+              {activity.type === "assignment" ? (
+                <BookmarkIcon className="h-4 w-4 mr-2 text-gray-500" />
+              ) : activity.type === "quiz" ? (
+                <CheckCircle className="h-4 w-4 mr-2 text-gray-500" />
+              ) : (
+                <BookOpen className="h-4 w-4 mr-2 text-gray-500" />
+              )}
+              <div>
+                <p className="text-sm font-medium">{activity.title}</p>
+                <p className="text-xs text-muted-foreground">{activity.course} - {activity.date}</p>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 };

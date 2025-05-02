@@ -17,17 +17,26 @@ const AdminDashboard = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState([]);
-  const [recentActions, setRecentActions] = useState([]);
-  const [popularCourses, setPopularCourses] = useState([]);
+  const [recentUsers, setRecentUsers] = useState([]);
+  const [recentCourses, setRecentCourses] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
         const data = await fetchAdminDashboardData();
-        setStats(data.stats);
-        setRecentActions(data.recentActions);
-        setPopularCourses(data.popularCourses);
+        
+        // Transform the stats object into an array for rendering
+        const statsArray = [
+          { title: "Total Users", value: data.stats.totalUsers, change: "+12% from last month", icon: "Users" },
+          { title: "Active Users", value: data.stats.activeUsers, change: "+8% from last month", icon: "UserPlus" },
+          { title: "Total Courses", value: data.stats.totalCourses, change: "+5% from last month", icon: "BookOpen" },
+          { title: "Total Revenue", value: data.stats.totalRevenue, change: "+15% from last month", icon: "TrendingUp" },
+        ];
+        
+        setStats(statsArray);
+        setRecentUsers(data.recentUsers || []);
+        setRecentCourses(data.recentCourses || []);
       } catch (error) {
         console.error("Error loading admin dashboard data:", error);
         toast({
@@ -98,14 +107,14 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActions.map((action, i) => (
+              {recentUsers.map((user, i) => (
                 <div key={i} className="flex items-start space-x-4">
                   <div className="bg-primary/10 p-2 rounded-full text-primary">
-                    {getIconComponent(action.icon)}
+                    <UserPlus className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="font-medium">{action.action}</p>
-                    <p className="text-sm text-muted-foreground">{action.time}</p>
+                    <p className="font-medium">{user.name} joined as a {user.role}</p>
+                    <p className="text-sm text-muted-foreground">{user.joinDate}</p>
                   </div>
                 </div>
               ))}
@@ -115,12 +124,12 @@ const AdminDashboard = () => {
 
         <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Popular Courses</CardTitle>
-            <CardDescription>Most enrolled courses this month</CardDescription>
+            <CardTitle>Recent Courses</CardTitle>
+            <CardDescription>Newly created courses</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {popularCourses.map((course, i) => (
+              {recentCourses.map((course, i) => (
                 <div key={i} className="flex items-center space-x-4">
                   <div className="h-10 w-10 rounded bg-gray-200 flex items-center justify-center">
                     <BookOpen className="h-5 w-5 text-gray-500" />
@@ -128,9 +137,9 @@ const AdminDashboard = () => {
                   <div className="flex-1">
                     <p className="font-medium">{course.title}</p>
                     <div className="flex items-center text-sm text-muted-foreground">
-                      <span>{course.students} students</span>
+                      <span>{course.teacher || "Unknown teacher"}</span>
                       <span className="mx-2">•</span>
-                      <span>{course.modules} modules</span>
+                      <span>{course.enrolled || 0} students</span>
                     </div>
                   </div>
                 </div>

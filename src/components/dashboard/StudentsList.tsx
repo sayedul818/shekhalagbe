@@ -19,7 +19,7 @@ const StudentsList = () => {
       try {
         setIsLoading(true);
         const data = await fetchStudentsList();
-        setStudents(data);
+        setStudents(data.students || []);
       } catch (error) {
         console.error("Error loading students list:", error);
         toast({

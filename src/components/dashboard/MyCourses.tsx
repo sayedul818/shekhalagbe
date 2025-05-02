@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,8 +27,8 @@ const MyCourses = () => {
       try {
         setIsLoading(true);
         const data = await fetchMyCourses();
-        setEnrolledCourses(data.enrolledCourses);
-        setCompletedCourses(data.completedCourses);
+        setEnrolledCourses(data.inProgress || []);
+        setCompletedCourses(data.completed || []);
       } catch (error) {
         console.error("Error loading courses data:", error);
         toast({

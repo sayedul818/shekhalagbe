@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,10 @@ const ExamsList = () => {
       try {
         setIsLoading(true);
         const data = await fetchExamsData();
-        setUpcomingExams(data.upcomingExams);
-        setCompletedExams(data.completedExams);
+        // Filter exams with status "upcoming"
+        const upcoming = data.exams.filter(exam => exam.status === "upcoming") || [];
+        setUpcomingExams(upcoming);
+        setCompletedExams(data.completedExams || []);
       } catch (error) {
         console.error("Error loading exams data:", error);
         toast({

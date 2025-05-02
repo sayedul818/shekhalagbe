@@ -19,4 +19,6 @@ export interface Course {
   thumbnail: string;
   certificate?: boolean;
   resources?: Resource[];
+  students?: number;
+  rating?: number;
 }
