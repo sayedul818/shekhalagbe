@@ -10,7 +10,6 @@ import { fetchCourseCurriculum } from "@/lib/course-data";
 import { useToast } from "@/hooks/use-toast";
 import { CourseComponentProps } from "@/types";
 
-// Extended the component to accept the courseId prop
 const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +23,7 @@ const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
       try {
         setIsLoading(true);
         const data = await fetchCourseCurriculum(courseId);
-        // Fix: Use the correct property from the API response
+        // Use the correct property from the API response - sections instead of curriculum
         setCurriculum(data.sections || []);
       } catch (error) {
         console.error("Error loading curriculum:", error);

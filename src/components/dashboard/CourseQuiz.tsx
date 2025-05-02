@@ -39,17 +39,16 @@ const CourseQuiz = ({ courseId }: CourseComponentProps) => {
           id: quiz.id,
           title: quiz.title,
           description: quiz.description,
-          // Handle the case where questions might be an array or a number
-          questions: typeof quiz.questions === 'number' 
-            ? quiz.questions 
-            : quiz.totalQuestions || 0,
+          // Ensure questions is a number
+          questions: quiz.totalQuestions || 0,
+          // Convert timeLimit to a number if it's a string
           timeLimit: typeof quiz.timeLimit === 'string' 
             ? parseInt(quiz.timeLimit, 10) 
             : quiz.timeLimit || 0,
           // Set default values for optional properties that might be missing
           status: quiz.status || "pending",
-          score: quiz.score,
-          dueDate: quiz.dueDate
+          score: quiz.score || undefined,
+          dueDate: quiz.dueDate || undefined
         }));
         
         setQuizzes(transformedQuizzes);
