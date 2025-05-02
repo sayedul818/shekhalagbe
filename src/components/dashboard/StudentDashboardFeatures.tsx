@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
   BookOpen,
   Clock,
@@ -28,13 +31,19 @@ import {
   PenTool,
   Users,
   ArrowLeft,
+  Search,
+  Upload,
+  Edit,
+  Plus,
+  Star,
 } from "lucide-react";
 import CourseCurriculum from "./courseCurriculam";
 import CourseQuiz from "./CourseQuiz";
 import CourseAssignment from "./courseAssignment";
 import CourseDiscussion from "./CourseDiscussion";
 import CourseNotes from "./CourseNotes";
-import TakeExam from "./TakeExam";
+import { useToast } from "@/hooks/use-toast";
+import { fetchStudentDashboardFeaturesData } from "@/lib/course-data";
 
 interface StudentDashboardFeaturesProps {
   courseId: string;
@@ -43,62 +52,31 @@ interface StudentDashboardFeaturesProps {
 
 const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeaturesProps) => {
   const [activeTab, setActiveTab] = useState("curriculum");
-  
-  // Mock course data - in real app would come from API
-  const courseData = {
-    id: courseId,
-    title: "JavaScript Fundamentals",
-    description: "Master the basics of JavaScript programming language",
-    instructor: "Sarah Johnson",
-    thumbnail: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
-    progress: 45,
-    lastAccessed: "2 days ago",
-    completedLessons: 9,
-    totalLessons: 20,
-    curriculum: [
-      {
-        id: "m1",
-        title: "Getting Started with JavaScript",
-        lessons: [
-          { id: "l1", title: "Introduction to JavaScript", duration: "10:30", type: "video", completed: true },
-          { id: "l2", title: "Setting Up Your Environment", duration: "12:45", type: "video", completed: true },
-          { id: "l3", title: "Basic Syntax Quiz", duration: "15 mins", type: "quiz", completed: false },
-        ]
-      },
-      {
-        id: "m2",
-        title: "JavaScript Fundamentals",
-        lessons: [
-          { id: "l4", title: "Variables and Data Types", duration: "15:20", type: "video", completed: false },
-          { id: "l5", title: "Operators and Expressions", duration: "18:10", type: "video", completed: false },
-          { id: "l6", title: "Control Flow", duration: "20:45", type: "video", completed: false },
-        ]
-      }
-    ],
-    assignments: [
-      { id: "a1", title: "JavaScript Basics Assignment", dueDate: "2025-05-10", status: "pending", score: null },
-      { id: "a2", title: "Building a Simple App", dueDate: "2025-05-20", status: "completed", score: 85 }
-    ],
-    quizzes: [
-      { id: "q1", title: "JavaScript Syntax Quiz", questions: 10, timeLimit: 15, status: "completed", score: 80 },
-      { id: "q2", title: "Functions & Objects Quiz", questions: 15, timeLimit: 20, status: "pending" }
-    ],
-    discussions: [
-      { id: "d1", title: "Help with JavaScript Arrays", replies: 5, lastActive: "1 day ago" },
-      { id: "d2", title: "Understanding Callbacks", replies: 8, lastActive: "3 days ago" }
-    ],
-    notes: [
-      { id: "n1", title: "Important JavaScript Concepts", content: "Remember to check for undefined values...", date: "2025-04-15" }
-    ],
-    metrics: {
-      timeSpent: "12h 30m",
-      avgQuizScore: 82,
-      completionRate: "45%",
-      activityStreak: 4
-    }
-  };
-
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [courseData, setCourseData] = useState(null);
+  const { toast } = useToast();
+  
+  useEffect(() => {
+    const loadCourseData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchStudentDashboardFeaturesData(courseId);
+        setCourseData(data);
+      } catch (error) {
+        console.error("Error loading course data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load course data",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadCourseData();
+  }, [courseId, toast]);
 
   const handleSelectLesson = (lesson) => {
     setSelectedLesson(lesson);
@@ -136,6 +114,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
             <p className="text-muted-foreground">{selectedLesson.duration}</p>
           </div>
           
+          {/* Lesson content based on type */}
           {selectedLesson.type === 'video' ? (
             <div className="aspect-video bg-black/5 rounded-md flex items-center justify-center border">
               <div className="text-center">
@@ -199,6 +178,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
           </div>
         </div>
         
+        {/* Discussion section */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Discussion</CardTitle>
@@ -243,21 +223,55 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
           </CardContent>
         </Card>
         
+        {/* Notes section */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Take Notes</CardTitle>
           </CardHeader>
           <CardContent>
-            <textarea
+            <Textarea
               placeholder="Write your notes for this lesson here..."
-              className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-            ></textarea>
-            <Button className="mt-2" variant="outline">Save Notes</Button>
+              className="w-full min-h-[100px]"
+            />
+            <div className="mt-2 flex justify-between items-center">
+              <div className="flex space-x-2">
+                <Button size="sm" variant="outline">
+                  <BookmarkPlus className="h-4 w-4 mr-1" />
+                  Save
+                </Button>
+                <Button size="sm" variant="outline">
+                  <FileText className="h-4 w-4 mr-1" />
+                  Export
+                </Button>
+              </div>
+              <span className="text-xs text-muted-foreground">Auto-saving...</span>
+            </div>
           </CardContent>
         </Card>
       </div>
     );
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Error or no data state
+  if (!courseData) {
+    return (
+      <div className="text-center py-12">
+        <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+        <h2 className="text-2xl font-semibold mb-2">Course not found</h2>
+        <p className="text-muted-foreground mb-6">Sorry, we couldn't load this course.</p>
+        <Button onClick={onBack}>Go Back</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -279,35 +293,231 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
             renderLessonContent()
           ) : (
             <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-
               <TabsList className="w-full justify-start mb-4 overflow-x-auto">
-                <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
-                <TabsTrigger value="quizzes">Quizzes & Exams</TabsTrigger>
-                <TabsTrigger value="assignments">Assignments</TabsTrigger>
-                <TabsTrigger value="discussion">Discussion</TabsTrigger>
-                <TabsTrigger value="notes">Notes</TabsTrigger>
+                <TabsTrigger value="curriculum">
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Curriculum
+                </TabsTrigger>
+                <TabsTrigger value="assignments">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Assignments
+                </TabsTrigger>
+                <TabsTrigger value="quizzes">
+                  <FileQuestion className="h-4 w-4 mr-2" />
+                  Quizzes
+                </TabsTrigger>
+                <TabsTrigger value="notes">
+                  <PenTool className="h-4 w-4 mr-2" />
+                  Notes
+                </TabsTrigger>
+                <TabsTrigger value="discussion">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Discussion
+                </TabsTrigger>
               </TabsList>
 
+              {/* Curriculum Tab */}
               <TabsContent value="curriculum">
-                <CourseCurriculum courseId={courseId} />
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold">Course Curriculum</h2>
+                    <div className="flex items-center bg-muted rounded-md px-3 py-1">
+                      <Search className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <Input
+                        placeholder="Search lessons..."
+                        className="h-8 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      />
+                    </div>
+                  </div>
+                  
+                  <Card>
+                    <CardContent className="p-0">
+                      <CourseCurriculum courseId={courseId} />
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
 
-              <TabsContent value="quizzes">
-                <CourseQuiz courseId={courseId} />
-              </TabsContent>
-              
+              {/* Assignments Tab */}
               <TabsContent value="assignments">
-                <CourseAssignment courseId={courseId} />
-              </TabsContent>
-
-              <TabsContent value="discussion">
-                <CourseDiscussion courseId={courseId} />
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold">Assignments</h2>
+                    <div className="flex space-x-2">
+                      <Tabs defaultValue="all" className="w-fit">
+                        <TabsList className="grid grid-cols-4 h-8">
+                          <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
+                          <TabsTrigger value="pending" className="text-xs">Pending</TabsTrigger>
+                          <TabsTrigger value="submitted" className="text-xs">Submitted</TabsTrigger>
+                          <TabsTrigger value="graded" className="text-xs">Graded</TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </div>
+                  </div>
+                  
+                  <Card>
+                    <CardContent className="p-0">
+                      <CourseAssignment courseId={courseId} />
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
               
-              <TabsContent value="notes">
-                <CourseNotes courseId={courseId} />
+              {/* Quizzes Tab */}
+              <TabsContent value="quizzes">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold">Quizzes</h2>
+                    <div className="flex space-x-2">
+                      <Tabs defaultValue="all" className="w-fit">
+                        <TabsList className="grid grid-cols-4 h-8">
+                          <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
+                          <TabsTrigger value="upcoming" className="text-xs">Upcoming</TabsTrigger>
+                          <TabsTrigger value="active" className="text-xs">Active</TabsTrigger>
+                          <TabsTrigger value="completed" className="text-xs">Completed</TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </div>
+                  </div>
+                  
+                  <Card>
+                    <CardContent className="p-0">
+                      <CourseQuiz courseId={courseId} />
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Performance Analytics</CardTitle>
+                      <CardDescription>Your quiz performance over time</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-64 bg-muted rounded-md flex items-center justify-center">
+                        <div className="text-center">
+                          <BarChart2 className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground">Quiz performance chart would appear here</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
 
+              {/* Notes Tab */}
+              <TabsContent value="notes">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold">My Notes</h2>
+                    <div className="flex space-x-2">
+                      <div className="relative">
+                        <Search className="h-4 w-4 absolute left-2.5 top-2.5 text-muted-foreground" />
+                        <Input placeholder="Search notes..." className="pl-8 h-9 w-[200px]" />
+                      </div>
+                      <Button size="sm">
+                        <Plus className="h-4 w-4 mr-1" />
+                        New Note
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-lg">Important JavaScript Concepts</CardTitle>
+                          <Button size="icon" variant="ghost">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <CardDescription>Module 2 - Lesson 3</CardDescription>
+                      </CardHeader>
+                      <CardContent className="pt-2">
+                        <p className="text-sm">Remember to check for undefined values before accessing object properties...</p>
+                      </CardContent>
+                      <CardFooter className="flex justify-between pt-2 text-xs text-muted-foreground">
+                        <span>May 2, 2025</span>
+                        <div className="flex items-center">
+                          <Badge variant="outline" className="mr-2">important</Badge>
+                          <Badge variant="outline">review</Badge>
+                        </div>
+                      </CardFooter>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-lg">Working with Arrays</CardTitle>
+                          <Button size="icon" variant="ghost">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <CardDescription>Module 3 - Lesson 1</CardDescription>
+                      </CardHeader>
+                      <CardContent className="pt-2">
+                        <p className="text-sm">Array methods to remember: map(), filter(), reduce(), forEach()...</p>
+                      </CardContent>
+                      <CardFooter className="flex justify-between pt-2 text-xs text-muted-foreground">
+                        <span>May 1, 2025</span>
+                        <Badge variant="outline">code</Badge>
+                      </CardFooter>
+                    </Card>
+                  </div>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Create New Note</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Input placeholder="Note title" className="mb-2" />
+                        <div className="flex space-x-2 mb-2">
+                          <Select placeholder="Select module" className="flex-1">
+                            {/* Options would go here */}
+                          </Select>
+                          <Select placeholder="Select lesson" className="flex-1">
+                            {/* Options would go here */}
+                          </Select>
+                        </div>
+                        <Textarea 
+                          placeholder="Write your note here..." 
+                          className="min-h-[200px]"
+                        />
+                      </div>
+                      <div className="flex justify-between">
+                        <div className="flex space-x-2">
+                          <Input placeholder="Add tags..." className="w-40" />
+                          <Button variant="outline" size="sm">Add Tag</Button>
+                        </div>
+                        <Button>Save Note</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+              
+              {/* Discussion Tab */}
+              <TabsContent value="discussion">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold">Course Discussions</h2>
+                    <div className="flex space-x-2">
+                      <Select placeholder="Filter by" className="w-[120px]">
+                        {/* Options would go here */}
+                      </Select>
+                      <Button>
+                        <Plus className="h-4 w-4 mr-1" />
+                        New Topic
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <Card>
+                    <CardContent className="p-0">
+                      <CourseDiscussion courseId={courseId} />
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
             </Tabs>
           )}
         </div>
@@ -333,7 +543,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                     <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
                     <span className="text-sm">Time Spent</span>
                   </div>
-                  <span className="text-sm font-medium">{courseData.metrics.timeSpent}</span>
+                  <span className="text-sm font-medium">{courseData.metrics?.timeSpent || '0h'}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
@@ -341,7 +551,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                     <BarChart2 className="h-4 w-4 mr-2 text-muted-foreground" />
                     <span className="text-sm">Avg. Quiz Score</span>
                   </div>
-                  <span className="text-sm font-medium">{courseData.metrics.avgQuizScore}%</span>
+                  <span className="text-sm font-medium">{courseData.metrics?.avgQuizScore || '0'}%</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
@@ -349,7 +559,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                     <Activity className="h-4 w-4 mr-2 text-muted-foreground" />
                     <span className="text-sm">Activity Streak</span>
                   </div>
-                  <span className="text-sm font-medium">{courseData.metrics.activityStreak} days</span>
+                  <span className="text-sm font-medium">{courseData.metrics?.activityStreak || '0'} days</span>
                 </div>
               </div>
             </CardContent>
@@ -384,7 +594,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
               <CardTitle>Upcoming Deadlines</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {courseData.assignments.filter(a => a.status === "pending").map((assignment) => (
+              {courseData.assignments?.filter(a => a.status === "pending").slice(0, 2).map((assignment) => (
                 <div key={assignment.id} className="flex justify-between items-center p-2 text-sm border-b last:border-0">
                   <div className="flex items-center">
                     <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
@@ -395,7 +605,8 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                   </Badge>
                 </div>
               ))}
-              {courseData.quizzes.filter(q => q.status === "pending").map((quiz) => (
+              
+              {courseData.quizzes?.filter(q => q.status === "pending").slice(0, 2).map((quiz) => (
                 <div key={quiz.id} className="flex justify-between items-center p-2 text-sm border-b last:border-0">
                   <div className="flex items-center">
                     <FileQuestion className="h-4 w-4 mr-2 text-muted-foreground" />
@@ -406,6 +617,71 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                   </Badge>
                 </div>
               ))}
+              
+              {(!courseData.assignments?.length && !courseData.quizzes?.length) && (
+                <div className="text-center py-2 text-sm text-muted-foreground">
+                  No upcoming deadlines
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          
+          {/* New Analytics Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Performance Stats</CardTitle>
+            </CardHeader>
+            <CardContent className="px-2 pt-0">
+              <div className="space-y-4">
+                {/* Quiz Performance */}
+                <div className="px-2">
+                  <div className="flex justify-between items-center text-sm mb-1">
+                    <span>Quiz Performance</span>
+                    <span className="font-medium">{courseData.metrics?.avgQuizScore || '0'}%</span>
+                  </div>
+                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-primary rounded-full"
+                      style={{ width: `${courseData.metrics?.avgQuizScore || 0}%` }}
+                    ></div>
+                  </div>
+                </div>
+                
+                {/* Assignment Completion */}
+                <div className="px-2">
+                  <div className="flex justify-between items-center text-sm mb-1">
+                    <span>Assignment Completion</span>
+                    <span className="font-medium">
+                      {courseData.assignments?.filter(a => a.status === "completed").length || 0}/
+                      {courseData.assignments?.length || 0}
+                    </span>
+                  </div>
+                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-green-500 rounded-full"
+                      style={{ 
+                        width: `${courseData.assignments?.length ? 
+                          ((courseData.assignments.filter(a => a.status === "completed").length / courseData.assignments.length) * 100) : 
+                          0}%` 
+                      }}
+                    ></div>
+                  </div>
+                </div>
+                
+                {/* Discussion Participation */}
+                <div className="px-2">
+                  <div className="flex justify-between items-center text-sm mb-1">
+                    <span>Discussion Participation</span>
+                    <span className="font-medium">{courseData.metrics?.discussionPosts || 0} posts</span>
+                  </div>
+                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-blue-500 rounded-full"
+                      style={{ width: `${Math.min((courseData.metrics?.discussionPosts || 0) * 10, 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -413,5 +689,15 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
     </div>
   );
 };
+
+// Add missing Select component to avoid errors
+function Select({ children, placeholder, className }) {
+  return (
+    <div className={`${className} flex items-center justify-between bg-background border rounded-md px-3 py-2 text-sm`}>
+      <span className="text-muted-foreground">{placeholder}</span>
+      <span className="text-muted-foreground">▼</span>
+    </div>
+  );
+}
 
 export default StudentDashboardFeatures;
