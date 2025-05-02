@@ -5,87 +5,52 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, CheckCircle, Clock, BookOpen } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { fetchCourseLessons } from "@/lib/course-data";
+import { useToast } from "@/hooks/use-toast";
 
 const CourseLesson = () => {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [lesson, setLesson] = useState(null);
   const [course, setCourse] = useState(null);
-
-  // Mock data for courses 
-  const mockCourses = [
-    {
-      id: "1",
-      title: "JavaScript Fundamentals",
-      thumbnail: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
-      progress: 60,
-      completedLessons: 8,
-      totalLessons: 12,
-      description: "Master the fundamentals of JavaScript with practical exercises and real-world examples.",
-      teacher: "Robert Johnson",
-      lessons: [
-        { id: "js-lesson-8", title: "Functions and Callbacks", completed: true, duration: "45 mins" },
-        { id: "js-lesson-9", title: "Working with Objects", completed: false, duration: "50 mins" },
-        { id: "js-lesson-10", title: "Arrays and Array Methods", completed: false, duration: "40 mins" },
-        { id: "js-lesson-11", title: "DOM Manipulation", completed: false, duration: "55 mins" },
-        { id: "js-lesson-12", title: "Event Handling", completed: false, duration: "45 mins" },
-      ]
-    },
-    {
-      id: "2",
-      title: "Advanced React & Redux",
-      thumbnail: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2",
-      progress: 35,
-      completedLessons: 5,
-      totalLessons: 14,
-      description: "Learn advanced React concepts and state management with Redux.",
-      teacher: "Emily Davis",
-      lessons: [
-        { id: "react-lesson-5", title: "Redux Middleware", completed: true, duration: "60 mins" },
-        { id: "react-lesson-6", title: "Redux Toolkit Overview", completed: false, duration: "45 mins" },
-        { id: "react-lesson-7", title: "Creating Slices", completed: false, duration: "50 mins" },
-        { id: "react-lesson-8", title: "Async Thunks", completed: false, duration: "55 mins" },
-        { id: "react-lesson-9", title: "Performance Optimization", completed: false, duration: "65 mins" },
-      ]
-    },
-    {
-      id: "3",
-      title: "Node.js API Development",
-      thumbnail: "https://images.unsplash.com/photo-1527689368864-3a821dbccc34",
-      progress: 80,
-      completedLessons: 10,
-      totalLessons: 12,
-      description: "Build scalable APIs with Node.js, Express, and MongoDB.",
-      teacher: "Michael Chen",
-      lessons: [
-        { id: "node-lesson-10", title: "Authentication & Authorization", completed: true, duration: "70 mins" },
-        { id: "node-lesson-11", title: "Advanced Error Handling", completed: false, duration: "45 mins" },
-        { id: "node-lesson-12", title: "API Documentation", completed: false, duration: "40 mins" },
-      ]
-    },
-  ];
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulate API call to fetch course and lesson data
-    setLoading(true);
-    const fetchedCourse = mockCourses.find(c => c.id === courseId);
-    
-    if (fetchedCourse) {
-      setCourse(fetchedCourse);
-      const fetchedLesson = fetchedCourse.lessons.find(l => l.id === lessonId);
-      if (fetchedLesson) {
-        setLesson(fetchedLesson);
+    const loadCourseAndLesson = async () => {
+      if (!courseId || !lessonId) return;
+      
+      try {
+        setLoading(true);
+        const data = await fetchCourseLessons(courseId);
+        
+        if (data.course) {
+          setCourse(data.course);
+          const fetchedLesson = data.course.lessons.find(l => l.id === lessonId);
+          if (fetchedLesson) {
+            setLesson(fetchedLesson);
+          } else {
+            setError("Lesson not found");
+          }
+        } else {
+          setError("Course not found");
+        }
+      } catch (err) {
+        console.error("Error loading course and lesson data:", err);
+        setError("Failed to load lesson data");
+        toast({
+          title: "Error",
+          description: "Failed to load lesson",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
       }
-    }
+    };
     
-    // Simulate loading delay
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 800);
-    
-    return () => clearTimeout(timer);
-  }, [courseId, lessonId]);
+    loadCourseAndLesson();
+  }, [courseId, lessonId, toast]);
 
   const handleMarkComplete = () => {
     // Here you would typically call an API to mark the lesson as complete
@@ -104,6 +69,11 @@ const CourseLesson = () => {
           navigate(`/dashboard/my-courses/${courseId}/lessons/${nextLesson.id}`);
         }, 1000);
       }
+      
+      toast({
+        title: "Progress Updated",
+        description: "Lesson marked as complete",
+      });
     }
   };
 
@@ -128,11 +98,11 @@ const CourseLesson = () => {
     );
   }
 
-  if (!course || !lesson) {
+  if (error || !course || !lesson) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold mb-4">Lesson Not Found</h2>
-        <p className="text-muted-foreground mb-6">The lesson you're looking for doesn't exist or has been moved.</p>
+        <p className="text-muted-foreground mb-6">{error || "The lesson you're looking for doesn't exist or has been moved."}</p>
         <Button onClick={() => navigate('/dashboard/my-courses')}>
           Back to My Courses
         </Button>

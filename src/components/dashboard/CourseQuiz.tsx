@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,13 +7,15 @@ import { ArrowLeft, Clock, CheckCircle } from "lucide-react";
 import { Quiz } from "@/components/ui/quiz";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { fetchCourseQuizzes } from "@/lib/course-data";
 
 const CourseQuiz = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const lessonId = searchParams.get("lessonId");
+  const { toast } = useToast();
   
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
@@ -20,72 +23,38 @@ const CourseQuiz = () => {
   const [showResults, setShowResults] = useState(false);
   const [confirmSubmitOpen, setConfirmSubmitOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
+  const [loading, setLoading] = useState(true);
+  const [quizData, setQuizData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const quizData = {
-    id: "q1",
-    title: "JavaScript Fundamentals Quiz",
-    description: "Test your knowledge of JavaScript basics",
-    timeLimit: "30 minutes",
-    passingScore: 70,
-    totalQuestions: 10,
-    questions: [
-      {
-        id: 1,
-        text: "Which of the following is not a JavaScript data type?",
-        options: [
-          "String",
-          "Number",
-          "Boolean",
-          "Character"
-        ],
-        correctAnswer: 3
-      },
-      {
-        id: 2,
-        text: "What does the '===' operator do in JavaScript?",
-        options: [
-          "Assigns a value",
-          "Compares values only",
-          "Compares values and data types",
-          "None of the above"
-        ],
-        correctAnswer: 2
-      },
-      {
-        id: 3,
-        text: "Which method adds an element to the end of an array?",
-        options: [
-          "push()",
-          "pop()",
-          "unshift()",
-          "shift()"
-        ],
-        correctAnswer: 0
-      },
-      {
-        id: 4,
-        text: "What does 'DOM' stand for?",
-        options: [
-          "Document Object Model",
-          "Data Object Model",
-          "Document Oriented Model",
-          "Digital Object Model"
-        ],
-        correctAnswer: 0
-      },
-      {
-        id: 5,
-        text: "Which statement is used to terminate a loop in JavaScript?",
-        options: [
-          "stop",
-          "exit",
-          "break",
-          "return"
-        ],
-        correctAnswer: 2
+  useEffect(() => {
+    const loadQuizData = async () => {
+      if (!courseId) return;
+      
+      try {
+        setLoading(true);
+        const data = await fetchCourseQuizzes(courseId);
+        
+        if (data.quizzes && data.quizzes.length > 0) {
+          setQuizData(data.quizzes[0]); // For now, take the first quiz
+        } else {
+          setError("No quiz found for this course");
+        }
+      } catch (err) {
+        console.error("Error loading quiz data:", err);
+        setError("Failed to load quiz data");
+        toast({
+          title: "Error",
+          description: "Failed to load quiz",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
       }
-    ]
-  };
+    };
+    
+    loadQuizData();
+  }, [courseId, toast]);
 
   const formatTimeRemaining = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -94,6 +63,8 @@ const CourseQuiz = () => {
   };
 
   const calculateResults = () => {
+    if (!quizData) return { score: 0, correctAnswers: 0, totalQuestions: 0, passed: false };
+    
     let correctCount = 0;
     quizData.questions.forEach((question, index) => {
       if (selectedAnswers[index] === question.correctAnswer) {
@@ -120,7 +91,7 @@ const CourseQuiz = () => {
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestion < quizData.questions.length - 1) {
+    if (quizData && currentQuestion < quizData.questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     }
   };
@@ -144,6 +115,38 @@ const CourseQuiz = () => {
       variant: results.passed ? "default" : "destructive",
     });
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error || !quizData) {
+    return (
+      <div className="container mx-auto p-4 max-w-4xl">
+        <Button variant="outline" onClick={() => navigate(-1)} className="mb-4">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Course
+        </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle>Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>{error || "Failed to load quiz data"}</p>
+          </CardContent>
+          <CardFooter>
+            <Button onClick={() => navigate(-1)}>
+              Return to Course
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
 
   const progressPercentage = Math.round(((currentQuestion + 1) / quizData.questions.length) * 100);
 

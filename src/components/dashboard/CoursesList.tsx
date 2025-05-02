@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { fetchCoursesList } from "@/lib/course-data";
 
 const pricePlans = [
   { id: 1, name: "Basic", price: 49.99, students: 10, storage: "1GB", description: "Perfect for small workshops and tutorials" },
@@ -23,68 +25,31 @@ const CoursesList = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  const courses = [
-    { 
-      id: "1", 
-      title: "JavaScript Fundamentals", 
-      teacher: "Robert Johnson", 
-      students: 124, 
-      price: 49.99, 
-      created: "Apr 10, 2023",
-      modules: 12,
-      published: true
-    },
-    { 
-      id: "2", 
-      title: "Advanced React & Redux", 
-      teacher: "Emily Davis", 
-      students: 97, 
-      price: 69.99, 
-      created: "May 15, 2023",
-      modules: 15,
-      published: true
-    },
-    { 
-      id: "3", 
-      title: "Node.js API Development", 
-      teacher: "Robert Johnson", 
-      students: 68, 
-      price: 59.99, 
-      created: "Jan 05, 2023",
-      modules: 10,
-      published: true
-    },
-    { 
-      id: "4", 
-      title: "Web Design Principles", 
-      teacher: "Lisa Martinez", 
-      students: 53, 
-      price: 39.99, 
-      created: "Feb 20, 2023",
-      modules: 8,
-      published: true
-    },
-    { 
-      id: "5", 
-      title: "Python for Data Science", 
-      teacher: "Emily Davis", 
-      students: 89, 
-      price: 49.99, 
-      created: "Mar 12, 2023",
-      modules: 14,
-      published: true
-    },
-    { 
-      id: "6", 
-      title: "UI/UX Design Masterclass", 
-      teacher: "Lisa Martinez", 
-      students: 76, 
-      price: 79.99, 
-      created: "Jun 30, 2023",
-      modules: 20,
-      published: false
-    },
-  ];
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchCoursesList();
+        setCourses(data.courses);
+      } catch (err) {
+        console.error("Error loading courses list:", err);
+        setError("Failed to load courses");
+        toast({
+          title: "Error",
+          description: "Failed to load courses list",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadCourses();
+  }, [toast]);
 
   const filteredByRole = user?.role === "teacher" 
     ? courses.filter(course => course.teacher === "Robert Johnson")
@@ -107,6 +72,24 @@ const CoursesList = () => {
   const handleManageCourse = (courseId) => {
     navigate(`/dashboard/courses/manage/${courseId}`);
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {user?.role === "admin" ? "All Courses" : "My Courses"}
+          </h1>
+          <p className="text-muted-foreground">
+            {user?.role === "admin" ? "View and manage all courses in the system" : "Manage your courses and content"}
+          </p>
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -281,7 +264,7 @@ const CoursesList = () => {
                   <TableRow>
                     <TableCell colSpan={user?.role === "admin" ? 7 : 6} className="h-24 text-center">
                       <div className="flex flex-col items-center justify-center space-y-2">
-                        <p className="text-muted-foreground">No courses found.</p>
+                        <p className="text-muted-foreground">{error || "No courses found."}</p>
                         <Button variant="outline" size="sm">
                           <Plus className="h-4 w-4 mr-2" />
                           Add your first course
