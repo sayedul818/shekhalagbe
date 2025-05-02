@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -31,8 +30,13 @@ interface CurriculumModule {
   completed?: boolean;
 }
 
-const CourseCurriculum = () => {
-  const { courseId } = useParams();
+interface CourseCurriculumProps {
+  courseId?: string;
+}
+
+const CourseCurriculum = ({ courseId: propsCourseId }: CourseCurriculumProps) => {
+  const params = useParams();
+  const courseId = propsCourseId || params.courseId;
   const navigate = useNavigate();
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [videoDialogOpen, setVideoDialogOpen] = useState(false);
@@ -140,13 +144,19 @@ const CourseCurriculum = () => {
     );
   }
 
+  if (curriculumModules.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <BookOpen className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+        <h2 className="text-2xl font-semibold mb-2">No Curriculum Available</h2>
+        <p className="text-muted-foreground mb-6">The curriculum for this course is not available yet.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4 max-w-5xl">
       <div className="mb-6">
-        <Button variant="outline" onClick={() => navigate(-1)} className="mb-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Course
-        </Button>
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold mb-2">Course Curriculum</h1>
@@ -172,7 +182,7 @@ const CourseCurriculum = () => {
           <Card key={module.id} className={module.completed ? "border-green-200" : ""}>
             <CardHeader 
               className="cursor-pointer flex flex-row items-center justify-between"
-              onClick={() => handleModuleToggle(module.id)}
+              onClick={() => setActiveModuleId(activeModuleId === module.id ? null : module.id)}
             >
               <div className="flex items-center">
                 <BookOpen className="h-5 w-5 mr-2 text-primary" />
@@ -232,14 +242,42 @@ const CourseCurriculum = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => handleMarkAsComplete(lesson.id)}
+                            onClick={() => {
+                              // Mark lesson as complete
+                              const updatedModules = curriculumModules.map(m => 
+                                m.id === module.id 
+                                  ? {
+                                      ...m,
+                                      lessons: m.lessons.map(l => 
+                                        l.id === lesson.id ? { ...l, completed: true } : l
+                                      )
+                                    }
+                                  : m
+                              );
+                              setCurriculumModules(updatedModules);
+                              toast({
+                                title: "Progress Updated",
+                                description: "Lesson marked as complete",
+                              });
+                            }}
                           >
                             Mark Complete
                           </Button>
                         )}
                         <Button 
                           size="sm" 
-                          onClick={() => handleLessonAccess(lesson)}
+                          onClick={() => {
+                            if (lesson.type === "video") {
+                              setSelectedVideo(lesson);
+                              setVideoDialogOpen(true);
+                            } else if (lesson.type === "quiz") {
+                              navigate(`/dashboard/my-courses/${courseId}/quiz/${lesson.id}`);
+                            } else if (lesson.type === "assignment") {
+                              navigate(`/dashboard/my-courses/${courseId}/assignment/${lesson.id}`);
+                            } else {
+                              navigate(`/dashboard/my-courses/${courseId}/lessons/${lesson.id}`);
+                            }
+                          }}
                         >
                           {lesson.completed ? "Review" : "Start"}
                         </Button>

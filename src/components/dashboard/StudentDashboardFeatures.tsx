@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Card,
@@ -288,23 +289,23 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
               </TabsList>
 
               <TabsContent value="curriculum">
-                <CourseCurriculum />
+                <CourseCurriculum courseId={courseId} />
               </TabsContent>
 
               <TabsContent value="quizzes">
-                <TakeExam />
+                <CourseQuiz courseId={courseId} />
               </TabsContent>
               
               <TabsContent value="assignments">
-                <CourseAssignment />
+                <CourseAssignment courseId={courseId} />
               </TabsContent>
 
               <TabsContent value="discussion">
-                <CourseDiscussion />
+                <CourseDiscussion courseId={courseId} />
               </TabsContent>
               
               <TabsContent value="notes">
-                <CourseNotes />
+                <CourseNotes courseId={courseId} />
               </TabsContent>
 
             </Tabs>
