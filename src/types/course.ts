@@ -1,4 +1,5 @@
 
+
 export interface Resource {
   type: string;
   title: string;
@@ -25,8 +26,8 @@ export interface Course {
 }
 
 export interface UserPreferences {
-  theme: string;
-  notifications: {
+  theme?: string;
+  notifications?: {
     email: boolean;
     push: boolean;
   };
@@ -38,4 +39,10 @@ export interface UserPreferences {
     education?: string;
     occupation?: string;
   };
+  // Include old preference structure fields for backward compatibility
+  emailNotifications?: boolean;
+  darkMode?: boolean;
+  language?: string;
+  timezone?: string;
 }
+

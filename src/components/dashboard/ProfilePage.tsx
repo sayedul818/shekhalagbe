@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Phone, MapPin, Calendar, School, Briefcase } from "lucide-react";
+import { Mail, Phone, MapPin, Calendar, School, Briefcase } from "lucide-react";
 import { fetchUserData, updateUserProfile } from "@/lib/course-data";
 
 const ProfilePage = () => {
@@ -36,15 +37,21 @@ const ProfilePage = () => {
         setIsLoading(true);
         const userData = await fetchUserData(user.id);
         if (userData) {
+          // Handle both old and new preference structures
+          const phone = userData.preferences?.contactPreferences?.phone || "";
+          const birthDate = userData.preferences?.personalInfo?.birthDate || "";
+          const education = userData.preferences?.personalInfo?.education || "";
+          const occupation = userData.preferences?.personalInfo?.occupation || "";
+          
           setProfileData({
             name: userData.name || "",
             email: userData.email || "",
-            phone: userData.preferences?.contactPreferences?.phone || "",
+            phone: phone,
             address: userData.location || "",
-            birthDate: userData.preferences?.personalInfo?.birthDate || "",
+            birthDate: birthDate,
             bio: userData.bio || "",
-            education: userData.preferences?.personalInfo?.education || "",
-            occupation: userData.preferences?.personalInfo?.occupation || ""
+            education: education,
+            occupation: occupation
           });
         }
       } catch (error) {
