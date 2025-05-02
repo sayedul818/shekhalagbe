@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,8 @@ const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
       try {
         setIsLoading(true);
         const data = await fetchCourseCurriculum(courseId);
-        setCurriculum(data.curriculum || []);
+        // Fix: Use the correct property from the API response
+        setCurriculum(data.sections || []);
       } catch (error) {
         console.error("Error loading curriculum:", error);
         toast({
@@ -73,7 +75,7 @@ const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
                   </AccordionTrigger>
                   <AccordionContent>
                     <ul className="space-y-2">
-                      {module.lessons.map((lesson) => (
+                      {module.items.map((lesson) => (
                         <li key={lesson.id} className="flex items-center justify-between">
                           <div className="flex items-center">
                             {lesson.completed ? (
@@ -84,10 +86,12 @@ const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
                             <span className="text-sm">{lesson.title}</span>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <Badge variant="outline" className="flex items-center">
-                              <Clock className="h-3 w-3 mr-1" />
-                              {lesson.duration}
-                            </Badge>
+                            {lesson.duration && (
+                              <Badge variant="outline" className="flex items-center">
+                                <Clock className="h-3 w-3 mr-1" />
+                                {lesson.duration}
+                              </Badge>
+                            )}
                             <Button variant="secondary" size="sm" onClick={() => handleLessonClick(lesson)}>
                               View
                             </Button>

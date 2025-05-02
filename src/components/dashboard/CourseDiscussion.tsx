@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,8 @@ const CourseDiscussion = ({ courseId }: CourseComponentProps) => {
       try {
         setIsLoading(true);
         const data = await fetchCourseDiscussions(courseId);
-        setDiscussions(data.discussions || []);
+        // Fix: Use the correct property from the API response
+        setDiscussions(data.threads || []);
       } catch (error) {
         console.error("Error loading discussions:", error);
         toast({
@@ -95,8 +97,8 @@ const CourseDiscussion = ({ courseId }: CourseComponentProps) => {
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                    {discussion.avatar ? (
-                      <img src={discussion.avatar} alt={discussion.author} className="h-full w-full object-cover" />
+                    {discussion.avatarUrl ? (
+                      <img src={discussion.avatarUrl} alt={discussion.author} className="h-full w-full object-cover" />
                     ) : (
                       <span className="text-lg font-semibold">{discussion.author.charAt(0)}</span>
                     )}
@@ -106,8 +108,7 @@ const CourseDiscussion = ({ courseId }: CourseComponentProps) => {
                       <div>
                         <p className="font-medium">{discussion.author}</p>
                         <p className="text-xs text-muted-foreground">
-                          {discussion.authorRole === "instructor" ? "Instructor" : "Student"} • 
-                          {new Date(discussion.date).toLocaleDateString()}
+                          {new Date(discussion.datePosted).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
@@ -124,8 +125,8 @@ const CourseDiscussion = ({ courseId }: CourseComponentProps) => {
                         {discussion.replies.map((reply) => (
                           <div key={reply.id} className="flex items-start gap-4">
                             <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                              {reply.avatar ? (
-                                <img src={reply.avatar} alt={reply.author} className="h-full w-full object-cover" />
+                              {reply.avatarUrl ? (
+                                <img src={reply.avatarUrl} alt={reply.author} className="h-full w-full object-cover" />
                               ) : (
                                 <span className="text-sm font-semibold">{reply.author.charAt(0)}</span>
                               )}
@@ -135,8 +136,8 @@ const CourseDiscussion = ({ courseId }: CourseComponentProps) => {
                                 <div>
                                   <p className="font-medium">{reply.author}</p>
                                   <p className="text-xs text-muted-foreground">
-                                    {reply.authorRole === "instructor" ? "Instructor" : "Student"} • 
-                                    {new Date(reply.date).toLocaleDateString()}
+                                    {reply.isInstructor ? "Instructor" : "Student"} • 
+                                    {new Date(reply.datePosted).toLocaleDateString()}
                                   </p>
                                 </div>
                               </div>

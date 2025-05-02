@@ -7,10 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Clock, FileQuestion, Trophy, CheckCircle } from "lucide-react";
 import { fetchCourseQuizzes } from "@/lib/course-data";
-
-interface CourseQuizProps {
-  courseId: string;
-}
+import { CourseComponentProps } from "@/types";
 
 interface Quiz {
   id: string;
@@ -23,7 +20,7 @@ interface Quiz {
   score?: number;
 }
 
-const CourseQuiz = ({ courseId }: CourseQuizProps) => {
+const CourseQuiz = ({ courseId }: CourseComponentProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -42,11 +39,17 @@ const CourseQuiz = ({ courseId }: CourseQuizProps) => {
           id: quiz.id,
           title: quiz.title,
           description: quiz.description,
-          questions: quiz.totalQuestions || quiz.questions || 0,
-          timeLimit: typeof quiz.timeLimit === 'string' ? parseInt(quiz.timeLimit, 10) : quiz.timeLimit,
+          // Handle the case where questions might be an array or a number
+          questions: typeof quiz.questions === 'number' 
+            ? quiz.questions 
+            : quiz.totalQuestions || 0,
+          timeLimit: typeof quiz.timeLimit === 'string' 
+            ? parseInt(quiz.timeLimit, 10) 
+            : quiz.timeLimit || 0,
+          // Set default values for optional properties that might be missing
           status: quiz.status || "pending",
-          score: quiz.score || undefined,
-          dueDate: quiz.dueDate || undefined
+          score: quiz.score,
+          dueDate: quiz.dueDate
         }));
         
         setQuizzes(transformedQuizzes);
@@ -202,7 +205,7 @@ const CourseQuiz = ({ courseId }: CourseQuizProps) => {
                 )}
               </div>
               
-              {quiz.status === "completed" && (
+              {quiz.status === "completed" && typeof quiz.score === 'number' && (
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm">Your score</span>
