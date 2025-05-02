@@ -1,5 +1,4 @@
 
-
 export type UserRole = "admin" | "teacher" | "student";
 
 export interface User {
@@ -86,3 +85,7 @@ export interface ExamSubmission {
 // Add exported type for curriculum item types
 export type CurriculumItemType = "video" | "reading" | "quiz" | "assignment";
 
+// Add interfaces for all course components with courseId prop
+export interface CourseComponentProps {
+  courseId: string;
+}

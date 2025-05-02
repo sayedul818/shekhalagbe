@@ -36,7 +36,20 @@ const CourseQuiz = ({ courseId }: CourseQuizProps) => {
       try {
         setIsLoading(true);
         const data = await fetchCourseQuizzes(courseId);
-        setQuizzes(data.quizzes || []);
+        
+        // Transform the data to match our Quiz interface
+        const transformedQuizzes: Quiz[] = data.quizzes.map(quiz => ({
+          id: quiz.id,
+          title: quiz.title,
+          description: quiz.description,
+          questions: quiz.totalQuestions || quiz.questions || 0,
+          timeLimit: typeof quiz.timeLimit === 'string' ? parseInt(quiz.timeLimit, 10) : quiz.timeLimit,
+          status: quiz.status || "pending",
+          score: quiz.score || undefined,
+          dueDate: quiz.dueDate || undefined
+        }));
+        
+        setQuizzes(transformedQuizzes);
       } catch (error) {
         console.error("Error loading quizzes:", error);
         toast({
