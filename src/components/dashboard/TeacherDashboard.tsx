@@ -9,6 +9,16 @@ import {
   PlayCircle,
   ChevronRight
 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { fetchTeacherDashboardData } from "@/lib/course-data";
@@ -192,7 +202,7 @@ const TeacherDashboard = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip />
+                    <RechartsTooltip />
                     <Legend />
                     <Bar dataKey="views" fill="#8884d8" name="Video Views" />
                     <Bar dataKey="assignments" fill="#82ca9d" name="Assignments Completed" />

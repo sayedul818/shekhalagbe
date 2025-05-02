@@ -21,4 +21,21 @@ export interface Course {
   resources?: Resource[];
   students?: number;
   rating?: number;
+  completion?: number;
+}
+
+export interface UserPreferences {
+  theme: string;
+  notifications: {
+    email: boolean;
+    push: boolean;
+  };
+  contactPreferences?: {
+    phone?: string;
+  };
+  personalInfo?: {
+    birthDate?: string;
+    education?: string;
+    occupation?: string;
+  };
 }
