@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { User, Mail, Phone, School, Briefcase, Calendar, MapPin } from "lucide-react";
-import { fetchUserData, updateUserProfile } from "@/data/api-data";
+import { fetchUserData, updateUserProfile } from "@/lib/course-data";
 
 const ProfilePage = () => {
   const { user } = useAuth();

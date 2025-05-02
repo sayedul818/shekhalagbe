@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,9 +7,9 @@ import { BookOpen, PlayCircle, Clock, CheckCircle, Lock, Award } from "lucide-re
 import { useNavigate } from "react-router-dom";
 import StudentDashboardFeatures from "./StudentDashboardFeatures";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { fetchMyCourses } from "@/data/api-data";
+import { fetchMyCourses } from "@/lib/course-data";
 import { useToast } from "@/hooks/use-toast";
-import { Course } from "@/data/api-data";
+import { Course } from "@/types/course";
 
 const MyCourses = () => {
   const [tabValue, setTabValue] = useState("in-progress");

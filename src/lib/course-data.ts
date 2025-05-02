@@ -1,5 +1,4 @@
 
-
 import { 
   getCourseById, 
   allCoursesData, 
@@ -18,7 +17,16 @@ import {
   fetchManageCourseData,
   fetchStudentDashboardFeaturesData,
   fetchExamTakeData,
-  fetchUsersListData
+  fetchUsersListData,
+  fetchAdminDashboardData,
+  fetchExamsData,
+  fetchMyCourses,
+  fetchUserData,
+  updateUserProfile,
+  fetchReportsData,
+  fetchStudentDashboardData,
+  fetchStudentsList,
+  fetchTeacherDashboardData
 } from "@/data/api-data";
 
 // Re-export the types and functions for backward compatibility
@@ -39,5 +47,14 @@ export {
   fetchManageCourseData,
   fetchStudentDashboardFeaturesData,
   fetchExamTakeData,
-  fetchUsersListData
+  fetchUsersListData,
+  fetchAdminDashboardData,
+  fetchExamsData,
+  fetchMyCourses,
+  fetchUserData,
+  updateUserProfile,
+  fetchReportsData,
+  fetchStudentDashboardData,
+  fetchStudentsList,
+  fetchTeacherDashboardData
 };

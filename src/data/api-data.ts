@@ -1,4 +1,3 @@
-
 // Mock API data functions for the LMS platform
 // In a real application, these would be replaced with actual API calls
 
@@ -631,7 +630,7 @@ export const fetchManageCourseData = async (courseId: string) => {
             },
             {
               id: "l4",
-              title: "Control Flow",
+2 title: "Control Flow",
               type: "video",
               duration: "30 mins"
             },
@@ -922,6 +921,588 @@ export const fetchUsersListData = async () => {
       }
     ]
   };
+};
+
+// Admin dashboard data
+export const fetchAdminDashboardData = async () => {
+  return {
+    stats: [
+      { 
+        title: "Total Students", 
+        value: 1453, 
+        change: "+12% from last month", 
+        icon: "Users" 
+      },
+      { 
+        title: "Total Courses", 
+        value: 42, 
+        change: "+4 new this month", 
+        icon: "BookOpen" 
+      },
+      { 
+        title: "Completed Courses", 
+        value: 287, 
+        change: "+18% from last month", 
+        icon: "Award" 
+      },
+      { 
+        title: "Revenue", 
+        value: 12480, 
+        change: "+8% from last month", 
+        icon: "TrendingUp" 
+      }
+    ],
+    recentActions: [
+      {
+        action: "New student registration",
+        time: "5 minutes ago",
+        icon: "UserPlus"
+      },
+      {
+        action: "New course published",
+        time: "2 hours ago",
+        icon: "BookPlus"
+      },
+      {
+        action: "Quiz completed by 15 students",
+        time: "4 hours ago",
+        icon: "ClipboardCheck"
+      },
+      {
+        action: "Course materials updated",
+        time: "1 day ago",
+        icon: "BookOpen"
+      }
+    ],
+    popularCourses: [
+      {
+        title: "JavaScript Fundamentals",
+        students: 245,
+        modules: 12
+      },
+      {
+        title: "Advanced React & Redux",
+        students: 189,
+        modules: 15
+      },
+      {
+        title: "Python for Data Science",
+        students: 173,
+        modules: 14
+      },
+      {
+        title: "UI/UX Design Masterclass",
+        students: 156,
+        modules: 20
+      }
+    ]
+  };
+};
+
+// Exams data
+export const fetchExamsData = async () => {
+  return {
+    upcomingExams: [
+      {
+        id: "exam1",
+        title: "JavaScript Fundamentals",
+        description: "Test your knowledge of JavaScript basics including variables, functions, and objects.",
+        courseTitle: "JavaScript Fundamentals",
+        date: "May 5, 2025",
+        time: "10:00 AM",
+        duration: "1 hour",
+        totalQuestions: 20,
+        status: "upcoming"
+      },
+      {
+        id: "exam2",
+        title: "React Components & Props",
+        description: "Assessment covering React component structure, props, and state management.",
+        courseTitle: "Advanced React & Redux",
+        date: "May 12, 2025",
+        time: "2:00 PM",
+        duration: "1.5 hours",
+        totalQuestions: 15,
+        status: "upcoming"
+      }
+    ],
+    completedExams: [
+      {
+        id: "exam3",
+        title: "HTML & CSS Basics",
+        description: "Assessment on foundational web development concepts.",
+        courseTitle: "Web Development Fundamentals",
+        completedDate: "April 20, 2025",
+        score: 92,
+        totalQuestions: 25,
+        timeTaken: "45 minutes",
+        status: "passed"
+      },
+      {
+        id: "exam4",
+        title: "Database Concepts",
+        description: "Test on SQL fundamentals and database design principles.",
+        courseTitle: "SQL Mastery",
+        completedDate: "April 15, 2025",
+        score: 88,
+        totalQuestions: 30,
+        timeTaken: "55 minutes",
+        status: "passed"
+      }
+    ]
+  };
+};
+
+// My courses data
+export const fetchMyCourses = async () => {
+  return {
+    enrolledCourses: [
+      { 
+        id: "1", 
+        title: "JavaScript Fundamentals", 
+        teacher: "Robert Johnson", 
+        thumbnail: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
+        progress: 60,
+        completedModules: 8,
+        modules: 12,
+        lastAccessed: "Yesterday"
+      },
+      { 
+        id: "2", 
+        title: "Advanced React & Redux", 
+        teacher: "Emily Davis", 
+        thumbnail: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2",
+        progress: 35,
+        completedModules: 5,
+        modules: 14,
+        lastAccessed: "3 days ago"
+      },
+      { 
+        id: "3", 
+        title: "Node.js API Development", 
+        teacher: "Michael Chen", 
+        thumbnail: "https://images.unsplash.com/photo-1527689368864-3a821dbccc34",
+        progress: 80,
+        completedModules: 8,
+        modules: 10,
+        lastAccessed: "Today"
+      }
+    ],
+    completedCourses: [
+      {
+        id: "4",
+        title: "HTML & CSS Mastery",
+        teacher: "Lisa Martinez",
+        thumbnail: "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8",
+        progress: 100,
+        completedModules: 12,
+        modules: 12,
+        completedDate: "April 10, 2025",
+        certificate: true
+      },
+      {
+        id: "5",
+        title: "UI Design Basics",
+        teacher: "David Wilson",
+        thumbnail: "https://images.unsplash.com/photo-1541462608143-67571c6738dd",
+        progress: 100,
+        completedModules: 8,
+        modules: 8,
+        completedDate: "March 22, 2025",
+        certificate: true
+      }
+    ]
+  };
+};
+
+// User profile data
+export const fetchUserData = async (userId: string) => {
+  return {
+    id: userId,
+    name: "Alex Johnson",
+    email: "alex.johnson@example.com",
+    phone: "+1 (555) 123-4567",
+    address: "123 Learning Street, Education City, 12345",
+    birthDate: "1992-06-15",
+    bio: "Passionate learner with interests in web development and design. Always looking to expand my knowledge and skills through online courses.",
+    education: "Bachelor's in Computer Science",
+    occupation: "Frontend Developer",
+    avatar: "https://i.pravatar.cc/150?u=alex"
+  };
+};
+
+export const updateUserProfile = async (userId: string, data: any) => {
+  console.log(`Profile updated for user ${userId}`, data);
+  return { success: true };
+};
+
+// Reports data
+export const fetchReportsData = async () => {
+  return {
+    enrollmentData: [
+      { month: "May", students: 45 },
+      { month: "Jun", students: 52 },
+      { month: "Jul", students: 38 },
+      { month: "Aug", students: 65 },
+      { month: "Sep", students: 87 },
+      { month: "Oct", students: 93 },
+      { month: "Nov", students: 108 },
+      { month: "Dec", students: 121 },
+      { month: "Jan", students: 145 },
+      { month: "Feb", students: 170 },
+      { month: "Mar", students: 185 },
+      { month: "Apr", students: 210 }
+    ],
+    courseDistributionData: [
+      { name: "Web Development", value: 425 },
+      { name: "Design", value: 310 },
+      { name: "Data Science", value: 275 },
+      { name: "Business", value: 190 }
+    ],
+    topPerformingCourses: [
+      { 
+        id: "1", 
+        title: "JavaScript Fundamentals", 
+        enrollment: 245, 
+        rating: 4.8, 
+        completion: 87 
+      },
+      { 
+        id: "2", 
+        title: "Advanced React & Redux", 
+        enrollment: 189, 
+        rating: 4.7, 
+        completion: 82 
+      },
+      { 
+        id: "5", 
+        title: "Python for Data Science", 
+        enrollment: 173, 
+        rating: 4.9, 
+        completion: 90 
+      },
+      { 
+        id: "6", 
+        title: "UI/UX Design Masterclass", 
+        enrollment: 156, 
+        rating: 4.8, 
+        completion: 78 
+      }
+    ]
+  };
+};
+
+// Student dashboard data
+export const fetchStudentDashboardData = async () => {
+  return {
+    courses: [
+      { 
+        id: "1", 
+        title: "JavaScript Fundamentals", 
+        thumbnail: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc",
+        progress: 60,
+        completedLessons: 8,
+        totalLessons: 12,
+        teacher: "Robert Johnson",
+        description: "Learn the foundations of JavaScript programming",
+        lastLesson: "Functions and Objects",
+        nextLessonId: "js-lesson-9"
+      },
+      { 
+        id: "2", 
+        title: "Advanced React & Redux", 
+        thumbnail: "https://images.unsplash.com/photo-1633356122102-3fe601e05bd2",
+        progress: 35,
+        completedLessons: 5,
+        totalLessons: 14,
+        teacher: "Emily Davis",
+        description: "Master state management with Redux",
+        lastLesson: "Redux Middleware",
+        nextLessonId: "react-lesson-6"
+      },
+      { 
+        id: "3", 
+        title: "Node.js API Development", 
+        thumbnail: "https://images.unsplash.com/photo-1527689368864-3a821dbccc34",
+        progress: 80,
+        completedLessons: 8,
+        totalLessons: 10,
+        teacher: "Michael Chen",
+        description: "Build robust APIs with Node.js",
+        lastLesson: "Authentication",
+        nextLessonId: "node-lesson-9"
+      }
+    ],
+    upcomingExams: [
+      {
+        id: "exam1",
+        title: "JavaScript Fundamentals",
+        date: "May 5, 2025",
+        time: "10:00 AM"
+      },
+      {
+        id: "exam2",
+        title: "React Components Quiz",
+        date: "May 12, 2025",
+        time: "2:00 PM"
+      }
+    ],
+    announcements: [
+      {
+        id: "a1",
+        title: "Updated Course Materials",
+        date: "Yesterday",
+        content: "New resources have been added to the JavaScript Fundamentals course. Check out the updated modules on async programming."
+      },
+      {
+        id: "a2",
+        title: "Live Workshop Next Week",
+        date: "3 days ago",
+        content: "Join us for a live React workshop next Friday at 4PM. We'll be covering advanced hooks and custom hook creation patterns."
+      },
+      {
+        id: "a3",
+        title: "Assignment Deadline Extended",
+        date: "1 week ago",
+        content: "The deadline for the Node.js API project has been extended to May 15th. Take advantage of this extra time to refine your work."
+      }
+    ]
+  };
+};
+
+// Students list
+export const fetchStudentsList = async () => {
+  return [
+    {
+      id: "s1",
+      name: "John Smith",
+      email: "john.smith@example.com",
+      progress: 78,
+      lastActive: "Today",
+      enrolled: "Jan 15, 2025"
+    },
+    {
+      id: "s2",
+      name: "Emma Wilson",
+      email: "emma.wilson@example.com",
+      progress: 92,
+      lastActive: "Yesterday",
+      enrolled: "Feb 3, 2025"
+    },
+    {
+      id: "s3",
+      name: "Michael Brown",
+      email: "michael.brown@example.com",
+      progress: 45,
+      lastActive: "3 days ago",
+      enrolled: "Jan 20, 2025"
+    },
+    {
+      id: "s4",
+      name: "Sophia Garcia",
+      email: "sophia.garcia@example.com",
+      progress: 65,
+      lastActive: "Today",
+      enrolled: "Mar 5, 2025"
+    },
+    {
+      id: "s5",
+      name: "William Lee",
+      email: "william.lee@example.com",
+      progress: 22,
+      lastActive: "1 week ago",
+      enrolled: "Mar 12, 2025"
+    },
+    {
+      id: "s6",
+      name: "Olivia Taylor",
+      email: "olivia.taylor@example.com",
+      progress: 85,
+      lastActive: "2 days ago",
+      enrolled: "Feb 8, 2025"
+    }
+  ];
+};
+
+// Teacher dashboard data
+export const fetchTeacherDashboardData = async () => {
+  return {
+    stats: [
+      { title: "Active Courses", value: 6, icon: "BookOpen" },
+      { title: "Total Students", value: 475, icon: "Users" },
+      { title: "Completion Rate", value: "83%", icon: "Award" },
+      { title: "Avg. Rating", value: "4.7", icon: "Star" }
+    ],
+    recentCourses: [
+      {
+        id: "c1",
+        title: "JavaScript Fundamentals",
+        students: 245,
+        progress: 80,
+        lastUpdated: "2 days ago"
+      },
+      {
+        id: "c2",
+        title: "Advanced React & Redux",
+        students: 189,
+        progress: 65,
+        lastUpdated: "Yesterday"
+      },
+      {
+        id: "c3",
+        title: "Node.js API Development",
+        students: 112,
+        progress: 40,
+        lastUpdated: "Today"
+      }
+    ],
+    upcomingClasses: [
+      {
+        id: "cl1",
+        title: "Live Q&A: JavaScript Promises",
+        date: "May 5, 2025",
+        time: "10:00 AM",
+        students: 68
+      },
+      {
+        id: "cl2",
+        title: "Workshop: Building Custom React Hooks",
+        date: "May 10, 2025",
+        time: "2:00 PM",
+        students: 52
+      }
+    ],
+    pendingAssignments: [
+      {
+        id: "a1",
+        title: "Todo List Application",
+        course: "JavaScript Fundamentals",
+        submissions: 18,
+        pending: 12,
+        dueDate: "April 28, 2025"
+      },
+      {
+        id: "a2",
+        title: "Redux State Management",
+        course: "Advanced React & Redux",
+        submissions: 22,
+        pending: 8,
+        dueDate: "May 3, 2025"
+      },
+      {
+        id: "a3",
+        title: "RESTful API Development",
+        course: "Node.js API Development",
+        submissions: 15,
+        pending: 10,
+        dueDate: "May 8, 2025"
+      }
+    ]
+  };
+};
+
+// Course modules
+export const fetchCourseModules = async (courseId: string) => {
+  const modules = {
+    "1": [
+      {
+        id: "m1",
+        title: "Introduction to JavaScript",
+        lessons: [
+          { id: "l1", title: "What is JavaScript?" },
+          { id: "l2", title: "Setting Up Your Environment" },
+          { id: "l3", title: "Basic Syntax and Data Types" }
+        ]
+      },
+      {
+        id: "m2",
+        title: "JavaScript Fundamentals",
+        lessons: [
+          { id: "l4", title: "Variables and Operators" },
+          { id: "l5", title: "Control Flow" },
+          { id: "l6", title: "Functions" },
+          { id: "l7", title: "Objects and Arrays" }
+        ]
+      },
+      {
+        id: "m3",
+        title: "Advanced JavaScript",
+        lessons: [
+          { id: "l8", title: "DOM Manipulation" },
+          { id: "l9", title: "Event Handling" },
+          { id: "l10", title: "Asynchronous JavaScript" },
+          { id: "l11", title: "Error Handling" },
+          { id: "l12", title: "Modern JavaScript Features" }
+        ]
+      }
+    ],
+    "2": [
+      {
+        id: "m1",
+        title: "React Fundamentals",
+        lessons: [
+          { id: "l1", title: "Introduction to React" },
+          { id: "l2", title: "Components and Props" },
+          { id: "l3", title: "State and Lifecycle" },
+          { id: "l4", title: "Handling Events" }
+        ]
+      },
+      {
+        id: "m2",
+        title: "Advanced React",
+        lessons: [
+          { id: "l5", title: "Hooks Overview" },
+          { id: "l6", title: "Custom Hooks" },
+          { id: "l7", title: "Context API" },
+          { id: "l8", title: "Performance Optimization" }
+        ]
+      },
+      {
+        id: "m3",
+        title: "Redux State Management",
+        lessons: [
+          { id: "l9", title: "Redux Fundamentals" },
+          { id: "l10", title: "Actions, Reducers, and Store" },
+          { id: "l11", title: "Redux Middleware" },
+          { id: "l12", title: "Redux Toolkit" },
+          { id: "l13", title: "Async Actions with Redux" },
+          { id: "l14", title: "Testing Redux Applications" }
+        ]
+      }
+    ],
+    "3": [
+      {
+        id: "m1",
+        title: "Node.js Basics",
+        lessons: [
+          { id: "l1", title: "Introduction to Node.js" },
+          { id: "l2", title: "Node.js Modules" },
+          { id: "l3", title: "File System Operations" }
+        ]
+      },
+      {
+        id: "m2",
+        title: "Building APIs with Express",
+        lessons: [
+          { id: "l4", title: "Express Framework Basics" },
+          { id: "l5", title: "Middleware" },
+          { id: "l6", title: "Routing" },
+          { id: "l7", title: "Error Handling" }
+        ]
+      },
+      {
+        id: "m3",
+        title: "Database Integration",
+        lessons: [
+          { id: "l8", title: "MongoDB Basics" },
+          { id: "l9", title: "Mongoose ODM" },
+          { id: "l10", title: "Authentication & Authorization" }
+        ]
+      }
+    ]
+  };
+
+  return modules[courseId as keyof typeof modules] || [];
 };
 
 // Resource and Course types

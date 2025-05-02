@@ -10,7 +10,7 @@ import {
   BookPlus,
   ClipboardCheck
 } from "lucide-react";
-import { fetchAdminDashboardData } from "@/data/api-data";
+import { fetchAdminDashboardData } from "@/lib/course-data";
 import { useToast } from "@/hooks/use-toast";
 
 const AdminDashboard = () => {

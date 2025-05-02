@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search, X, Mail, Eye } from "lucide-react";
-import { fetchStudentsList } from "@/data/api-data";
+import { fetchStudentsList } from "@/lib/course-data";
 import { useToast } from "@/hooks/use-toast";
 
 const StudentsList = () => {

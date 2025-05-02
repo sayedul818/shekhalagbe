@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { ExamCard } from "@/components/exams/ExamCard";
 import { CompletedExamCard } from "@/components/exams/CompletedExamCard";
-import { fetchExamsData } from "@/data/api-data";
+import { fetchExamsData } from "@/lib/course-data";
 
 const ExamsList = () => {
   const { user } = useAuth();

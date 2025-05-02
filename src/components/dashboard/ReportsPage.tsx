@@ -16,7 +16,7 @@ import {
   Cell
 } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { fetchReportsData } from "@/data/api-data";
+import { fetchReportsData } from "@/lib/course-data";
 import { useToast } from "@/hooks/use-toast";
 
 const ReportsPage = () => {
