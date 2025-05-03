@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,8 +84,8 @@ const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
               title: item.title,
               type: mapContentType(item.type),
               duration: item.duration || "10 min",
-              status: item.locked ? "locked" : 
-                     item.completed ? "completed" : "in-progress",
+              status: item.locked ? "locked" as "locked" : 
+                     item.completed ? "completed" as "completed" : "in-progress" as "in-progress",
               completed: item.completed || false,
               isBookmarked: item.bookmarked || false
             })) || []
@@ -191,7 +192,7 @@ const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
         if (module.id === moduleId) {
           const updatedItems = module.items.map(item => {
             if (item.id === lessonId) {
-              return { ...item, status: "completed", completed: true };
+              return { ...item, status: "completed" as "completed", completed: true };
             }
             return item;
           });
