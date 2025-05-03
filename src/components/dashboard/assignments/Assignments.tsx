@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,14 +10,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Clock, Calendar, FileText, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { CourseComponentProps } from "@/types";
+import { Assignment, AssignmentStatus } from "@/types/assignments";
 
-// Mock data for assignments with proper type
-const mockAssignments = [
+// Mock data for assignments using the Assignment type
+const mockAssignments: Assignment[] = [
   {
     id: "1",
     title: "JavaScript Fundamentals",
     dueDate: "2025-05-15",
-    status: "pending" as const,
+    status: "pending",
     instructions: "Create a simple JavaScript application that demonstrates the use of promises, async/await, and error handling. Your submission should include both the code and a brief explanation of your implementation.",
     module: "Module 2: JavaScript Basics"
   },
@@ -24,7 +26,7 @@ const mockAssignments = [
     id: "2",
     title: "React Component Library",
     dueDate: "2025-05-10",
-    status: "overdue" as const,
+    status: "overdue",
     instructions: "Build a reusable component library in React. Your submission should include at least 5 components with proper documentation and styling.",
     module: "Module 4: React Fundamentals"
   },
@@ -32,7 +34,7 @@ const mockAssignments = [
     id: "3",
     title: "CSS Layouts",
     dueDate: "2025-04-28",
-    status: "submitted" as const,
+    status: "submitted",
     submissionDate: "2025-04-27",
     instructions: "Create a responsive layout using CSS Grid and Flexbox. Your submission should work on mobile, tablet, and desktop views.",
     module: "Module 1: Web Fundamentals"
@@ -41,7 +43,7 @@ const mockAssignments = [
     id: "4",
     title: "Backend API Integration",
     dueDate: "2025-04-20",
-    status: "graded" as const,
+    status: "graded",
     grade: 95,
     feedback: "Excellent work! Your API integration was clean and well-documented. The error handling was particularly impressive.",
     instructions: "Integrate a third-party API into your application. Document the API endpoints and explain your implementation choices.",
@@ -54,10 +56,10 @@ interface AssignmentsProps extends CourseComponentProps {}
 
 const Assignments: React.FC<AssignmentsProps> = ({ courseId }) => {
   const [activeTab, setActiveTab] = useState<"pending" | "submitted" | "graded" | "all">("all");
-  const [assignments, setAssignments] = useState(mockAssignments);
+  const [assignments, setAssignments] = useState<Assignment[]>(mockAssignments);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { toast } = useToast();
@@ -94,7 +96,7 @@ const Assignments: React.FC<AssignmentsProps> = ({ courseId }) => {
   );
   
   // Handlers
-  const handleViewAssignment = (assignment) => {
+  const handleViewAssignment = (assignment: Assignment) => {
     // In a real implementation, this would fetch the assignment details
     console.log("Viewing assignment:", assignment);
     setSelectedAssignment(assignment);
@@ -106,7 +108,7 @@ const Assignments: React.FC<AssignmentsProps> = ({ courseId }) => {
     }
   };
   
-  const handleSubmitAssignment = (assignment) => {
+  const handleSubmitAssignment = (assignment: Assignment) => {
     setSelectedAssignment(assignment);
     setIsModalOpen(true);
   };
@@ -117,7 +119,7 @@ const Assignments: React.FC<AssignmentsProps> = ({ courseId }) => {
   };
   
   // Handle file submission
-  const handleFileSubmit = async (assignmentId, file) => {
+  const handleFileSubmit = async (assignmentId: string, file: File) => {
     // In a real implementation, this would upload the file to a server
     console.log(`Submitting file for assignment ${assignmentId}:`, file);
     
@@ -128,7 +130,7 @@ const Assignments: React.FC<AssignmentsProps> = ({ courseId }) => {
     setAssignments(prevAssignments => 
       prevAssignments.map(a => 
         a.id === assignmentId 
-          ? { ...a, status: "submitted" as const, submissionDate: new Date().toISOString() } 
+          ? { ...a, status: "submitted" as AssignmentStatus, submissionDate: new Date().toISOString() } 
           : a
       )
     );

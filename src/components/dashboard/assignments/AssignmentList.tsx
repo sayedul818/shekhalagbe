@@ -1,26 +1,13 @@
 
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar, Clock, FileText, Check, Eye, Upload } from "lucide-react";
-
-interface Assignment {
-  id: string;
-  title: string;
-  dueDate: string;
-  status: "pending" | "submitted" | "graded" | "overdue";
-  grade?: number;
-  feedback?: string;
-  instructions: string;
-  module?: string;
-  submissionDate?: string;
-}
+import { Badge } from "@/components/ui/badge";
+import { Clock, CheckCircle, AlertTriangle, FileCheck } from "lucide-react";
+import { Assignment, AssignmentStatus } from "@/types/assignments";
 
 interface AssignmentListProps {
   assignments: Assignment[];
-  filter: "pending" | "submitted" | "graded" | "all";
+  filter: "all" | "pending" | "submitted" | "graded";
   onViewAssignment: (assignment: Assignment) => void;
   onSubmitAssignment: (assignment: Assignment) => void;
 }
@@ -31,166 +18,111 @@ const AssignmentList: React.FC<AssignmentListProps> = ({
   onViewAssignment,
   onSubmitAssignment,
 }) => {
-  // Filter assignments based on the selected filter
+  // Filter assignments based on the selected tab
   const filteredAssignments = filter === "all" 
     ? assignments 
     : assignments.filter(assignment => assignment.status === filter);
-  
-  // Function to determine badge variant based on status
-  const getBadgeVariant = (status: string) => {
+
+  if (filteredAssignments.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <FileCheck className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+        <p className="text-muted-foreground">No assignments found</p>
+      </div>
+    );
+  }
+
+  const getStatusBadge = (status: AssignmentStatus) => {
     switch (status) {
       case "pending":
-        return "outline";
-      case "submitted":
-        return "secondary";
-      case "graded":
-        return "default";
-      case "overdue":
-        return "destructive";
-      default:
-        return "outline";
-    }
-  };
-  
-  // Function to format date with relative time
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays < 0) {
-      return `${Math.abs(diffDays)} days ago`;
-    } else if (diffDays === 0) {
-      return "Today";
-    } else if (diffDays === 1) {
-      return "Tomorrow";
-    } else if (diffDays < 7) {
-      return `In ${diffDays} days`;
-    } else {
-      return date.toLocaleDateString();
-    }
-  };
-  
-  // Function to determine action button based on status
-  const getActionButton = (assignment: Assignment) => {
-    switch (assignment.status) {
-      case "pending":
         return (
-          <Button 
-            size="sm" 
-            onClick={() => onSubmitAssignment(assignment)} 
-            className="gap-1"
-          >
-            <Upload className="h-4 w-4" />
-            Submit
-          </Button>
+          <Badge variant="outline" className="flex items-center gap-1 font-normal">
+            <Clock className="h-3 w-3" />
+            <span>Pending</span>
+          </Badge>
         );
       case "submitted":
         return (
-          <Button 
-            size="sm" 
-            variant="outline" 
-            onClick={() => onViewAssignment(assignment)}
-            className="gap-1"
-          >
-            <Eye className="h-4 w-4" />
-            View
-          </Button>
+          <Badge variant="secondary" className="flex items-center gap-1 font-normal">
+            <CheckCircle className="h-3 w-3" />
+            <span>Submitted</span>
+          </Badge>
         );
       case "graded":
         return (
-          <Button 
-            size="sm" 
-            variant="outline" 
-            onClick={() => onViewAssignment(assignment)}
-            className="gap-1"
-          >
-            <Check className="h-4 w-4" />
-            Feedback
-          </Button>
+          <Badge variant="default" className="flex items-center gap-1 font-normal">
+            <FileCheck className="h-3 w-3" />
+            <span>Graded</span>
+          </Badge>
         );
       case "overdue":
         return (
-          <Button 
-            size="sm" 
-            variant="destructive" 
-            onClick={() => onSubmitAssignment(assignment)}
-            className="gap-1"
-          >
-            <Upload className="h-4 w-4" />
-            Submit Late
-          </Button>
+          <Badge variant="destructive" className="flex items-center gap-1 font-normal">
+            <AlertTriangle className="h-3 w-3" />
+            <span>Overdue</span>
+          </Badge>
         );
       default:
         return null;
     }
   };
-  
-  // If no assignments match the filter
-  if (filteredAssignments.length === 0) {
-    return (
-      <Card>
-        <CardContent className="pt-6 pb-6 flex flex-col items-center justify-center text-center">
-          <FileText className="h-10 w-10 text-muted-foreground mb-2" />
-          <h3 className="text-lg font-medium mb-1">No assignments found</h3>
-          <p className="text-muted-foreground text-sm max-w-sm">
-            {filter === "pending" 
-              ? "You don't have any pending assignments. Check back later or look at other tabs."
-              : filter === "submitted" 
-              ? "You haven't submitted any assignments yet."
-              : filter === "graded" 
-              ? "None of your assignments have been graded yet." 
-              : "You don't have any assignments at the moment."}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-  
+
+  const isOverdue = (dueDate: string) => {
+    return new Date(dueDate) < new Date() && filter === "pending";
+  };
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Assignment Title</TableHead>
-          <TableHead>Due Date</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Action</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {filteredAssignments.map((assignment) => (
-          <TableRow key={assignment.id}>
-            <TableCell className="font-medium">
-              <div className="flex flex-col">
-                {assignment.title}
-                {assignment.module && (
-                  <span className="text-xs text-muted-foreground">
-                    {assignment.module}
-                  </span>
-                )}
-              </div>
-            </TableCell>
-            <TableCell>
+    <div className="divide-y">
+      {filteredAssignments.map((assignment) => (
+        <div key={assignment.id} className="p-4 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-1 md:space-y-2">
+            <div className="flex items-center gap-2">
+              <h3 className="font-medium">{assignment.title}</h3>
+              {getStatusBadge(assignment.status)}
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
               <div className="flex items-center">
-                <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
-                <span>{formatDate(assignment.dueDate)}</span>
+                <Clock className="h-3 w-3 mr-1" />
+                <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
               </div>
-            </TableCell>
-            <TableCell>
-              <Badge variant={getBadgeVariant(assignment.status)}>
-                {assignment.status === "graded" && assignment.grade 
-                  ? `${assignment.grade}%` 
-                  : assignment.status.charAt(0).toUpperCase() + assignment.status.slice(1)}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              {getActionButton(assignment)}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+              {assignment.module && (
+                <div>{assignment.module}</div>
+              )}
+              {assignment.status === "submitted" && assignment.submissionDate && (
+                <div className="flex items-center">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  <span>Submitted: {new Date(assignment.submissionDate).toLocaleDateString()}</span>
+                </div>
+              )}
+              {assignment.status === "graded" && (
+                <div className="font-medium text-primary">
+                  Score: {assignment.grade}/100
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col xs:flex-row gap-2 xs:ml-auto">
+            {assignment.status === "pending" || assignment.status === "overdue" ? (
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={() => onSubmitAssignment(assignment)}
+              >
+                Submit Assignment
+              </Button>
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => onViewAssignment(assignment)}
+              >
+                {assignment.status === "graded" ? "View Feedback" : "View Submission"}
+              </Button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };
 

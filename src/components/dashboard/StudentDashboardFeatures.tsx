@@ -33,12 +33,6 @@ interface StudentDashboardFeaturesProps {
   onBack: () => void;
 }
 
-interface CustomSelectProps {
-  children: React.ReactNode;
-  placeholder: string;
-  className?: string;
-}
-
 const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeaturesProps) => {
   const [activeTab, setActiveTab] = useState("curriculum");
   const [isLoading, setIsLoading] = useState(true);
@@ -207,16 +201,5 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
     </div>
   );
 };
-
-// CustomSelect component with proper TypeScript interface and children prop
-function CustomSelect({ children, placeholder, className }: CustomSelectProps) {
-  return (
-    <div className={`${className || ''} flex items-center justify-between bg-background border rounded-md px-3 py-2 text-sm`}>
-      <span className="text-muted-foreground">{placeholder}</span>
-      <span className="text-muted-foreground">▼</span>
-      {children}
-    </div>
-  );
-}
 
 export default StudentDashboardFeatures;

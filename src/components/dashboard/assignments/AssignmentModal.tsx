@@ -1,20 +1,15 @@
-
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Upload, FileText, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Assignment } from "@/types/assignments";
 
 interface AssignmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  assignment: {
-    id: string;
-    title: string;
-    instructions: string;
-    dueDate: string;
-  };
+  assignment: Assignment;
   onSubmit: (assignmentId: string, file: File) => Promise<void>;
 }
 
