@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,12 +16,14 @@ import {
   Clock,
   PieChart,
   Calendar,
-  Bookmark,
   ArrowLeft,
   BookPlus,
   Tag,
-  UserPlus
 } from "lucide-react";
+import CurriculumManager from "./curriculum/CurriculumManager";
+import QuizzesManager from "./quizzes/QuizzesManager";
+import AssignmentsManager from "./assignments/AssignmentsManager";
+import DiscussionManager from "./discussions/DiscussionManager";
 
 const ManageCoursePage = () => {
   const { courseId } = useParams();
@@ -123,177 +124,49 @@ const ManageCoursePage = () => {
         <div className="md:col-span-4">
           <Tabs defaultValue="content" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="flex flex-wrap w-full">
-              <TabsTrigger value="content" className="flex-1">Content</TabsTrigger>
-              <TabsTrigger value="quizzes" className="flex-1">Quizzes</TabsTrigger>
-              <TabsTrigger value="students" className="flex-1">Students</TabsTrigger>
-              <TabsTrigger value="assignments" className="flex-1">Assign.</TabsTrigger>
-              <TabsTrigger value="engagement" className="flex-1">Engage.</TabsTrigger>
-              <TabsTrigger value="communication" className="flex-1">Comms.</TabsTrigger>
-              <TabsTrigger value="settings" className="flex-1">Settings</TabsTrigger>
+              <TabsTrigger value="content" className="flex-1">
+                <Video className="h-4 w-4 mr-2 sm:inline hidden" />
+                Content
+              </TabsTrigger>
+              <TabsTrigger value="quizzes" className="flex-1">
+                <FileQuestion className="h-4 w-4 mr-2 sm:inline hidden" />
+                Quizzes
+              </TabsTrigger>
+              <TabsTrigger value="assignments" className="flex-1">
+                <FileText className="h-4 w-4 mr-2 sm:inline hidden" />
+                Assignments
+              </TabsTrigger>
+              <TabsTrigger value="students" className="flex-1">
+                <Users className="h-4 w-4 mr-2 sm:inline hidden" />
+                Students
+              </TabsTrigger>
+              <TabsTrigger value="discussions" className="flex-1">
+                <MessageSquare className="h-4 w-4 mr-2 sm:inline hidden" />
+                Discussions
+              </TabsTrigger>
+              <TabsTrigger value="engagement" className="flex-1">
+                <PieChart className="h-4 w-4 mr-2 sm:inline hidden" />
+                Engagement
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex-1">
+                <Settings className="h-4 w-4 mr-2 sm:inline hidden" />
+                Settings
+              </TabsTrigger>
             </TabsList>
             
             {/* Content Tab */}
             <TabsContent value="content" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Course Content</CardTitle>
-                  <CardDescription>Manage your course curriculum, sections, and lessons</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 overflow-x-auto">
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                    <h3 className="text-lg font-medium">Curriculum</h3>
-                    <Button>
-                      <BookPlus className="h-4 w-4 mr-2" />
-                      Add Section
-                    </Button>
-                  </div>
-                  
-                  {/* Section 1 */}
-                  <div className="border rounded-md">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 gap-2">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium">Section 1:</span>
-                        <span className="font-semibold">Introduction to JavaScript</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm">Edit</Button>
-                        <Button variant="ghost" size="sm">Add Lesson</Button>
-                      </div>
-                    </div>
-                    <Separator />
-                    <div className="p-4 space-y-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
-                        <div className="flex items-center space-x-3">
-                          <Video className="h-4 w-4 text-gray-500" />
-                          <span>Lesson 1: JavaScript Basics</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
-                        <div className="flex items-center space-x-3">
-                          <FileText className="h-4 w-4 text-gray-500" />
-                          <span>Lesson 2: Variables and Data Types</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
-                        <div className="flex items-center space-x-3">
-                          <FileQuestion className="h-4 w-4 text-gray-500" />
-                          <span>Quiz: JavaScript Basics</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Section 2 */}
-                  <div className="border rounded-md">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 gap-2">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium">Section 2:</span>
-                        <span className="font-semibold">Functions and Objects</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm">Edit</Button>
-                        <Button variant="ghost" size="sm">Add Lesson</Button>
-                      </div>
-                    </div>
-                    <Separator />
-                    <div className="p-4 space-y-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
-                        <div className="flex items-center space-x-3">
-                          <Video className="h-4 w-4 text-gray-500" />
-                          <span>Lesson 3: Functions in JavaScript</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 px-3 bg-gray-100 rounded-md">
-                        <div className="flex items-center space-x-3">
-                          <FileText className="h-4 w-4 text-gray-500" />
-                          <span>Lesson 4: Objects and Methods</span>
-                        </div>
-                        <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-center mt-4">
-                    <Button variant="outline">
-                      <BookPlus className="h-4 w-4 mr-2" />
-                      Add New Section
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <CurriculumManager />
             </TabsContent>
             
             {/* Quizzes Tab */}
             <TabsContent value="quizzes" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quizzes & Assessments</CardTitle>
-                  <CardDescription>Create and manage quizzes, tests, and assessments</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col sm:flex-row sm:justify-between mb-6 gap-2">
-                    <div>
-                      <h3 className="text-lg font-medium">Question Bank</h3>
-                      <p className="text-sm text-muted-foreground">Reusable questions for your quizzes</p>
-                    </div>
-                    <Button>
-                      <FileQuestion className="h-4 w-4 mr-2" />
-                      Add Question
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="border rounded-md p-4">
-                      <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
-                        <h4 className="font-medium">JavaScript Basics Quiz</h4>
-                        <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm">Preview</Button>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">10 questions • Time limit: 20 minutes</p>
-                      <div className="flex flex-wrap items-center mt-2 text-sm gap-1">
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">MCQ</span>
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-2">Easy</span>
-                        <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">Auto-graded</span>
-                      </div>
-                    </div>
-                    
-                    <div className="border rounded-md p-4">
-                      <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
-                        <h4 className="font-medium">Final Assessment</h4>
-                        <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm">Preview</Button>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">25 questions • Time limit: 60 minutes</p>
-                      <div className="flex flex-wrap items-center mt-2 text-sm gap-1">
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">Mixed</span>
-                        <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs mr-2">Medium</span>
-                        <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">Manual Review</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <QuizzesManager />
+            </TabsContent>
+            
+            {/* Assignments Tab */}
+            <TabsContent value="assignments" className="space-y-4">
+              <AssignmentsManager />
             </TabsContent>
             
             {/* Students Tab */}
@@ -310,7 +183,7 @@ const ManageCoursePage = () => {
                       <p className="text-sm text-muted-foreground">124 students enrolled</p>
                     </div>
                     <Button>
-                      <UserPlus className="h-4 w-4 mr-2" />
+                      <Users className="h-4 w-4 mr-2" />
                       Invite Students
                     </Button>
                   </div>
@@ -377,60 +250,9 @@ const ManageCoursePage = () => {
               </Card>
             </TabsContent>
             
-            {/* Assignments Tab */}
-            <TabsContent value="assignments" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Assignments</CardTitle>
-                  <CardDescription>Create and manage assignments</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col sm:flex-row sm:justify-between mb-6 gap-2">
-                    <div>
-                      <h3 className="text-lg font-medium">All Assignments</h3>
-                      <p className="text-sm text-muted-foreground">Manage your course assignments</p>
-                    </div>
-                    <Button>
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Create Assignment
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="border rounded-md p-4">
-                      <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
-                        <h4 className="font-medium">JavaScript Loops Project</h4>
-                        <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm" className="hidden sm:inline-flex">View Submissions</Button>
-                          <Button variant="ghost" size="sm" className="sm:hidden">View</Button>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">Due: May 25, 2023 • 67 submissions</p>
-                      <div className="flex flex-wrap items-center mt-2 text-sm gap-1">
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">File Upload</span>
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Resubmission allowed</span>
-                      </div>
-                    </div>
-                    
-                    <div className="border rounded-md p-4">
-                      <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
-                        <h4 className="font-medium">DOM Manipulation Exercise</h4>
-                        <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm" className="hidden sm:inline-flex">View Submissions</Button>
-                          <Button variant="ghost" size="sm" className="sm:hidden">View</Button>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">Due: June 10, 2023 • 42 submissions</p>
-                      <div className="flex flex-wrap items-center mt-2 text-sm gap-1">
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">Written Response</span>
-                        <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No resubmission</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Discussions Tab */}
+            <TabsContent value="discussions" className="space-y-4">
+              <DiscussionManager />
             </TabsContent>
             
             {/* Engagement Tab */}
@@ -501,97 +323,6 @@ const ManageCoursePage = () => {
               </Card>
             </TabsContent>
             
-            {/* Communication Tab */}
-            <TabsContent value="communication" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Communication</CardTitle>
-                  <CardDescription>Manage communication with your students</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col sm:flex-row sm:justify-between mb-6 gap-2">
-                    <div>
-                      <h3 className="text-lg font-medium">Communication Tools</h3>
-                      <p className="text-sm text-muted-foreground">Connect with your students</p>
-                    </div>
-                    <Button>
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">New Announcement</span>
-                      <span className="sm:hidden">Announce</span>
-                    </Button>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="border rounded-md p-4">
-                      <h4 className="font-medium mb-4 flex items-center">
-                        <MessageSquare className="h-5 w-5 mr-2 text-primary" />
-                        Announcements
-                      </h4>
-                      <div className="space-y-4">
-                        <div className="border-l-4 border-primary pl-4 py-1">
-                          <p className="font-medium">Final Project Deadline Extension</p>
-                          <p className="text-sm text-muted-foreground">Posted: 3 days ago</p>
-                        </div>
-                        <div className="border-l-4 border-primary pl-4 py-1">
-                          <p className="font-medium">New Bonus Content Added</p>
-                          <p className="text-sm text-muted-foreground">Posted: 1 week ago</p>
-                        </div>
-                      </div>
-                      <Button variant="ghost" className="mt-4 w-full">View All Announcements</Button>
-                    </div>
-                    
-                    <div className="border rounded-md p-4">
-                      <h4 className="font-medium mb-4 flex items-center">
-                        <Calendar className="h-5 w-5 mr-2 text-primary" />
-                        Scheduled Live Sessions
-                      </h4>
-                      <div className="space-y-4">
-                        <div className="border rounded-md p-3">
-                          <p className="font-medium">Q&A Session: JavaScript Objects</p>
-                          <p className="text-sm text-muted-foreground">May 25, 2023 • 10:00 AM</p>
-                          <div className="flex gap-2 mt-2">
-                            <Button size="sm" variant="outline">Edit</Button>
-                            <Button size="sm" variant="ghost">Cancel</Button>
-                          </div>
-                        </div>
-                        <Button variant="outline" className="w-full">
-                          Schedule New Session
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="border rounded-md p-4 mt-6">
-                    <h4 className="font-medium mb-4">Student Q&A</h4>
-                    <div className="space-y-4">
-                      {[
-                        { student: "Maria Garcia", question: "When will we learn about async/await in JavaScript?", replies: 2, time: "2 days ago" },
-                        { student: "Robert Johnson", question: "Can you provide more examples of closures?", replies: 1, time: "1 week ago" },
-                      ].map((item, i) => (
-                        <div key={i} className="border-b pb-4 last:border-b-0 last:pb-0">
-                          <div className="flex flex-col sm:flex-row sm:items-start">
-                            <div className="flex-shrink-0 h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
-                              {item.student.charAt(0)}
-                            </div>
-                            <div className="ml-0 sm:ml-3 mt-2 sm:mt-0 flex-1">
-                              <p className="text-sm font-medium">{item.student}</p>
-                              <p className="text-sm">{item.question}</p>
-                              <div className="flex items-center text-xs text-muted-foreground mt-1">
-                                <span>{item.time}</span>
-                                <span className="mx-2">•</span>
-                                <span>{item.replies} replies</span>
-                              </div>
-                            </div>
-                            <Button variant="ghost" size="sm" className="mt-2 sm:mt-0">Reply</Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
             {/* Settings Tab */}
             <TabsContent value="settings" className="space-y-4">
               <Card>
@@ -599,99 +330,101 @@ const ManageCoursePage = () => {
                   <CardTitle>Course Settings</CardTitle>
                   <CardDescription>Configure your course settings</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">Basic Information</h3>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-medium mb-4">Basic Information</h3>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Course Title</label>
+                            <input 
+                              type="text" 
+                              className="w-full rounded-md border border-gray-300 p-2"
+                              value={course.title}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Price ($)</label>
+                            <input 
+                              type="number" 
+                              className="w-full rounded-md border border-gray-300 p-2"
+                              value={course.price}
+                            />
+                          </div>
+                        </div>
                         <div className="space-y-2">
-                          <label className="text-sm font-medium">Course Title</label>
-                          <input 
-                            type="text" 
-                            className="w-full rounded-md border border-gray-300 p-2"
-                            value={course.title}
-                          />
+                          <label className="text-sm font-medium">Description</label>
+                          <textarea 
+                            className="w-full rounded-md border border-gray-300 p-2 min-h-[100px]"
+                            value={course.description}
+                          ></textarea>
                         </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium">Price ($)</label>
-                          <input 
-                            type="number" 
-                            className="w-full rounded-md border border-gray-300 p-2"
-                            value={course.price}
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Description</label>
-                        <textarea 
-                          className="w-full rounded-md border border-gray-300 p-2 min-h-[100px]"
-                          value={course.description}
-                        ></textarea>
                       </div>
                     </div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">Access Settings</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium">Access Type</label>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
-                          <div className="border rounded-md p-3 flex items-start space-x-3">
-                            <input type="radio" name="accessType" checked={course.accessType === "Paid"} />
-                            <div>
-                              <p className="font-medium">Paid</p>
-                              <p className="text-sm text-muted-foreground">Students pay to access</p>
+                    
+                    <Separator />
+                    
+                    <div>
+                      <h3 className="text-lg font-medium mb-4">Access Settings</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium">Access Type</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+                            <div className="border rounded-md p-3 flex items-start space-x-3">
+                              <input type="radio" name="accessType" checked={course.accessType === "Paid"} />
+                              <div>
+                                <p className="font-medium">Paid</p>
+                                <p className="text-sm text-muted-foreground">Students pay to access</p>
+                              </div>
                             </div>
-                          </div>
-                          <div className="border rounded-md p-3 flex items-start space-x-3">
-                            <input type="radio" name="accessType" checked={course.accessType === "Free"} />
-                            <div>
-                              <p className="font-medium">Free</p>
-                              <p className="text-sm text-muted-foreground">Open access for everyone</p>
+                            <div className="border rounded-md p-3 flex items-start space-x-3">
+                              <input type="radio" name="accessType" checked={course.accessType === "Free"} />
+                              <div>
+                                <p className="font-medium">Free</p>
+                                <p className="text-sm text-muted-foreground">Open access for everyone</p>
+                              </div>
                             </div>
-                          </div>
-                          <div className="border rounded-md p-3 flex items-start space-x-3">
-                            <input type="radio" name="accessType" checked={course.accessType === "Invite"} />
-                            <div>
-                              <p className="font-medium">Invite Only</p>
-                              <p className="text-sm text-muted-foreground">Access by invitation</p>
+                            <div className="border rounded-md p-3 flex items-start space-x-3">
+                              <input type="radio" name="accessType" checked={course.accessType === "Invite"} />
+                              <div>
+                                <p className="font-medium">Invite Only</p>
+                                <p className="text-sm text-muted-foreground">Access by invitation</p>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">Course Tags</h3>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {course.tags.map((tag, index) => (
-                        <div key={index} className="bg-gray-100 px-3 py-1 rounded-full flex items-center">
-                          <span className="text-sm">{tag}</span>
-                          <button className="ml-2 text-gray-500 hover:text-gray-700">×</button>
-                        </div>
-                      ))}
+                    
+                    <Separator />
+                    
+                    <div>
+                      <h3 className="text-lg font-medium mb-4">Course Tags</h3>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {course.tags.map((tag, index) => (
+                          <div key={index} className="bg-gray-100 px-3 py-1 rounded-full flex items-center">
+                            <span className="text-sm">{tag}</span>
+                            <button className="ml-2 text-gray-500 hover:text-gray-700">×</button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <input 
+                          type="text" 
+                          className="flex-1 rounded-md border border-gray-300 p-2"
+                          placeholder="Add a new tag..."
+                        />
+                        <Button>Add</Button>
+                      </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <input 
-                        type="text" 
-                        className="flex-1 rounded-md border border-gray-300 p-2"
-                        placeholder="Add a new tag..."
-                      />
-                      <Button>Add</Button>
+                    
+                    <Separator />
+                    
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline">Cancel</Button>
+                      <Button>Save Changes</Button>
                     </div>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline">Cancel</Button>
-                    <Button>Save Changes</Button>
                   </div>
                 </CardContent>
               </Card>
