@@ -4,8 +4,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileQuestion, Clock, Users, Calendar, Edit, Trash2, Eye, Plus, ChevronDown, ChevronRight } from "lucide-react";
+import { FileQuestion, Clock, Users, Calendar, Edit, Trash2, Eye, Plus, ChevronDown, ChevronRight, BarChart2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useToast } from "@/hooks/use-toast";
 
 type QuizType = "mcq" | "true-false" | "short-answer" | "mixed";
 type DifficultyLevel = "easy" | "medium" | "hard";
@@ -101,15 +108,82 @@ export default function QuizzesManager() {
   const [quizzes, setQuizzes] = useState<Quiz[]>(initialQuizzes);
   const [expandedQuiz, setExpandedQuiz] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("all");
+  const [isAddQuestionOpen, setIsAddQuestionOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isViewSubmissionsOpen, setIsViewSubmissionsOpen] = useState(false);
+  const [isCreateQuizOpen, setIsCreateQuizOpen] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
+  const [newQuestion, setNewQuestion] = useState<Partial<Question>>({
+    id: "",
+    text: "",
+    type: "mcq",
+    options: ["", "", "", ""],
+    correctAnswer: 0
+  });
+  const [newQuiz, setNewQuiz] = useState<Partial<Quiz>>({
+    title: "",
+    questionCount: 0,
+    timeLimit: 15,
+    type: "mcq",
+    difficulty: "medium",
+    autoGraded: true,
+    passScore: 70,
+    questions: [],
+    submissionCount: 0
+  });
+
+  const { toast } = useToast();
+  
+  // Sample submission data
+  const sampleSubmissions = [
+    { id: "1", studentName: "Alice Johnson", score: 92, timeTaken: "8:45", submittedAt: "2025-05-02" },
+    { id: "2", studentName: "Bob Smith", score: 78, timeTaken: "12:30", submittedAt: "2025-05-01" },
+    { id: "3", studentName: "Charlie Brown", score: 85, timeTaken: "9:20", submittedAt: "2025-05-02" },
+    { id: "4", studentName: "Diana Prince", score: 96, timeTaken: "7:15", submittedAt: "2025-05-03" },
+    { id: "5", studentName: "Edward Miller", score: 65, timeTaken: "14:50", submittedAt: "2025-05-03" },
+  ];
   
   const handleDelete = (quizId: string) => {
     setQuizzes(quizzes.filter(quiz => quiz.id !== quizId));
+    toast({
+      title: "Quiz Deleted",
+      description: "The quiz has been successfully deleted",
+    });
   };
   
   const handleCreateQuiz = () => {
-    const newQuiz: Quiz = {
+    setIsCreateQuizOpen(true);
+  };
+
+  const handleQuizSubmit = () => {
+    if (!newQuiz.title) {
+      toast({
+        title: "Missing Information",
+        description: "Please provide a quiz title",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const quiz: Quiz = {
       id: `quiz-${quizzes.length + 1}`,
-      title: "New Quiz",
+      title: newQuiz.title as string,
+      questionCount: 0,
+      timeLimit: newQuiz.timeLimit || 15,
+      dueDate: newQuiz.dueDate,
+      type: newQuiz.type as QuizType || "mcq",
+      difficulty: newQuiz.difficulty as DifficultyLevel || "medium",
+      autoGraded: newQuiz.autoGraded !== undefined ? newQuiz.autoGraded : true,
+      passScore: newQuiz.passScore || 70,
+      questions: [],
+      submissionCount: 0
+    };
+
+    setQuizzes([...quizzes, quiz]);
+    setExpandedQuiz(quiz.id);
+    setIsCreateQuizOpen(false);
+    setNewQuiz({
+      title: "",
       questionCount: 0,
       timeLimit: 15,
       type: "mcq",
@@ -118,9 +192,69 @@ export default function QuizzesManager() {
       passScore: 70,
       questions: [],
       submissionCount: 0
+    });
+    
+    toast({
+      title: "Success",
+      description: "Quiz has been created successfully",
+    });
+  };
+  
+  const handleAddQuestion = (quizId: string) => {
+    setSelectedQuiz(quizzes.find(q => q.id === quizId) || null);
+    setIsAddQuestionOpen(true);
+  };
+  
+  const handleQuestionSubmit = () => {
+    if (!selectedQuiz || !newQuestion.text || (newQuestion.type === "mcq" && (!newQuestion.options || newQuestion.options.some(opt => !opt)))) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const questionId = `q-${Date.now()}`;
+    const question: Question = {
+      id: questionId,
+      text: newQuestion.text,
+      type: newQuestion.type as "mcq" | "true-false" | "short-answer",
+      options: newQuestion.options,
+      correctAnswer: newQuestion.correctAnswer
     };
-    setQuizzes([...quizzes, newQuiz]);
-    setExpandedQuiz(newQuiz.id);
+    
+    setQuizzes(prevQuizzes => prevQuizzes.map(quiz => {
+      if (quiz.id === selectedQuiz.id) {
+        const updatedQuestions = [...quiz.questions, question];
+        return {...quiz, questions: updatedQuestions, questionCount: updatedQuestions.length};
+      }
+      return quiz;
+    }));
+    
+    setIsAddQuestionOpen(false);
+    setNewQuestion({
+      id: "",
+      text: "",
+      type: "mcq",
+      options: ["", "", "", ""],
+      correctAnswer: 0
+    });
+    
+    toast({
+      title: "Success",
+      description: "Question added successfully",
+    });
+  };
+  
+  const handlePreviewQuiz = (quiz: Quiz) => {
+    setSelectedQuiz(quiz);
+    setIsPreviewOpen(true);
+  };
+  
+  const handleViewSubmissions = (quiz: Quiz) => {
+    setSelectedQuiz(quiz);
+    setIsViewSubmissionsOpen(true);
   };
   
   const getFilteredQuizzes = () => {
@@ -193,7 +327,10 @@ export default function QuizzesManager() {
                         <Edit className="h-4 w-4 mr-1" />
                         <span className="hidden sm:inline">Edit</span>
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(quiz.id)}>
+                      <Button variant="ghost" size="sm" onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(quiz.id);
+                      }}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                       {expandedQuiz === quiz.id ? (
@@ -228,12 +365,12 @@ export default function QuizzesManager() {
                             <p className="font-medium">{quiz.dueDate || "Not set"}</p>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between mt-4">
-                          <Button size="sm" variant="outline">
+                        <div className="flex items-center justify-between mt-4 gap-2">
+                          <Button size="sm" variant="outline" onClick={() => handlePreviewQuiz(quiz)}>
                             <Eye className="h-4 w-4 mr-1" />
                             Preview
                           </Button>
-                          <Button size="sm">
+                          <Button size="sm" onClick={() => handleAddQuestion(quiz.id)}>
                             <Plus className="h-4 w-4 mr-1" />
                             Add Questions
                           </Button>
@@ -266,8 +403,22 @@ export default function QuizzesManager() {
                                 <span>100%</span>
                               </div>
                             </div>
-                            <Button size="sm" variant="outline" className="w-full">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="w-full"
+                              onClick={() => handleViewSubmissions(quiz)}
+                            >
+                              <Users className="h-4 w-4 mr-1" />
                               View All Submissions
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="w-full"
+                            >
+                              <BarChart2 className="h-4 w-4 mr-1" />
+                              View Detailed Analytics
                             </Button>
                           </>
                         ) : (
@@ -277,6 +428,45 @@ export default function QuizzesManager() {
                         )}
                       </div>
                     </div>
+
+                    {quiz.questionCount > 0 && (
+                      <div className="mt-4">
+                        <h4 className="font-medium mb-3">Quiz Questions ({quiz.questionCount})</h4>
+                        <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                          {quiz.questions.map((question, index) => (
+                            <div key={question.id} className="border rounded-md p-3 bg-gray-50">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <div className="font-medium">Question {index + 1}</div>
+                                  <p className="text-sm">{question.text}</p>
+                                  
+                                  {question.type === "mcq" && question.options && (
+                                    <div className="mt-2 ml-4 space-y-1">
+                                      {question.options.map((option, i) => (
+                                        <div 
+                                          key={i} 
+                                          className={`text-xs px-2 py-1 rounded ${
+                                            question.correctAnswer === i ? 'bg-green-100 text-green-800' : ''
+                                          }`}
+                                        >
+                                          {String.fromCharCode(65 + i)}. {option}
+                                          {question.correctAnswer === i && " ✓"}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                <Badge>
+                                  {question.type === "mcq" ? "Multiple Choice" : 
+                                   question.type === "true-false" ? "True/False" : 
+                                   "Short Answer"}
+                                </Badge>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -300,6 +490,473 @@ export default function QuizzesManager() {
           )}
         </div>
       </CardContent>
+
+      {/* Create Quiz Dialog */}
+      <Dialog open={isCreateQuizOpen} onOpenChange={setIsCreateQuizOpen}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Quiz</DialogTitle>
+            <DialogDescription>
+              Fill in the details to create a new quiz or assessment
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Quiz Title</Label>
+                <Input 
+                  id="title" 
+                  value={newQuiz.title || ''} 
+                  onChange={(e) => setNewQuiz({...newQuiz, title: e.target.value})}
+                  placeholder="Enter quiz title"
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="module">Module (Optional)</Label>
+                  <Select onValueChange={(value) => setNewQuiz({...newQuiz, moduleId: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select module" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="section-1">Introduction to JavaScript</SelectItem>
+                      <SelectItem value="section-2">Functions and Objects</SelectItem>
+                      <SelectItem value="section-3">DOM Manipulation</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="time-limit">Time Limit (minutes)</Label>
+                  <Input 
+                    id="time-limit" 
+                    type="number" 
+                    min={1} 
+                    value={newQuiz.timeLimit || 15} 
+                    onChange={(e) => setNewQuiz({...newQuiz, timeLimit: parseInt(e.target.value)})}
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="quiz-type">Quiz Type</Label>
+                  <Select 
+                    defaultValue="mcq"
+                    onValueChange={(value) => setNewQuiz({
+                      ...newQuiz, 
+                      type: value as QuizType
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mcq">Multiple Choice</SelectItem>
+                      <SelectItem value="true-false">True/False</SelectItem>
+                      <SelectItem value="short-answer">Short Answer</SelectItem>
+                      <SelectItem value="mixed">Mixed Question Types</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="difficulty">Difficulty Level</Label>
+                  <Select 
+                    defaultValue="medium"
+                    onValueChange={(value) => setNewQuiz({
+                      ...newQuiz, 
+                      difficulty: value as DifficultyLevel
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="easy">Easy</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="hard">Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="pass-score">Pass Score (%)</Label>
+                  <Input 
+                    id="pass-score" 
+                    type="number" 
+                    min={0} 
+                    max={100} 
+                    value={newQuiz.passScore || 70} 
+                    onChange={(e) => setNewQuiz({...newQuiz, passScore: parseInt(e.target.value)})}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="due-date">Due Date (Optional)</Label>
+                  <Input 
+                    id="due-date" 
+                    type="date" 
+                    value={newQuiz.dueDate || ''} 
+                    onChange={(e) => setNewQuiz({...newQuiz, dueDate: e.target.value})}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Grading Type</Label>
+                <RadioGroup 
+                  defaultValue="auto" 
+                  className="flex flex-col space-y-1"
+                  onValueChange={(value) => setNewQuiz({
+                    ...newQuiz, 
+                    autoGraded: value === "auto"
+                  })}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="auto" id="auto" />
+                    <Label htmlFor="auto">Auto-grade (Recommended for MCQ/True-False)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="manual" id="manual" />
+                    <Label htmlFor="manual">Manual Review (Required for short answers)</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="description">Description (Optional)</Label>
+                <Textarea 
+                  id="description" 
+                  placeholder="Enter a description or instructions for this quiz"
+                  rows={3}
+                  onChange={(e) => setNewQuiz({
+                    ...newQuiz, 
+                    description: e.target.value
+                  })}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateQuizOpen(false)}>Cancel</Button>
+            <Button onClick={handleQuizSubmit}>Create Quiz</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Add Question Dialog */}
+      <Dialog open={isAddQuestionOpen} onOpenChange={setIsAddQuestionOpen}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add Question</DialogTitle>
+            <DialogDescription>
+              {selectedQuiz && `Adding question to ${selectedQuiz.title}`}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="question-text">Question Text</Label>
+              <Textarea 
+                id="question-text" 
+                placeholder="Enter your question"
+                value={newQuestion.text || ''}
+                onChange={(e) => setNewQuestion({...newQuestion, text: e.target.value})}
+                rows={3}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="question-type">Question Type</Label>
+              <Select 
+                defaultValue="mcq"
+                onValueChange={(value) => {
+                  setNewQuestion({
+                    ...newQuestion, 
+                    type: value as "mcq" | "true-false" | "short-answer",
+                    options: value === "mcq" ? ["", "", "", ""] : 
+                             value === "true-false" ? ["True", "False"] : undefined,
+                    correctAnswer: value === "mcq" ? 0 : 
+                                   value === "true-false" ? 0 : ""
+                  });
+                }}
+              >
+                <SelectTrigger id="question-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mcq">Multiple Choice</SelectItem>
+                  <SelectItem value="true-false">True/False</SelectItem>
+                  <SelectItem value="short-answer">Short Answer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {newQuestion.type === "mcq" && newQuestion.options && (
+              <div className="space-y-4">
+                <Label>Answer Options</Label>
+                {newQuestion.options.map((option, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="w-8">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm">
+                        {String.fromCharCode(65 + index)}
+                      </div>
+                    </div>
+                    <Input 
+                      value={option}
+                      onChange={(e) => {
+                        const newOptions = [...newQuestion.options!];
+                        newOptions[index] = e.target.value;
+                        setNewQuestion({...newQuestion, options: newOptions});
+                      }}
+                      placeholder={`Option ${String.fromCharCode(65 + index)}`}
+                    />
+                    <RadioGroup 
+                      value={newQuestion.correctAnswer?.toString()}
+                      className="flex"
+                      onValueChange={(value) => {
+                        setNewQuestion({...newQuestion, correctAnswer: parseInt(value)});
+                      }}
+                    >
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value={index.toString()} id={`option-${index}`} />
+                        <Label htmlFor={`option-${index}`}>Correct</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                ))}
+                {newQuestion.options.length < 6 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setNewQuestion({
+                        ...newQuestion, 
+                        options: [...newQuestion.options!, ""]
+                      });
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Option
+                  </Button>
+                )}
+              </div>
+            )}
+            
+            {newQuestion.type === "true-false" && (
+              <div className="space-y-2">
+                <Label>Correct Answer</Label>
+                <RadioGroup 
+                  defaultValue="0"
+                  className="flex space-x-4"
+                  onValueChange={(value) => {
+                    setNewQuestion({...newQuestion, correctAnswer: parseInt(value)});
+                  }}
+                >
+                  <div className="flex items-center space-x-1">
+                    <RadioGroupItem value="0" id="true" />
+                    <Label htmlFor="true">True</Label>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <RadioGroupItem value="1" id="false" />
+                    <Label htmlFor="false">False</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
+            
+            {newQuestion.type === "short-answer" && (
+              <div className="space-y-2">
+                <Label htmlFor="expected-answer">Expected Answer (for grading reference)</Label>
+                <Textarea 
+                  id="expected-answer" 
+                  placeholder="Enter expected answer"
+                  value={newQuestion.correctAnswer?.toString() || ""}
+                  onChange={(e) => setNewQuestion({...newQuestion, correctAnswer: e.target.value})}
+                  rows={2}
+                />
+                <p className="text-sm text-muted-foreground">
+                  Note: Short answer questions require manual grading.
+                </p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddQuestionOpen(false)}>Cancel</Button>
+            <Button onClick={handleQuestionSubmit}>Add Question</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Preview Quiz Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Quiz Preview</DialogTitle>
+            <DialogDescription>
+              {selectedQuiz?.title} - Preview Mode
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="font-medium">{selectedQuiz?.title}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {selectedQuiz?.questionCount} questions • {selectedQuiz?.timeLimit} minutes
+                </p>
+              </div>
+              <Badge className={selectedQuiz ? difficultyColors[selectedQuiz.difficulty] : ""}>
+                {selectedQuiz?.difficulty.charAt(0).toUpperCase() + selectedQuiz?.difficulty.slice(1)}
+              </Badge>
+            </div>
+            
+            {selectedQuiz?.questions.length ? (
+              <div className="space-y-6">
+                {selectedQuiz.questions.map((question, index) => (
+                  <div key={question.id} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <p className="font-medium">Q{index + 1}: {question.text}</p>
+                      <Badge>
+                        {question.type === "mcq" ? "Multiple Choice" : 
+                         question.type === "true-false" ? "True/False" : 
+                         "Short Answer"}
+                      </Badge>
+                    </div>
+                    
+                    {question.type === "mcq" && question.options && (
+                      <div className="space-y-2 ml-4">
+                        {question.options.map((option, idx) => (
+                          <div key={idx} className="flex items-center space-x-2">
+                            <div className="w-6 h-6 rounded-full border flex items-center justify-center">
+                              {String.fromCharCode(65 + idx)}
+                            </div>
+                            <span>{option}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {question.type === "true-false" && (
+                      <div className="space-y-2 ml-4">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 rounded-full border flex items-center justify-center">
+                            A
+                          </div>
+                          <span>True</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-6 h-6 rounded-full border flex items-center justify-center">
+                            B
+                          </div>
+                          <span>False</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {question.type === "short-answer" && (
+                      <div className="mt-2">
+                        <Textarea disabled placeholder="Student will type answer here" className="bg-gray-50" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <FileQuestion className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
+                <p className="text-muted-foreground">No questions added to this quiz yet.</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsPreviewOpen(false)}>Close Preview</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* View All Submissions Dialog */}
+      <Dialog open={isViewSubmissionsOpen} onOpenChange={setIsViewSubmissionsOpen}>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Quiz Submissions</DialogTitle>
+            <DialogDescription>
+              {selectedQuiz?.title} - Student Submissions
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-gray-50 p-3 rounded-md text-center">
+                <p className="text-sm text-muted-foreground">Total Submissions</p>
+                <p className="text-xl font-bold">{selectedQuiz?.submissionCount}</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-md text-center">
+                <p className="text-sm text-muted-foreground">Average Score</p>
+                <p className="text-xl font-bold">{selectedQuiz?.averageScore}%</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-md text-center">
+                <p className="text-sm text-muted-foreground">Pass Rate</p>
+                <p className="text-xl font-bold">
+                  {selectedQuiz ? Math.round((selectedQuiz.submissionCount * 0.8) / selectedQuiz.submissionCount * 100) : 0}%
+                </p>
+              </div>
+            </div>
+            
+            <div className="border rounded-md overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Time Taken</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Date Submitted</th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sampleSubmissions.map((submission) => (
+                    <tr key={submission.id}>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            {submission.studentName.charAt(0)}
+                          </div>
+                          <div className="ml-3">
+                            <div className="text-sm font-medium text-gray-900">{submission.studentName}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-right">
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          submission.score >= 80 ? 'bg-green-100 text-green-800' : 
+                          submission.score >= 60 ? 'bg-yellow-100 text-yellow-800' : 
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {submission.score}%
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">
+                        {submission.timeTaken}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">
+                        {submission.submittedAt}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
+                        <Button variant="ghost" size="sm">View</Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsViewSubmissionsOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
