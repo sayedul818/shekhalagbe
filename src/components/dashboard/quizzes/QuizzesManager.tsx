@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,6 +39,7 @@ interface Quiz {
   questions: Question[];
   submissionCount: number;
   averageScore?: number;
+  description?: string;
 }
 
 const initialQuizzes: Quiz[] = [
@@ -129,7 +129,8 @@ export default function QuizzesManager() {
     autoGraded: true,
     passScore: 70,
     questions: [],
-    submissionCount: 0
+    submissionCount: 0,
+    description: ""
   });
 
   const { toast } = useToast();
@@ -176,7 +177,8 @@ export default function QuizzesManager() {
       autoGraded: newQuiz.autoGraded !== undefined ? newQuiz.autoGraded : true,
       passScore: newQuiz.passScore || 70,
       questions: [],
-      submissionCount: 0
+      submissionCount: 0,
+      description: newQuiz.description
     };
 
     setQuizzes([...quizzes, quiz]);
@@ -191,7 +193,8 @@ export default function QuizzesManager() {
       autoGraded: true,
       passScore: 70,
       questions: [],
-      submissionCount: 0
+      submissionCount: 0,
+      description: ""
     });
     
     toast({
