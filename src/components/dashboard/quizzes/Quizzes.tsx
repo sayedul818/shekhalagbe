@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,6 +7,7 @@ import QuizAttempt from './QuizAttempt';
 import Leaderboard from './Leaderboard';
 import { useToast } from '@/hooks/use-toast';
 import { Clock, Calendar, FileQuestion, AlertTriangle, CheckCircle } from 'lucide-react';
+import { CourseComponentProps } from '@/types';
 
 // Mock quiz data
 const mockQuizzes = [
@@ -134,9 +134,7 @@ const mockLeaderboard = [
   { rank: 10, userId: "user10", userName: "Julia Roberts", score: 65, timeTaken: 530, isCurrentUser: false }
 ];
 
-interface QuizzesProps {
-  courseId: string;
-}
+interface QuizzesProps extends CourseComponentProps {}
 
 const Quizzes: React.FC<QuizzesProps> = ({ courseId }) => {
   const [activeTab, setActiveTab] = useState<"all" | "upcoming" | "active" | "completed">("all");
@@ -202,7 +200,7 @@ const Quizzes: React.FC<QuizzesProps> = ({ courseId }) => {
       toast({
         title: "Quiz Not Available Yet",
         description: `This quiz will be available from ${formatDate(quiz.availableFrom)}.`,
-        variant: "warning",
+        variant: "default", // Changed from "warning" to "default"
       });
       return;
     }

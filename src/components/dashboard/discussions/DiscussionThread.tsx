@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,8 @@ import {
   Award,
   AlertCircle,
   Image,
-  FileText
+  FileText,
+  X
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 

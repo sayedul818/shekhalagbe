@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,10 +7,51 @@ import { Badge } from '@/components/ui/badge';
 import PostDiscussion from './PostDiscussion';
 import DiscussionThread from './DiscussionThread';
 import { useToast } from '@/hooks/use-toast';
-import { MessageSquare, Search, Tag, Filter, SlidersHorizontal, Plus } from 'lucide-react';
+import { MessageSquare, Search, Tag, Filter, SlidersHorizontal, Plus, X } from 'lucide-react';
+import { CourseComponentProps } from '@/types';
 
-// Mock discussion data
-const mockDiscussions = [
+// Type definition for discussion post
+interface Attachment {
+  id: string;
+  type: 'image' | 'document';
+  url: string;
+  name: string;
+}
+
+interface ReplyComment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
+  authorRole?: 'student' | 'instructor' | 'ta';
+  content: string;
+  createdAt: string;
+  likes: number;
+  mentionedUsers?: { id: string; name: string }[];
+  hasLiked?: boolean;
+  attachments?: Attachment[];
+}
+
+interface DiscussionPost {
+  id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
+  authorRole?: 'student' | 'instructor' | 'ta';
+  createdAt: string;
+  tags: string[];
+  likes: number;
+  replies: ReplyComment[];
+  isResolved?: boolean;
+  isPinned?: boolean;
+  hasLiked?: boolean;
+  attachments?: Attachment[];
+}
+
+// Mock discussion data with correct types
+const mockDiscussions: DiscussionPost[] = [
   {
     id: "1",
     title: "How to solve this JavaScript promise issue?",
@@ -110,13 +150,11 @@ const mockDiscussions = [
   }
 ];
 
-interface DiscussionsProps {
-  courseId: string;
-}
+interface DiscussionsProps extends CourseComponentProps {}
 
 const Discussions: React.FC<DiscussionsProps> = ({ courseId }) => {
   const [activeTab, setActiveTab] = useState<"all" | "resolved" | "pinned" | "my-posts">("all");
-  const [discussions, setDiscussions] = useState(mockDiscussions);
+  const [discussions, setDiscussions] = useState<DiscussionPost[]>(mockDiscussions);
   const [isLoading, setIsLoading] = useState(true);
   const [showNewPostForm, setShowNewPostForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -198,23 +236,24 @@ const Discussions: React.FC<DiscussionsProps> = ({ courseId }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Create a new discussion object
-      const newDiscussion = {
+      const newDiscussion: DiscussionPost = {
         id: `new-${Date.now()}`,
         title: postData.title,
         content: postData.content,
         authorId: "user3", // Mock current user ID
         authorName: "Mike Brown", // Mock current user name
         authorAvatar: "https://i.pravatar.cc/150?u=mike", // Mock current user avatar
-        authorRole: "student" as const,
+        authorRole: "student",
         createdAt: new Date().toISOString(),
         tags: postData.tags,
         likes: 0,
         replies: [],
         isResolved: false,
+        isPinned: false,
         hasLiked: false,
         attachments: postData.attachments ? postData.attachments.map((file, index) => ({
           id: `att-new-${index}`,
-          type: file.type.startsWith('image/') ? 'image' as const : 'document' as const,
+          type: file.type.startsWith('image/') ? 'image' : 'document',
           url: URL.createObjectURL(file),
           name: file.name
         })) : undefined
@@ -249,19 +288,19 @@ const Discussions: React.FC<DiscussionsProps> = ({ courseId }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Create a new reply
-      const newReply = {
+      const newReply: ReplyComment = {
         id: `reply-new-${Date.now()}`,
         authorId: "user3", // Mock current user ID
         authorName: "Mike Brown", // Mock current user name
         authorAvatar: "https://i.pravatar.cc/150?u=mike", // Mock current user avatar
-        authorRole: "student" as const,
+        authorRole: "student",
         content,
         createdAt: new Date().toISOString(),
         likes: 0,
         hasLiked: false,
         attachments: attachments ? attachments.map((file, index) => ({
           id: `att-reply-${index}`,
-          type: file.type.startsWith('image/') ? 'image' as const : 'document' as const,
+          type: file.type.startsWith('image/') ? 'image' : 'document',
           url: URL.createObjectURL(file),
           name: file.name
         })) : undefined

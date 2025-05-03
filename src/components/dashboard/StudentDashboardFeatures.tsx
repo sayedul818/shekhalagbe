@@ -26,6 +26,7 @@ import Quizzes from "./quizzes/Quizzes";
 import Discussions from "./discussions/Discussions";
 import { useToast } from "@/hooks/use-toast";
 import { fetchStudentDashboardFeaturesData } from "@/lib/course-data";
+import { CourseComponentProps } from "@/types"; // Import the interface
 
 interface StudentDashboardFeaturesProps {
   courseId: string;
@@ -207,7 +208,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
   );
 };
 
-// CustomSelect component with proper TypeScript interface
+// CustomSelect component with proper TypeScript interface and children prop
 function CustomSelect({ children, placeholder, className }: CustomSelectProps) {
   return (
     <div className={`${className || ''} flex items-center justify-between bg-background border rounded-md px-3 py-2 text-sm`}>
