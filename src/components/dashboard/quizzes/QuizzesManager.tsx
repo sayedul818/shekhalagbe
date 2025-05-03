@@ -22,6 +22,7 @@ interface Question {
   type: "mcq" | "true-false" | "short-answer";
   options?: string[];
   correctAnswer?: string | number | boolean;
+  description?: string;
 }
 
 interface Quiz {
@@ -537,7 +538,7 @@ export default function QuizzesManager() {
                     type="number" 
                     min={1} 
                     value={newQuiz.timeLimit || 15} 
-                    onChange={(e) => setNewQuiz({...newQuiz, timeLimit: parseInt(e.target.value)})}
+                    onChange={(e) => setNewQuiz({...newQuiz, timeLimit: parseInt(e.target.value)})
                   />
                 </div>
               </div>
@@ -834,132 +835,4 @@ export default function QuizzesManager() {
                         {question.options.map((option, idx) => (
                           <div key={idx} className="flex items-center space-x-2">
                             <div className="w-6 h-6 rounded-full border flex items-center justify-center">
-                              {String.fromCharCode(65 + idx)}
-                            </div>
-                            <span>{option}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {question.type === "true-false" && (
-                      <div className="space-y-2 ml-4">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-6 h-6 rounded-full border flex items-center justify-center">
-                            A
-                          </div>
-                          <span>True</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-6 h-6 rounded-full border flex items-center justify-center">
-                            B
-                          </div>
-                          <span>False</span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {question.type === "short-answer" && (
-                      <div className="mt-2">
-                        <Textarea disabled placeholder="Student will type answer here" className="bg-gray-50" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <FileQuestion className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
-                <p className="text-muted-foreground">No questions added to this quiz yet.</p>
-              </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setIsPreviewOpen(false)}>Close Preview</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* View All Submissions Dialog */}
-      <Dialog open={isViewSubmissionsOpen} onOpenChange={setIsViewSubmissionsOpen}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Quiz Submissions</DialogTitle>
-            <DialogDescription>
-              {selectedQuiz?.title} - Student Submissions
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-gray-50 p-3 rounded-md text-center">
-                <p className="text-sm text-muted-foreground">Total Submissions</p>
-                <p className="text-xl font-bold">{selectedQuiz?.submissionCount}</p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-md text-center">
-                <p className="text-sm text-muted-foreground">Average Score</p>
-                <p className="text-xl font-bold">{selectedQuiz?.averageScore}%</p>
-              </div>
-              <div className="bg-gray-50 p-3 rounded-md text-center">
-                <p className="text-sm text-muted-foreground">Pass Rate</p>
-                <p className="text-xl font-bold">
-                  {selectedQuiz ? Math.round((selectedQuiz.submissionCount * 0.8) / selectedQuiz.submissionCount * 100) : 0}%
-                </p>
-              </div>
-            </div>
-            
-            <div className="border rounded-md overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Time Taken</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Date Submitted</th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {sampleSubmissions.map((submission) => (
-                    <tr key={submission.id}>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
-                            {submission.studentName.charAt(0)}
-                          </div>
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900">{submission.studentName}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-right">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          submission.score >= 80 ? 'bg-green-100 text-green-800' : 
-                          submission.score >= 60 ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {submission.score}%
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">
-                        {submission.timeTaken}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500 text-right">
-                        {submission.submittedAt}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-right text-sm">
-                        <Button variant="ghost" size="sm">View</Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setIsViewSubmissionsOpen(false)}>Close</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </Card>
-  );
-}
+                              {String.fromCharCode
