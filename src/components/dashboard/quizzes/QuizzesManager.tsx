@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -538,7 +539,7 @@ export default function QuizzesManager() {
                     type="number" 
                     min={1} 
                     value={newQuiz.timeLimit || 15} 
-                    onChange={(e) => setNewQuiz({...newQuiz, timeLimit: parseInt(e.target.value)})
+                    onChange={(e) => setNewQuiz({...newQuiz, timeLimit: parseInt(e.target.value)})}
                   />
                 </div>
               </div>
@@ -835,4 +836,97 @@ export default function QuizzesManager() {
                         {question.options.map((option, idx) => (
                           <div key={idx} className="flex items-center space-x-2">
                             <div className="w-6 h-6 rounded-full border flex items-center justify-center">
-                              {String.fromCharCode
+                              {String.fromCharCode(65 + idx)}
+                            </div>
+                            <span>{option}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {question.type === "true-false" && (
+                      <div className="space-y-2 ml-4">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 rounded-full border"></div>
+                          <span>True</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 rounded-full border"></div>
+                          <span>False</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {question.type === "short-answer" && (
+                      <div className="mt-2">
+                        <Textarea placeholder="Enter your answer" disabled rows={2} />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                No questions added to this quiz yet.
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* View Submissions Dialog */}
+      <Dialog open={isViewSubmissionsOpen} onOpenChange={setIsViewSubmissionsOpen}>
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Quiz Submissions</DialogTitle>
+            <DialogDescription>
+              {selectedQuiz?.title} - Student Submissions
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="rounded-md border">
+              <div className="grid grid-cols-12 bg-muted p-3 text-sm font-medium">
+                <div className="col-span-4">Student</div>
+                <div className="col-span-2 text-center">Score</div>
+                <div className="col-span-2 text-center">Time Taken</div>
+                <div className="col-span-2 text-center">Date</div>
+                <div className="col-span-2 text-right">Actions</div>
+              </div>
+              <div>
+                {sampleSubmissions.map((submission) => (
+                  <div key={submission.id} className="grid grid-cols-12 border-t p-3 text-sm">
+                    <div className="col-span-4">{submission.studentName}</div>
+                    <div className="col-span-2 text-center font-medium">
+                      <span className={submission.score >= (selectedQuiz?.passScore || 0) 
+                        ? "text-green-600" 
+                        : "text-red-600"}>
+                        {submission.score}%
+                      </span>
+                    </div>
+                    <div className="col-span-2 text-center">{submission.timeTaken}</div>
+                    <div className="col-span-2 text-center">{submission.submittedAt}</div>
+                    <div className="col-span-2 text-right">
+                      <Button size="sm" variant="ghost">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="mt-4 flex justify-between">
+              <div className="text-sm text-muted-foreground">
+                Showing {sampleSubmissions.length} submissions
+              </div>
+              <div>
+                <Button size="sm">
+                  Download Results
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </Card>
+  );
+}
