@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,31 +6,44 @@ import { ArrowLeft, ArrowRight, CheckCircle, Clock, BookOpen } from "lucide-reac
 import { Progress } from "@/components/ui/progress";
 import { fetchCourseLessons } from "@/lib/course-data";
 import { useToast } from "@/hooks/use-toast";
+import { CourseComponentProps } from "@/types";
 
-const CourseLesson = () => {
-  const { courseId, lessonId } = useParams();
+const CourseLesson = ({ courseId: propsCourseId }: CourseComponentProps) => {
+  const { courseId: paramsCourseId, lessonId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [lesson, setLesson] = useState(null);
   const [course, setCourse] = useState(null);
   const [error, setError] = useState(null);
+  
+  // Use the prop courseId if provided, otherwise use the one from URL params
+  const effectiveCourseId = propsCourseId || paramsCourseId;
 
   useEffect(() => {
     const loadCourseAndLesson = async () => {
-      if (!courseId || !lessonId) return;
+      if (!effectiveCourseId) return;
       
       try {
         setLoading(true);
-        const data = await fetchCourseLessons(courseId);
+        const data = await fetchCourseLessons(effectiveCourseId);
         
         if (data.course) {
           setCourse(data.course);
-          const fetchedLesson = data.course.lessons.find(l => l.id === lessonId);
-          if (fetchedLesson) {
-            setLesson(fetchedLesson);
+          
+          // If lessonId is provided, find that specific lesson
+          if (lessonId) {
+            const fetchedLesson = data.course.lessons.find(l => l.id === lessonId);
+            if (fetchedLesson) {
+              setLesson(fetchedLesson);
+            } else {
+              setError("Lesson not found");
+            }
+          } else if (data.course.lessons && data.course.lessons.length > 0) {
+            // If no specific lesson is requested, show the first one
+            setLesson(data.course.lessons[0]);
           } else {
-            setError("Lesson not found");
+            setError("No lessons available");
           }
         } else {
           setError("Course not found");
@@ -50,7 +62,7 @@ const CourseLesson = () => {
     };
     
     loadCourseAndLesson();
-  }, [courseId, lessonId, toast]);
+  }, [effectiveCourseId, lessonId, toast]);
 
   const handleMarkComplete = () => {
     // Here you would typically call an API to mark the lesson as complete
