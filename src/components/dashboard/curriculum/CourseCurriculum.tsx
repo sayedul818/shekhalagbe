@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +25,32 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { fetchCourseCurriculum } from "@/lib/course-data";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { CourseComponentProps, CurriculumData, LessonItem, CurriculumModule } from "@/types";
+import { CourseComponentProps, CurriculumData, LessonItem, CurriculumModule, ContentType, ModuleStatus } from "@/types";
+
+interface ApiSection {
+  id: string;
+  title: string;
+  locked?: boolean;
+  completionPercentage?: number;
+  items: ApiItem[];
+}
+
+interface ApiItem {
+  id: string;
+  title: string;
+  type: string;
+  duration?: string;
+  completed?: boolean;
+  locked?: boolean;
+  bookmarked?: boolean;
+}
+
+interface ApiCurriculumData {
+  sections: ApiSection[];
+  progress?: number;
+  timeSpent?: string;
+  timeRemaining?: string;
+}
 
 const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
   const { toast } = useToast();
@@ -44,15 +68,15 @@ const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
       
       try {
         setIsLoading(true);
-        const data = await fetchCourseCurriculum(courseId);
+        const data = await fetchCourseCurriculum(courseId) as ApiCurriculumData;
         
         // Transform API data into our CurriculumData structure
         const transformedData: CurriculumData = {
           modules: data.sections?.map((section) => ({
             id: section.id,
             title: section.title,
-            status: section.locked ? "locked" : 
-                   section.completionPercentage === 100 ? "completed" : "in-progress",
+            status: section.locked ? "locked" as ModuleStatus : 
+                   (section.completionPercentage === 100) ? "completed" as ModuleStatus : "in-progress" as ModuleStatus,
             completionPercentage: section.completionPercentage || 0,
             items: section.items?.map((item) => ({
               id: item.id,
@@ -61,7 +85,7 @@ const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
               duration: item.duration || "10 min",
               status: item.locked ? "locked" : 
                      item.completed ? "completed" : "in-progress",
-              completed: item.completed,
+              completed: item.completed || false,
               isBookmarked: item.bookmarked || false
             })) || []
           })) || [],
@@ -181,7 +205,7 @@ const CourseCurriculum = ({ courseId }: CourseComponentProps) => {
             ...module,
             items: updatedItems,
             completionPercentage: newCompletionPercentage,
-            status: newCompletionPercentage === 100 ? "completed" : "in-progress"
+            status: newCompletionPercentage === 100 ? "completed" as ModuleStatus : "in-progress" as ModuleStatus
           };
         }
         return module;
