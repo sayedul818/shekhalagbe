@@ -31,10 +31,16 @@ import {
   Plus,
   ArrowUp,
   ArrowDown,
-  Settings
+  Settings,
+  Save,
+  X
 } from "lucide-react";
 import ContentUploader from "./ContentUploader";
 import { ContentType } from "@/types";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose } from "@/components/ui/sheet";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 // Content types with their respective icons
 const contentTypeIcons = {
@@ -64,24 +70,37 @@ export default function CurriculumManager() {
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [selectedSectionName, setSelectedSectionName] = useState<string | null>(null);
   
+  // New state for modals
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [previewSheetOpen, setPreviewSheetOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [editedContent, setEditedContent] = useState<{
+    title: string;
+    type: string;
+    duration: string;
+    description: string;
+    content: string;
+  } | null>(null);
+  
   // Mock sections data (in real app, would be fetched from API)
   const [sections, setSections] = useState([
     {
       id: "section-1",
       title: "Introduction to JavaScript",
       items: [
-        { id: "item-1-1", title: "JavaScript Basics", type: "video", duration: "15:30" },
-        { id: "item-1-2", title: "Variables and Data Types", type: "reading", duration: "10 mins read" },
-        { id: "item-1-3", title: "JavaScript Basics Quiz", type: "quiz", duration: "10 questions" }
+        { id: "item-1-1", title: "JavaScript Basics", type: "video", duration: "15:30", description: "Learn the basic concepts of JavaScript programming", content: "https://example.com/video-link" },
+        { id: "item-1-2", title: "Variables and Data Types", type: "reading", duration: "10 mins read", description: "Understand JavaScript variables and different data types", content: "JavaScript has several data types including string, number, boolean, etc." },
+        { id: "item-1-3", title: "JavaScript Basics Quiz", type: "quiz", duration: "10 questions", description: "Test your knowledge of JavaScript basics", content: "quiz-id-123" }
       ]
     },
     {
       id: "section-2",
       title: "Functions and Objects",
       items: [
-        { id: "item-2-1", title: "Functions in JavaScript", type: "video", duration: "25:10" },
-        { id: "item-2-2", title: "Working with Objects", type: "reading", duration: "15 mins read" },
-        { id: "item-2-3", title: "Functions Assignment", type: "assignment", duration: "Due: May 15" }
+        { id: "item-2-1", title: "Functions in JavaScript", type: "video", duration: "25:10", description: "Learn how to create and use functions", content: "https://example.com/functions-video" },
+        { id: "item-2-2", title: "Working with Objects", type: "reading", duration: "15 mins read", description: "Understand JavaScript objects and their properties", content: "JavaScript objects are collections of key-value pairs that..." },
+        { id: "item-2-3", title: "Functions Assignment", type: "assignment", duration: "Due: May 15", description: "Create functions to solve specific problems", content: "assignment-123" }
       ]
     }
   ]);
@@ -208,6 +227,67 @@ export default function CurriculumManager() {
           };
         })
       );
+    }
+  };
+
+  // New functions for enhanced button functionality
+  const handleOpenEditModal = (sectionId: string, item: any) => {
+    setSelectedSectionId(sectionId);
+    setSelectedItem(item);
+    setEditedContent({
+      title: item.title,
+      type: item.type,
+      duration: item.duration,
+      description: item.description || '',
+      content: item.content || ''
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleOpenPreviewSheet = (item: any) => {
+    setSelectedItem(item);
+    setPreviewSheetOpen(true);
+  };
+
+  const handleOpenDeleteConfirm = (sectionId: string, item: any) => {
+    setSelectedSectionId(sectionId);
+    setSelectedItem(item);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleSaveEditedContent = () => {
+    if (!editedContent || !selectedItem || !selectedSectionId) return;
+
+    setSections(prevSections =>
+      prevSections.map(section => {
+        if (section.id !== selectedSectionId) return section;
+        
+        return {
+          ...section,
+          items: section.items.map(item => {
+            if (item.id !== selectedItem.id) return item;
+            return { 
+              ...item, 
+              title: editedContent.title,
+              type: editedContent.type,
+              duration: editedContent.duration,
+              description: editedContent.description,
+              content: editedContent.content
+            };
+          })
+        };
+      })
+    );
+
+    setEditModalOpen(false);
+    toast.success("Content updated successfully");
+  };
+
+  const confirmDeleteItem = () => {
+    if (selectedItem && selectedSectionId) {
+      handleDeleteItem(selectedSectionId, selectedItem.id);
+      setDeleteConfirmOpen(false);
+      toast.success("Content deleted successfully");
     }
   };
 
@@ -413,17 +493,25 @@ export default function CurriculumManager() {
                             >
                               <ArrowDown className="h-3 w-3" />
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleOpenEditModal(section.id, item)}
+                            >
                               <Edit className="h-3 w-3" />
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleOpenPreviewSheet(item)}
+                            >
                               <Eye className="h-3 w-3" />
                             </Button>
                             <Button 
                               variant="ghost" 
                               size="sm" 
                               className="text-destructive hover:text-destructive"
-                              onClick={() => handleDeleteItem(section.id, item.id)}
+                              onClick={() => handleOpenDeleteConfirm(section.id, item)}
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -496,6 +584,9 @@ export default function CurriculumManager() {
                                   {item.duration}
                                 </span>
                               </div>
+                              {item.description && (
+                                <p className="text-sm text-muted-foreground mt-2">{item.description}</p>
+                              )}
                             </div>
                           </div>
                         ))}
@@ -523,6 +614,211 @@ export default function CurriculumManager() {
         moduleId={selectedSectionId || undefined}
         moduleName={selectedSectionName || undefined}
       />
+
+      {/* Edit Content Modal */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent className="sm:max-w-[625px]">
+          <DialogHeader>
+            <DialogTitle>Edit Content</DialogTitle>
+          </DialogHeader>
+          
+          {editedContent && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="title" className="text-right font-medium">
+                  Title
+                </label>
+                <input
+                  id="title"
+                  value={editedContent.title}
+                  onChange={(e) => setEditedContent({...editedContent, title: e.target.value})}
+                  className="col-span-3 w-full rounded-md border border-gray-300 p-2"
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="type" className="text-right font-medium">
+                  Type
+                </label>
+                <select
+                  id="type"
+                  value={editedContent.type}
+                  onChange={(e) => setEditedContent({...editedContent, type: e.target.value})}
+                  className="col-span-3 w-full rounded-md border border-gray-300 p-2"
+                >
+                  <option value="video">Video</option>
+                  <option value="reading">Reading</option>
+                  <option value="quiz">Quiz</option>
+                  <option value="assignment">Assignment</option>
+                </select>
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="duration" className="text-right font-medium">
+                  Duration
+                </label>
+                <input
+                  id="duration"
+                  value={editedContent.duration}
+                  onChange={(e) => setEditedContent({...editedContent, duration: e.target.value})}
+                  className="col-span-3 w-full rounded-md border border-gray-300 p-2"
+                  placeholder="e.g., 15:30, 10 mins, etc."
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-start gap-4">
+                <label htmlFor="description" className="text-right font-medium pt-2">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  value={editedContent.description}
+                  onChange={(e) => setEditedContent({...editedContent, description: e.target.value})}
+                  className="col-span-3 w-full rounded-md border border-gray-300 p-2 min-h-[80px]"
+                  placeholder="Brief description of the content"
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-start gap-4">
+                <label htmlFor="content" className="text-right font-medium pt-2">
+                  Content URL or Text
+                </label>
+                <textarea
+                  id="content"
+                  value={editedContent.content}
+                  onChange={(e) => setEditedContent({...editedContent, content: e.target.value})}
+                  className="col-span-3 w-full rounded-md border border-gray-300 p-2 min-h-[120px]"
+                  placeholder={
+                    editedContent.type === "video" 
+                      ? "Enter video URL" 
+                      : editedContent.type === "reading" 
+                        ? "Enter reading content or URL" 
+                        : "Enter reference ID or content"
+                  }
+                />
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleSaveEditedContent}>
+              <Save className="h-4 w-4 mr-2" />
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Preview Content Sheet */}
+      <Sheet open={previewSheetOpen} onOpenChange={setPreviewSheetOpen}>
+        <SheetContent className="sm:max-w-[540px] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Content Preview</SheetTitle>
+          </SheetHeader>
+          
+          {selectedItem && (
+            <div className="py-6">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold">{selectedItem.title}</h3>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Badge className={contentTypeColors[selectedItem.type as keyof typeof contentTypeColors] || "bg-gray-100 text-gray-800"}>
+                      {contentTypeLabels[selectedItem.type as keyof typeof contentTypeLabels] || "Content"}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground flex items-center">
+                      <Clock className="h-3.5 w-3.5 mr-1" />
+                      {selectedItem.duration}
+                    </span>
+                  </div>
+                </div>
+                
+                {selectedItem.description && (
+                  <div>
+                    <h4 className="text-sm font-medium mb-1">Description</h4>
+                    <p className="text-sm text-muted-foreground">{selectedItem.description}</p>
+                  </div>
+                )}
+                
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Content Preview</h4>
+                  <div className="border rounded-md p-4 bg-gray-50">
+                    {selectedItem.type === 'video' ? (
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-2">Video URL:</p>
+                        <div className="bg-white p-3 border rounded">
+                          <a 
+                            href={selectedItem.content} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline break-all"
+                          >
+                            {selectedItem.content}
+                          </a>
+                        </div>
+                        <div className="mt-4 bg-gray-100 p-4 rounded-md text-center">
+                          <Video className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                          <p className="text-sm text-gray-500">Video preview not available</p>
+                        </div>
+                      </div>
+                    ) : selectedItem.type === 'reading' ? (
+                      <div className="prose prose-sm max-w-none">
+                        <p className="whitespace-pre-wrap">{selectedItem.content}</p>
+                      </div>
+                    ) : selectedItem.type === 'quiz' ? (
+                      <div className="text-center py-4">
+                        <FileQuestion className="h-8 w-8 mx-auto text-purple-500 mb-2" />
+                        <p>Quiz content will be displayed to students when they take the quiz</p>
+                        <p className="text-sm text-muted-foreground mt-1">Quiz ID: {selectedItem.content}</p>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <File className="h-8 w-8 mx-auto text-amber-500 mb-2" />
+                        <p>Assignment details will be displayed to students</p>
+                        <p className="text-sm text-muted-foreground mt-1">Assignment ID: {selectedItem.content}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <SheetFooter className="pt-4">
+            <SheetClose asChild>
+              <Button>
+                <X className="h-4 w-4 mr-2" />
+                Close Preview
+              </Button>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete{" "}
+              <span className="font-semibold">{selectedItem?.title}</span> from your course.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteItem}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
