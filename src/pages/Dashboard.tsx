@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -94,7 +93,7 @@ const Dashboard = () => {
           <>
             <Route path="browse" element={<BrowseCourses />} />
             <Route path="my-courses" element={<MyCourses />} />
-            <Route path="my-courses/:courseId/lessons/:lessonId" element={<CourseLesson />} />
+            <Route path="my-courses/:courseId/lessons/:lessonId" element={<CourseLesson courseId="" />} />
             <Route path="exams" element={<ExamsList />} />
             <Route path="exams/take/:examId" element={<TakeExam />} />
             <Route path="settings" element={<SettingsPage />} />

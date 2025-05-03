@@ -78,7 +78,7 @@ const CourseLesson = ({ courseId: propsCourseId }: CourseComponentProps) => {
       if (nextLesson) {
         // Navigate to next lesson
         setTimeout(() => {
-          navigate(`/dashboard/my-courses/${courseId}/lessons/${nextLesson.id}`);
+          navigate(`/dashboard/my-courses/${effectiveCourseId}/lessons/${nextLesson.id}`);
         }, 1000);
       }
       
@@ -90,7 +90,7 @@ const CourseLesson = ({ courseId: propsCourseId }: CourseComponentProps) => {
   };
 
   const handleNavigateToLesson = (lessonId) => {
-    navigate(`/dashboard/my-courses/${courseId}/lessons/${lessonId}`);
+    navigate(`/dashboard/my-courses/${effectiveCourseId}/lessons/${lessonId}`);
   };
 
   const findCurrentLessonIndex = () => {
