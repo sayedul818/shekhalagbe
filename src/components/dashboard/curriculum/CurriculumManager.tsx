@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Card, 
@@ -31,8 +30,11 @@ import {
   Clock,
   Plus,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Settings
 } from "lucide-react";
+import ContentUploader from "./ContentUploader";
+import { ContentType } from "@/types";
 
 // Content types with their respective icons
 const contentTypeIcons = {
@@ -58,6 +60,9 @@ const contentTypeColors = {
 
 export default function CurriculumManager() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  const [contentUploaderOpen, setContentUploaderOpen] = useState(false);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+  const [selectedSectionName, setSelectedSectionName] = useState<string | null>(null);
   
   // Mock sections data (in real app, would be fetched from API)
   const [sections, setSections] = useState([
@@ -176,6 +181,36 @@ export default function CurriculumManager() {
     );
   };
 
+  const handleOpenContentUploader = (sectionId: string, sectionTitle: string) => {
+    setSelectedSectionId(sectionId);
+    setSelectedSectionName(sectionTitle);
+    setContentUploaderOpen(true);
+  };
+
+  const handleContentAdded = (newContent: any) => {
+    // Add the new content to the appropriate section
+    if (selectedSectionId) {
+      setSections(prevSections =>
+        prevSections.map(section => {
+          if (section.id !== selectedSectionId) return section;
+          
+          return {
+            ...section,
+            items: [
+              ...section.items,
+              {
+                id: newContent.id,
+                title: newContent.title,
+                type: newContent.type.toLowerCase(),
+                duration: newContent.duration || "00:00"
+              }
+            ]
+          };
+        })
+      );
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -257,6 +292,14 @@ export default function CurriculumManager() {
                         >
                           <Plus className="h-4 w-4 mr-1" />
                           Add Lesson
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleOpenContentUploader(section.id, section.title)}
+                        >
+                          <Settings className="h-4 w-4 mr-1" />
+                          Add Content
                         </Button>
                         <Button 
                           variant="ghost" 
@@ -390,15 +433,24 @@ export default function CurriculumManager() {
                     ) : (
                       <div className="text-center py-8 text-muted-foreground">
                         <p>No items in this section yet.</p>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="mt-2"
-                          onClick={() => handleAddItem(section.id)}
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Add Lesson
-                        </Button>
+                        <div className="flex justify-center space-x-2 mt-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleAddItem(section.id)}
+                          >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Add Lesson
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleOpenContentUploader(section.id, section.title)}
+                          >
+                            <Settings className="h-4 w-4 mr-1" />
+                            Add Content
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -462,6 +514,15 @@ export default function CurriculumManager() {
           </Tabs>
         </div>
       </CardContent>
+
+      {/* Content Uploader Modal */}
+      <ContentUploader 
+        open={contentUploaderOpen}
+        onOpenChange={setContentUploaderOpen}
+        onContentAdded={handleContentAdded}
+        moduleId={selectedSectionId || undefined}
+        moduleName={selectedSectionName || undefined}
+      />
     </Card>
   );
 }
