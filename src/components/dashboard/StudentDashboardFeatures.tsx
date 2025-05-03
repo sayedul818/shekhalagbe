@@ -21,12 +21,12 @@ import {
   Activity,
 } from "lucide-react";
 import CourseLesson from "./CourseLesson";
+import CourseCurriculum from "./curriculum/CourseCurriculum";
 import Assignments from "./assignments/Assignments";
 import Quizzes from "./quizzes/Quizzes";
 import Discussions from "./discussions/Discussions";
 import { useToast } from "@/hooks/use-toast";
 import { fetchStudentDashboardFeaturesData } from "@/lib/course-data";
-import { CourseComponentProps } from "@/types"; // Import the interface
 
 interface StudentDashboardFeaturesProps {
   courseId: string;
@@ -83,7 +83,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <Button variant="outline" onClick={onBack} className="mb-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -94,31 +94,39 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
         </div>
       </div>
       
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Content */}
-        <div className="flex-1">
+        <div className="flex-1 order-2 lg:order-1">
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full justify-start mb-4 overflow-x-auto">
-              <TabsTrigger value="curriculum">
-                <BookOpen className="h-4 w-4 mr-2" />
+            <TabsList className="w-full justify-start mb-4 overflow-x-auto flex-nowrap">
+              <TabsTrigger value="curriculum" className="whitespace-nowrap">
+                <BookOpen className="h-4 w-4 mr-2 hidden sm:inline-block" />
                 Curriculum
               </TabsTrigger>
-              <TabsTrigger value="assignments">
+              <TabsTrigger value="lessons" className="whitespace-nowrap">
+                Lessons
+              </TabsTrigger>
+              <TabsTrigger value="assignments" className="whitespace-nowrap">
                 Assignments
               </TabsTrigger>
-              <TabsTrigger value="quizzes">
+              <TabsTrigger value="quizzes" className="whitespace-nowrap">
                 Quizzes
               </TabsTrigger>
-              <TabsTrigger value="discussions">
+              <TabsTrigger value="discussions" className="whitespace-nowrap">
                 Discussions
               </TabsTrigger>
             </TabsList>
 
             {/* Curriculum Tab */}
             <TabsContent value="curriculum">
-              <CourseLesson courseId={courseId} />
+              <CourseCurriculum courseId={courseId} />
             </TabsContent>
 
+            {/* Lessons Tab */}
+            <TabsContent value="lessons">
+              <CourseLesson courseId={courseId} />
+            </TabsContent>
+            
             {/* Assignments Tab */}
             <TabsContent value="assignments">
               <Assignments courseId={courseId} />
@@ -137,9 +145,9 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
         </div>
         
         {/* Sidebar */}
-        <div className="w-full md:w-80 space-y-4">
+        <div className="w-full lg:w-80 space-y-4 order-1 lg:order-2">
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-3">
               <CardTitle>Your Progress</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -173,7 +181,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
           
           {/* Upcoming deadlines section */}
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-3">
               <CardTitle>Upcoming Deadlines</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -181,7 +189,7 @@ const StudentDashboardFeatures = ({ courseId, onBack }: StudentDashboardFeatures
                 <div key={assignment.id} className="flex justify-between items-center p-2 text-sm border-b last:border-0">
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>{assignment.title}</span>
+                    <span className="truncate max-w-[150px]">{assignment.title}</span>
                   </div>
                   <Badge variant="outline">
                     {new Date(assignment.dueDate).toLocaleDateString()}

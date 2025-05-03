@@ -30,3 +30,36 @@ export interface ExamSubmission {
   }[];
   timeTaken: number;
 }
+
+// New curriculum-related types
+export type ContentType = "video" | "quiz" | "reading" | "assignment" | "live" | "ai-practice";
+export type ModuleStatus = "completed" | "in-progress" | "locked";
+
+export interface LessonItem {
+  id: string;
+  title: string;
+  type: ContentType;
+  duration: string;
+  status: "completed" | "in-progress" | "locked";
+  description?: string;
+  completed?: boolean;
+  isBookmarked?: boolean;
+  lastAccessedAt?: string;
+}
+
+export interface CurriculumModule {
+  id: string;
+  title: string;
+  status: ModuleStatus;
+  completionPercentage: number;
+  items: LessonItem[];
+  unlockDate?: string;
+}
+
+export interface CurriculumData {
+  modules: CurriculumModule[];
+  overallProgress: number;
+  nextRecommended?: LessonItem;
+  totalTimeSpent: string;
+  totalTimeRemaining: string;
+}
