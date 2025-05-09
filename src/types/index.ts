@@ -63,38 +63,3 @@ export interface CurriculumData {
   totalTimeSpent: string;
   totalTimeRemaining: string;
 }
-
-// Curriculum Manager types
-export interface SectionItem {
-  id: string;
-  title: string;
-  type: string;
-  duration: string;
-  description: string;
-  content: string;
-}
-
-export interface CurriculumSection {
-  id: string;
-  title: string;
-  items: SectionItem[];
-}
-
-// Question bank platform types
-export interface QuestionSet {
-  id: string;
-  type: string;
-  title: string;
-  questionCount: number;
-  date: string;
-  isNew?: boolean;
-}
-
-export interface SubjectCard {
-  id: string;
-  name: string;
-  questionCount: number;
-  color: string;
-  isNew?: boolean;
-  questionSets: QuestionSet[];
-}

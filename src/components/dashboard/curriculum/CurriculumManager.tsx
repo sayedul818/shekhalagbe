@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Card, 
@@ -65,23 +64,6 @@ const contentTypeColors = {
   assignment: "bg-amber-100 text-amber-800"
 };
 
-// Define the type for section items to ensure consistency
-interface SectionItem {
-  id: string;
-  title: string;
-  type: string;
-  duration: string;
-  description: string;
-  content: string;
-}
-
-// Define the type for sections
-interface Section {
-  id: string;
-  title: string;
-  items: SectionItem[];
-}
-
 export default function CurriculumManager() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [contentUploaderOpen, setContentUploaderOpen] = useState(false);
@@ -92,7 +74,7 @@ export default function CurriculumManager() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [previewSheetOpen, setPreviewSheetOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<SectionItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const [editedContent, setEditedContent] = useState<{
     title: string;
     type: string;
@@ -102,7 +84,7 @@ export default function CurriculumManager() {
   } | null>(null);
   
   // Mock sections data (in real app, would be fetched from API)
-  const [sections, setSections] = useState<Section[]>([
+  const [sections, setSections] = useState([
     {
       id: "section-1",
       title: "Introduction to JavaScript",
@@ -144,9 +126,7 @@ export default function CurriculumManager() {
                   id: `item-${section.id}-${section.items.length + 1}`,
                   title: `New Lesson`,
                   type: "video",
-                  duration: "00:00",
-                  description: "", // Add empty description
-                  content: "" // Add empty content
+                  duration: "00:00"
                 }
               ]
             }
@@ -241,9 +221,7 @@ export default function CurriculumManager() {
                 id: newContent.id,
                 title: newContent.title,
                 type: newContent.type.toLowerCase(),
-                duration: newContent.duration || "00:00",
-                description: newContent.description || "", // Add empty description if not provided
-                content: newContent.content || "" // Add empty content if not provided
+                duration: newContent.duration || "00:00"
               }
             ]
           };
@@ -253,7 +231,7 @@ export default function CurriculumManager() {
   };
 
   // New functions for enhanced button functionality
-  const handleOpenEditModal = (sectionId: string, item: SectionItem) => {
+  const handleOpenEditModal = (sectionId: string, item: any) => {
     setSelectedSectionId(sectionId);
     setSelectedItem(item);
     setEditedContent({
@@ -266,12 +244,12 @@ export default function CurriculumManager() {
     setEditModalOpen(true);
   };
 
-  const handleOpenPreviewSheet = (item: SectionItem) => {
+  const handleOpenPreviewSheet = (item: any) => {
     setSelectedItem(item);
     setPreviewSheetOpen(true);
   };
 
-  const handleOpenDeleteConfirm = (sectionId: string, item: SectionItem) => {
+  const handleOpenDeleteConfirm = (sectionId: string, item: any) => {
     setSelectedSectionId(sectionId);
     setSelectedItem(item);
     setDeleteConfirmOpen(true);
