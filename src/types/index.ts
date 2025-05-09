@@ -63,3 +63,20 @@ export interface CurriculumData {
   totalTimeSpent: string;
   totalTimeRemaining: string;
 }
+
+// Curriculum Manager types
+export interface SectionItem {
+  id: string;
+  title: string;
+  type: string;
+  duration: string;
+  description: string;
+  content: string;
+}
+
+export interface CurriculumSection {
+  id: string;
+  title: string;
+  items: SectionItem[];
+}
+
