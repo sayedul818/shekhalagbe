@@ -80,3 +80,21 @@ export interface CurriculumSection {
   items: SectionItem[];
 }
 
+// Question bank platform types
+export interface QuestionSet {
+  id: string;
+  type: string;
+  title: string;
+  questionCount: number;
+  date: string;
+  isNew?: boolean;
+}
+
+export interface SubjectCard {
+  id: string;
+  name: string;
+  questionCount: number;
+  color: string;
+  isNew?: boolean;
+  questionSets: QuestionSet[];
+}

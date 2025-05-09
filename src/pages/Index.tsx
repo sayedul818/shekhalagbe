@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import {
   Menu,
   X
 } from "lucide-react";
+import ExamQuestionPlatform from "@/components/ExamQuestionPlatform";
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -343,6 +345,9 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Exam Question Platform Section */}
+      <ExamQuestionPlatform />
+      
       {/* Features Section */}
       <div className="bg-accent py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
