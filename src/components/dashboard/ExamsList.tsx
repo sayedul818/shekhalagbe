@@ -16,7 +16,8 @@ import {
   ClipboardList,
   Search,
   Filter,
-  Check
+  Check,
+  ChevronDown
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -832,11 +833,11 @@ const ExamsList = () => {
                         <span className="font-bold mr-2">1.</span>
                         <div>
                           <span className="text-lg font-medium">
-                            $\begin{bmatrix}
-                            4 & 0 & -2 \\
-                            0 & 5 & m \\
+                            {`$\\begin{bmatrix}
+                            4 & 0 & -2 \\\\
+                            0 & 5 & m \\\\
                             -2 & 4 & 5
-                            \end{bmatrix}$ ম্যাট্রিক্সটি প্রতিসম হলে m = কত?
+                            \\end{bmatrix}$`} ম্যাট্রিক্সটি প্রতিসম হলে m = কত?
                           </span>
                         </div>
                       </div>
@@ -870,41 +871,41 @@ const ExamsList = () => {
                         <span className="font-bold mr-2">2.</span>
                         <div>
                           <span className="text-lg font-medium">
-                            $A = \begin{pmatrix}
-                            2 & 3-2i \\
+                            {`$A = \\begin{pmatrix}
+                            2 & 3-2i \\\\
                             1+2i & i-2
-                            \end{pmatrix}$ ম্যাট্রিক্সের অনুবন্ধী (conjugate) ম্যাট্রিক্স কোনটি?
+                            \\end{pmatrix}$`} ম্যাট্রিক্সের অনুবন্ধী (conjugate) ম্যাট্রিক্স কোনটি?
                           </span>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="flex items-center">
                           <span className="mr-2">A.</span>
-                          <span>$\begin{pmatrix}
-                            2 & 3+2i \\
+                          <span>{`$\\begin{pmatrix}
+                            2 & 3+2i \\\\
                             1-2i & -i-2
-                            \end{pmatrix}$</span>
+                            \\end{pmatrix}$`}</span>
                         </div>
                         <div className="flex items-center">
                           <span className="mr-2">B.</span>
-                          <span>$\begin{pmatrix}
-                            3-2i & 2 \\
+                          <span>{`$\\begin{pmatrix}
+                            3-2i & 2 \\\\
                             i-2 & 1+2i
-                            \end{pmatrix}$</span>
+                            \\end{pmatrix}$`}</span>
                         </div>
                         <div className="flex items-center">
                           <span className="mr-2">C.</span>
-                          <span>$\begin{pmatrix}
-                            2 & 1+2i \\
+                          <span>{`$\\begin{pmatrix}
+                            2 & 1+2i \\\\
                             3-2i & i-2
-                            \end{pmatrix}$</span>
+                            \\end{pmatrix}$`}</span>
                         </div>
                         <div className="flex items-center">
                           <span className="mr-2">D.</span>
-                          <span>$\begin{pmatrix}
-                            2 & 3+2i \\
+                          <span>{`$\\begin{pmatrix}
+                            2 & 3+2i \\\\
                             1-2i & -i-2
-                            \end{pmatrix}$</span>
+                            \\end{pmatrix}$`}</span>
                         </div>
                       </div>
                     </div>

@@ -1,4 +1,5 @@
 
+
 export interface CourseComponentProps {
   courseId: string;
 }
@@ -98,3 +99,4 @@ export interface SubjectCard {
   isNew?: boolean;
   questionSets: QuestionSet[];
 }
+
